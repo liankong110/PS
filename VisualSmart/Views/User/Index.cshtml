@@ -1,0 +1,180 @@
+﻿@{
+    ViewBag.Title = "用户信息列表";
+    Layout = "~/Views/Shared/_LayoutList.cshtml";
+}
+@using VisualSmart.Domain.SetUp;
+@using VisualSmart.Util;
+@model IList<UserDomain>
+
+<div class="admin-content">
+    <!--面包屑-->
+    @*<div class="am-cf am-padding">
+            <ol class="am-breadcrumb">
+                <li><i class="icon-home color-green">&nbsp;</i><a href="#">首页</a></li>
+                <li><a href="#">系统设置</a></li>
+                <li class="am-active">用户列表</li>
+            </ol>
+        </div>*@
+    <!--编辑按钮集-->
+    <div class="am-g am-form">
+        <div class="am-u-sm-12 am-u-md-6">
+            <div class="am-btn-toolbar">
+                <div class="am-btn-group am-btn-group-xs">
+                    <button onclick="window.location='add.html'" type="button" class="am-btn am-btn-default"><span class="icon-plus">&nbsp;</span>新增</button>
+                    <button type="button" class="am-btn am-btn-default"><span class="icon-edit">&nbsp;</span>修改</button>
+                    <button type="button" class="am-btn am-btn-default"><span class="icon-trash">&nbsp;</span>删除</button>
+                    <button type="button" class="am-btn am-btn-default"><span class="icon-trash">&nbsp;</span>查询</button>
+                </div>
+            </div>
+        </div>
+        @*<div class="am-u-sm-12 am-u-md-3">
+                <div class="am-input-group am-input-group-sm">
+                    姓名：
+                    <input type="text" placeholder="请输入姓名" class="am-form-field" />
+
+                    <span class="am-input-group-btn">
+                        <button class="am-btn am-btn-default" type="button">搜索</button>
+                    </span>
+                </div>
+            </div>*@
+    </div>
+    <!--table-->
+    <div class="am-g">
+        <div class="am-u-sm-12">
+            <form class="am-form">
+                <table id="select-table" class="am-table am-table-striped am-table-hover table-main">
+                    <thead>
+                        <tr>
+                            <th colspan="6">
+                                <a href="#" id="selectContent">查询条件</a><label hidden="hidden" id="selectState"></label>
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody id="selectBody">
+                        <tr style="vertical-align:middle;padding:4px;">
+                            <td>姓名：</td>
+                            <td><input type="text" placeholder="请输入姓名" class="am-form-field" style="width:200px;" /></td>
+                            <td>部门：</td>
+                            <td><input type="text" placeholder="请输入部门" class="am-form-field" style="width:200px;" /></td>
+                            <td>状态：</td>
+                            <td>
+                                <select data-am-selected="{btnSize: 'sm'}" style="width:200px;">
+                                    <option value="option1">全部</option>
+                                    <option value="option2">在职</option>
+                                    <option value="option3">离职</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>姓名：</td>
+                            <td><input type="text" placeholder="请输入姓名" class="am-form-field" style="width:200px;" /></td>
+                            <td>部门：</td>
+                            <td><input type="text" placeholder="请输入部门" class="am-form-field" style="width:200px;" /></td>
+                            <td>状态：</td>
+                            <td>
+                                <select data-am-selected="{btnSize: 'sm'}" style="width:200px;">
+                                    <option value="option1">全部</option>
+                                    <option value="option2">在职</option>
+                                    <option value="option3">离职</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>姓名：</td>
+                            <td><input type="text" placeholder="请输入姓名" class="am-form-field" style="width:200px;" /></td>
+                            <td>部门：</td>
+                            <td><input type="text" placeholder="请输入部门" class="am-form-field" style="width:200px;" /></td>
+                            <td>状态：</td>
+                            <td>
+                                <select data-am-selected="{btnSize: 'sm'}" style="width:200px;">
+                                    <option value="option1">全部</option>
+                                    <option value="option2">在职</option>
+                                    <option value="option3">离职</option>
+                                </select>
+
+                               
+
+                            </td>
+                        </tr>
+                        <tr><td colspan="6"><button class="am-btn am-btn-default" type="button" style=" float:right;">搜索</button></td></tr>
+                    </tbody>
+                </table>
+                <table id="am-table" class="am-table am-table-striped am-table-hover table-main">
+                    <thead>
+                        <tr>
+                            <th class="table-check">
+                                <input id="checkAll" type="checkbox" />
+                            </th>
+                            <th>用户名</th>
+                            <th>真实姓名</th>
+                            <th>性别</th>
+                            <th>电话</th>
+                            <th>邮箱</th>
+                            <th>所属公司</th>
+                            <th>职位</th>
+                            <th>注册时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <input name="subBox" type="checkbox" />
+                                </td>
+                                <td>@m.loginId</td>
+                                <td>
+                                    @m.Name
+
+                                </td>
+                                <td>@(m.Sex ? "男" : "女")</td>
+                                <td>@m.Phone</td>
+                                <td>@m.Email</td>
+                                <td>@m.Company</td>
+                                <td>@m.Position</td>
+                                <td class="am-hide-sm-only">@m.CreateTime</td>
+                                <td>
+                                    <div class="am-btn-toolbar">
+                                        <div class="am-btn-group am-btn-group-xs">
+                                            <button class="am-btn am-btn-default am-btn-xs am-text-secondary"><span class="icon-pencil">&nbsp;</span>编辑</button>
+                                            <button class="am-btn am-btn-default am-btn-xs am-hide-sm-only"><span class=" icon-sitemap">&nbsp;</span>权限</button>
+                                            <button class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only"><span class="icon-trash">&nbsp;</span>删除</button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+                @{
+                    var page = ViewBag.Page as VisualSmart.Util.PagerDomain;
+                }
+                @Html.Pager("page", page.PageSize, page.TotalCount, page.CurrentPage, page.TotalPageCount)
+
+            </form>
+        </div>
+    </div>
+</div>
+<!-- /.content -->
+<script type="text/javascript">
+    $(function () {
+        $("#checkAll").click(function () {
+            $("input[name='subBox']:enabled").prop("checked", $(this).prop("checked"));
+        });
+
+        $("#selectContent").click(function () {
+            if ($("#selectState").val() == "") {
+                $("#selectBody").hide();
+                $("#selectState").val(0);
+            }
+            else {
+                $("#selectBody").show();
+                $("#selectState").val("");
+            }
+        });
+    });
+
+</script>

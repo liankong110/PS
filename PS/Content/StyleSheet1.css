@@ -1,0 +1,19 @@
+﻿
+@media (max-width: 2000px) {
+    .table-responsive1 {
+        width: 100%;
+        margin-bottom: 15px;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        border: 0px solid #dddddd;
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+        -webkit-overflow-scrolling: touch;
+    }
+
+.table-responsive1 > .table {
+    margin-bottom: 0;
+}
+
+    .table-responsive1 > .table > thead > tr > th, .table-responsive > .table > tbody > tr > th, .table-responsive > .table > tfoot > tr > th, .table-responsive > .table > thead > tr > td, .table-responsive > .table > tbody > tr > td, .table-responsive > .table > tfoot > tr > td {
+        white-space: nowrap;
+    }

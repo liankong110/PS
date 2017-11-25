@@ -1,0 +1,330 @@
+﻿@{
+    ViewBag.Title = "订单退款审批列表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using VisualSmart.Domain.SceneryOrder;
+@using VisualSmart.Util;
+@model SceneryOrderRefundDomain
+
+<div class="page-content">
+
+    <div class="page-header">
+        <h1>
+            订单退款审批列表
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                查询条件
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal " role="form" action="/SceneryOrderRefund/Index" id="index" method="get">
+                <input type="hidden" id="page" name="page" />
+                @Html.AntiForgeryToken()
+                <!-- 查询条件-->
+                <div class="form-group" style="margin-bottom:6px;">
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">景区名称：</label>
+                    <div class="col-sm-3 ">
+
+                        @Html.TextBoxFor(t => t.SceneryName)
+                    </div>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">批次号：</label>
+                    <div class="col-sm-3 ">
+                        @Html.TextBoxFor(t => t.BatchNumber)
+                    </div><label class="col-sm-1 control-label no-padding-right" for="form-field-tags">订单号：</label>
+                    <div class="col-sm-3 ">
+                        @Html.TextBoxFor(t => t.SerialId)
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:6px;">
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">游玩时间：</label>
+                    <div class="col-sm-3 ">
+                        @Html.TextBoxFor(t => t.PlayDateFrom, new { @onclick = "WdatePicker()", @placeholder = "开始游玩时间" })
+                    </div>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">游玩时间：</label>
+                    <div class="col-sm-3 ">
+                        @Html.TextBoxFor(t => t.PlayDateTo, new { @onclick = "WdatePicker()", @placeholder = "结束游玩时间" })
+                    </div><label class="col-sm-1 control-label no-padding-right" for="form-field-tags">审批状态：</label>
+                    <div class="col-sm-2 ">
+                        @Html.DropDownListFor(t => t.ApprovalStatus, (ViewData["ApprovalStatusItems"] as IEnumerable<SelectListItem>), new { @class = "chosen-select form-control" })
+
+
+                    </div>
+                </div>
+                <hr class="no-padding no-margin" />
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- 查询功能-->
+                        <div class="row">
+                            <div class="col-sm-12 " id="default-buttons">
+
+                                <p>
+                                    <button class="btn btn-sm btn-success" type="submit" onclick="GetExcel(0)">
+                                        <i class="ace-icon fa fa-search bigger-110 "></i>
+                                        查询
+                                    </button>
+                                    <input type="hidden" id="isExcel" name="isExcel" value="0" />
+                                    <button class="btn btn-sm btn-primary " type="submit" id="excel" onclick="GetExcel(1)">
+                                        <i class="ace-icon fa fa-file-excel-o bigger-110"></i>
+                                        导出Excel
+                                    </button>
+
+                                    <button class="btn btn-sm btn-primary " type="button" id="excel" onclick="CancelRefund();">
+                                        <i class="ace-icon fa fa-dollar bigger-110"></i>
+                                        取消退款
+                                    </button>
+                                </p>
+                                <!-- /section:elements.button.white -->
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+
+                        <div class="space-4"></div>
+                        <!-- 查询列表 -->
+                        <div class="row">
+
+                            <div class="col-xs-12 table-responsive">
+                                <table id="simple-table" class="table table-hover table-condensed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="center">
+                                                <label class="pos-rel">
+                                                    <input type="checkbox" class="ace" />
+                                                    <span class="lbl"></span>
+                                                </label>
+                                            </th>
+                                            <th><span style="margin-right:28px;">操作</span></th>
+                                            <th>支付类型</th>
+                                            <th><span style="margin-right:100px;">景区名称</span></th>
+                                            <th>同景区ID</th>
+                                            <th>批次号</th>
+                                            <th>订单号</th>
+                                            <th>游玩时间</th>
+                                            <th>退款金额</th>
+                                            <th>审批状态</th>
+                                            <th>创建时间/创建人</th>
+                                            <th>审批时间/审批人</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            var RefundList = ViewBag.RefundList as IList<SceneryOrderRefundDomain>;
+
+                                        }
+                                        @foreach (var m in RefundList)
+                                        {
+                                            <tr>
+                                                <td class="center">
+
+                                                    @if (m.ApprovalStatus == 0)
+                                                    {
+                                                        <label class="pos-rel">
+                                                            <input type="checkbox" class="ace" name="sId" id="sId" value="@m.Id" />
+                                                            <span class="lbl"></span>
+                                                        </label>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (m.ApprovalStatus == 0)
+                                                    {
+                                                        <a class="btn btn-xs btn-danger" title="退款" onclick="Confirm('@m.Id','@m.PayType');">
+                                                            <i class="ace-icon fa fa-dollar bigger-120">退款</i>
+                                                        </a>
+                                                    }
+
+                                                </td>
+                                                <td>@(VisualSmart.Util.EnumOperate.GetEnumDesc((VisualSmart.Util.Menus.PayTypeMenu)m.PayType))</td>
+                                                <td>@m.SceneryName</td>
+                                                <td>
+                                                    @m.SceneryTCId
+                                                </td>
+                                                <td>
+                                                    @if (m.ApprovalStatus == 1)
+                                                    {
+                                                        if (m.PayType==(int)VisualSmart.Util.Menus.PayTypeMenu.Alipay)
+                                                        { 
+                                                            <a href="/AlipayDetail/Index?BatchNumber=@m.BatchNumber&SerialId=@m.SerialId">@m.BatchNumber</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="/WeChatDetail/Index?BatchNumber=@m.BatchNumber&SerialId=@m.SerialId">@m.BatchNumber</a>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        @m.BatchNumber
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @m.SerialId
+                                                </td>
+                                                <td>
+                                                    @m.PlayDate.ToString("yyyy-MM-dd")
+                                                </td>
+                                                <td>
+                                                    @m.Total
+                                                </td>
+                                                <td>
+                                                    @m.ApprovalStatusString
+                                                </td>
+                                                <td>@m.Creater<br /> @m.CreateTime</td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(m.Updater))
+                                                    {
+                                                        @m.Updater<br /> @m.UpdateTime
+                                                    }
+                                                </td>
+
+
+                                            </tr>
+                                        }
+                                        @if (RefundList.Count == 0)
+                                        {
+                                            <tr><td colspan="12" class="center" height="100px"> 暂无数据</td></tr>
+                                        }
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                            <!-- /.span -->
+
+
+                        </div><!-- /.row -->
+                        @{var page = ViewBag.Page as VisualSmart.Util.PagerDomain;}
+                        <!-- 分页 -->
+                        @Html.BootStrapPager("page", page.PageSize, page.TotalCount, page.CurrentPage, page.TotalPageCount)
+                        <div class="hr hr-18 dotted hr-double"></div>
+                        <!-- PAGE CONTENT ENDS -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-3">金额(合计)：<label class="red">@page.SumDT.Rows[0]["SumTotal"] </label> </div>
+
+    </div>
+</div><!-- /.page-content -->
+
+<script src="~/Content/components/datatables/media/js/jquery.dataTables.js"></script>
+<script src="~/Content/components/_mod/datatables/jquery.dataTables.bootstrap.js"></script>
+<script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
+<link href="~/Content/StyleSheet1.css" rel="stylesheet" />
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+
+    function PostForm(page) {
+        $("#page").val(page);
+        $("#index").submit();
+    }
+
+    function Confirm(id,type) {
+
+        if (confirm("确定要退款此数据？") == false) {
+            return;
+        }
+
+        var url = "/SceneryOrderRefund/ConfirmRefund/?id=" + id+"&type="+type;
+        $.ajax({
+            url: url,
+            data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+            cache: false,
+            type: 'post',
+            async: false,
+            success: function (data) {
+                if (data.Mess == "success") {
+                    $.gritter.add({
+                        title: '退款成功！',
+                        text: '',
+                        class_name: 'gritter-info gritter-light'
+                    });
+                    setTimeout(function () { window.location.reload(); }, 500);
+                } else {
+                    $.gritter.add({
+                        title: "错误提示",
+                        text: data.Mess,
+                        class_name: 'gritter-error gritter-light'
+                    });
+
+                }
+
+            }
+        });
+    }
+
+    function CancelRefund() {
+
+        var str = "";
+        $('input[name="sId"]:checked').each(function () {
+            str += $(this).val() + ",";
+        });
+        if (str == "") {
+            alert("请选择数据");
+            return;
+        }
+        if (confirm("确定要取消这些数据？") == false) {
+            return;
+        }
+        var url = "/SceneryOrderRefund/CancelRefund/?ids=" + str;
+        $.ajax({
+            url: url,
+            data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+            cache: false,
+            type: 'post',
+            async: false,
+            success: function (data) {
+                if (data.Mess == "success") {
+                    $.gritter.add({
+                        title: '设置成功！',
+                        text: '',
+                        class_name: 'gritter-info gritter-light'
+                    });
+                    setTimeout(function () {
+                        $('input[name="sId"]:checked').each(function () {
+                            this.checked = false;
+                        });
+                        window.location.reload();
+                    }, 500);
+                }
+                else {
+                    $.gritter.add({
+                        title: '设置失败，请刷新列表重新设置！',
+                        text: '',
+                        class_name: 'gritter-error gritter-light'
+                    });
+
+                }
+
+            }
+        });
+    }
+
+    function GetExcel(val) {
+
+        $('#isExcel').val(val)
+    }
+
+    //And for the first simple table, which doesn't have TableTools or dataTables
+    //select/deselect all rows according to table header checkbox
+    var active_class = 'active';
+    $('#simple-table > thead > tr > th input[type=checkbox]').eq(0).on('click', function () {
+        var th_checked = this.checked;//checkbox inside "TH" table header
+
+        $(this).closest('table').find('tbody > tr').each(function () {
+            var row = this;
+            if (th_checked) $(row).addClass(active_class).find('input[type=checkbox]').eq(0).prop('checked', true);
+            else $(row).removeClass(active_class).find('input[type=checkbox]').eq(0).prop('checked', false);
+        });
+    });
+
+    //select/deselect a row when the checkbox is checked/unchecked
+    $('#simple-table').on('click', 'td input[type=checkbox]', function () {
+        var $row = $(this).closest('tr');
+        if ($row.is('.detail-row ')) return;
+        if (this.checked) $row.addClass(active_class);
+        else $row.removeClass(active_class);
+    });
+</script>

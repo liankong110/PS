@@ -1,0 +1,160 @@
+﻿@{
+    ViewBag.Title = "支付宝账户";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model VisualSmart.Domain.Alipay.AlipayDomain
+<div class="page-content">
+    <div class="page-header">
+        <h1>
+            @ViewBag.ViewTitle 支付宝账户
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                请填写下面内容
+                <input type="hidden" id="error" value="@ViewBag.Error" />
+                <span class="red">提示：新增/修改信息后，需要重新启动支付接口站点，重新加载缓存，才能进行支付</span>
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+
+
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal" role="form" action="/Alipay/Add" method="post">
+
+                <div class="col-xs-12">
+                    <!-- PAGE CONTENT BEGINS -->
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="AppName"> <span style="color:red;">*</span>名称</label>
+
+                        <div class="col-sm-9">
+                            @Html.HiddenFor(t => t.Id)
+                            @Html.HiddenFor(T => T.CreateTime)
+                            @Html.HiddenFor(T => T.Creater)  
+                            @Html.AntiForgeryToken()
+                            @Html.TextBoxFor(t => t.AppName, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入名称", @placeholder = "请输入名称", @data_trigger = "focus" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="APPID"> <span style="color:red;">*</span>APPID</label>
+
+                        <div class="col-sm-9">
+                          
+
+                            @Html.TextBoxFor(t => t.APP_ID, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入APPID", @placeholder = "请输入APPID", @data_trigger = "focus" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="PID"> <span style="color:red;">*</span>PID</label>
+
+                        <div class="col-sm-9">
+
+
+                            @Html.TextBoxFor(t => t.PID, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入PID", @placeholder = "请输入PID", @data_trigger = "focus" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="ALIPAY_PUBLIC_KEY"> <span style="color:red;">*</span>支付宝公钥</label>
+
+                        <div class="col-sm-9">                           
+                   
+                       
+                        @Html.Password("ALIPAY_PUBLIC_KEY", Model.ALIPAY_PUBLIC_KEY, new { @class = "col-xs-10 col-sm-10", @data_rel = "tooltip", @data_placement = "right", @title = "请输入支付宝公钥", @placeholder = "请输入支付宝公钥", @data_trigger = "focus" })
+                          </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="APP_PRIVATE_KEY"> <span style="color:red;">*</span>应用私钥</label>
+
+                        <div class="col-sm-9"> 
+
+                            @Html.Password("APP_PRIVATE_KEY", Model.APP_PRIVATE_KEY, new { @class = "col-xs-10 col-sm-10", @data_rel = "tooltip", @data_placement = "right", @title = "请输入应用私钥", @placeholder = "请输入应用私钥", @data_trigger = "focus" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="APP_PUBLIC_KEY">应用公钥</label>
+
+                        <div class="col-sm-9">
+                            @Html.Password("APP_PUBLIC_KEY",Model.APP_PUBLIC_KEY, new { @class = "col-xs-10 col-sm-10" })
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="APP_PUBLIC_KEY">备注</label>
+
+                        <div class="col-sm-9">
+                            @Html.TextAreaFor(t => t.Remark, new { @class = "col-xs-10 col-sm-10" })
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+
+                        <div class="clearfix form-actions">
+                            <div class="col-md-offset-3 col-md-9">
+                                <button class="btn btn-info" type="submit" id="btnSave">
+                                    <i class="ace-icon fa fa-check bigger-110 "></i>
+                                    保存
+                                </button>
+
+                                &nbsp; &nbsp; &nbsp;
+                                <a class="btn" href="/Alipay/Index">
+
+                                    <i class="ace-icon fa fa-undo bigger-110 "></i>
+                                    返回
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div><!-- /.col -->
+        <!-- /.table-responsive -->
+    </div>
+</div><!-- /.row -->
+
+<script type="text/javascript">
+    jQuery(function ($) {
+
+        $('[data-rel=tooltip]').tooltip({ container: 'body' });
+        $('[data-rel=popover]').popover({ container: 'body' });
+
+        var error = $("#error").val();
+
+        if (error != "") {
+            var className = "gritter-error gritter-light";
+            if (error == 1) {
+                className = "gritter-info gritter-light";
+                error = "保存成功！";
+            }
+
+            $.gritter.add({
+                title: error,
+                text: "",
+                class_name: className
+            });
+        }
+    });
+
+
+
+
+    $("#btnSave").click(function () {
+
+        var result = CheckValue("AppName") && CheckValue("APP_ID") && CheckValue("ALIPAY_PUBLIC_KEY") && CheckValue("APP_PRIVATE_KEY");
+        return result;
+    });
+
+    function CheckValue(name) {
+        var control = $("#" + name + "");
+        if (control.val() == "") {
+            control.focus();
+            return false;
+        }
+        return true;
+    }
+
+</script>

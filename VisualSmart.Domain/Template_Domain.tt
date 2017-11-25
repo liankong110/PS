@@ -1,0 +1,149 @@
+﻿<#@ template debug="true" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Data" #>
+<#@ assembly name="System.xml" #>
+<#@ assembly name="System" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Data.SqlClient" #>
+<#@ import namespace="System.Data" #>
+<# 
+	 List<string> extColumNames =new List<string>{ "rowstatus", "version","creatorid", "createby", "createon","updateid", "updateby", "updateon" };
+	string connectionString = "Data Source=.;Initial Catalog=VisualSmart;Persist Security Info=True;User ID=sa;Password=Fengjian1234.;"; 
+	SqlConnection conn = new SqlConnection(connectionString);
+    conn.Open(); 
+    System.Data.DataTable schema = conn.GetSchema("TABLES"); 
+    string selectQuery = "select * from @tableName"; 
+    SqlCommand command = new SqlCommand(selectQuery,conn); 
+    SqlDataAdapter ad = new SqlDataAdapter(command); 
+	System.Data.DataSet ds = new DataSet();
+	foreach(System.Data.DataRow row in schema.Rows)
+	{
+	string tableName = row["TABLE_NAME"].ToString();	
+	//表名
+	if(tableName!="Alipay")continue;	 
+	string className = tableName.Substring(tableName.IndexOf('_') + 1);
+    #>
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using VisualSmart.Domain.Base;
+
+namespace VisualSmart.Domain.SetUp
+{ 	<#	    ds.Tables.Clear();
+		bool isFirstColumn = true;
+		command.CommandText = selectQuery.Replace("@tableName",row["TABLE_NAME"].ToString());
+		ad.FillSchema(ds, SchemaType.Mapped, row["TABLE_NAME"].ToString()); 	
+	   var key="Id";
+	   foreach (DataColumn dc in ds.Tables[0].Columns)
+			{	
+			   string columnName = dc.ColumnName;
+			   var match = Regex.Match(columnName, "[A-Z]+Id$");
+					if (match.Value.Equals(columnName))
+					{
+					    key=columnName;
+					    break;
+					}
+			}
+	#> 
+    [Serializable]
+	public class <#=className#>Domain : Entity
+	{ 
+		<#						
+			foreach (DataColumn dc in ds.Tables[0].Columns)
+			{						
+				string dataType = string.Empty;
+				switch(dc.DataType.Name)
+				{
+					case "Int64":
+						dataType="long";
+						break;
+					case "Int32":
+						dataType="int";
+						break;
+					case "String":
+						dataType="string";
+						break;
+					case "Boolean":
+						dataType="bool";
+						break;
+					default:
+						dataType = dc.DataType.Name;
+						break;
+				}
+				ds.Tables.Clear();		 
+				string columnName = dc.ColumnName;
+				var sqlCommandString = "select b from (SELECT  a.name a , isnull(g.[value],'-') AS b FROM sys.columns a left join sys.extended_properties g on (a.object_id = g.major_id AND g.minor_id = a.column_id) WHERE  object_id = (SELECT object_id FROM sys.tables WHERE name = '"+tableName+"')) as x where a='"+columnName+"'";
+				command.CommandText =  sqlCommandString;
+				ad = new SqlDataAdapter(command);						
+				ad.Fill(ds);
+				string descriptions = string.Empty;
+				try
+				{
+					descriptions = ds.Tables[0].Rows[0][0].ToString();
+				}
+				catch(Exception e)
+				{
+					descriptions = e.Message;
+				}
+                if(isFirstColumn)
+				{
+					isFirstColumn = false;#>
+
+		/// <summary>
+		/// <#= descriptions #>
+		/// </summary>		
+		public <#= dataType #> Id {get;set;}		
+				<#}else if(!extColumNames.Contains(columnName.ToLower())){
+				switch(columnName)
+				{					
+				default:
+					var match = Regex.Match(columnName, "[a-z]+[A-Z]+ID$");
+					if (match.Value.Equals(columnName))
+					{#>									
+		
+		/// <summary>
+		/// <#= descriptions #>
+		/// </summary>		[
+		public <#= dataType #> <#= columnName #> {get;set;}
+						<#
+					}
+					else
+					{									
+						var matcha = Regex.Match(columnName, "[A-Z][A-Za-z]+"); 
+						if(string.IsNullOrEmpty(columnName))
+						{
+						#>								
+		
+		/// <summary>
+		/// <#= descriptions #>
+		/// </summary>		
+		public <#= dataType #> <#= matcha.Value #> {get;set;}
+						<#}else
+						{
+						var m = Regex.Match(columnName, "[A-Z]+"); 
+							#>
+		
+		/// <summary>
+		/// <#= descriptions #>
+		/// </summary>		
+		public <#= dataType #> <#= columnName.Substring(m.Length-1) #> {get;set;}
+						<#
+						}
+					}
+				break;
+				}
+				#>
+				<#}#>
+			<#}#>
+	}
+}
+	<#
+}
+#>
+
+ 
+  

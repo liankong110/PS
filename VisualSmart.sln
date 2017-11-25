@@ -1,0 +1,74 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualSmart.Util", "VisualSmart.Util\VisualSmart.Util.csproj", "{45B07F67-3EA0-4EBA-A1E5-C18AFC857B81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualSmart.Domain", "VisualSmart.Domain\VisualSmart.Domain.csproj", "{356679C7-2B19-40D9-957E-DCAF1BC3F4F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualSmart.Dao.DataQuickStart", "VisualSmart.Dao.DataQuickStart\VisualSmart.Dao.DataQuickStart.csproj", "{7A55727F-A80B-4783-B776-ACB0E5CC177A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualSmart.BizService", "VisualSmart.BizService\VisualSmart.BizService.csproj", "{CFF3FA91-26BE-45C8-A511-478144076A4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualSmart.BizService.Implements", "VisualSmart.BizService.Implements\VisualSmart.BizService.Implements.csproj", "{BE6CF75A-E4D6-4BD9-A4F0-62AAF8ACB4E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualSmart.BizService.Core", "VisualSmart.BizService.Core\VisualSmart.BizService.Core.csproj", "{284EB7A2-1F74-4EB6-A52C-7B2CBDE97159}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DLL", "DLL", "{BD39170E-5050-47E6-B365-4AE231F58C31}"
+	ProjectSection(SolutionItems) = preProject
+		DLL\Common.Logging.dll = DLL\Common.Logging.dll
+		DLL\Common.Logging.Log4Net1210.dll = DLL\Common.Logging.Log4Net1210.dll
+		DLL\log4net.dll = DLL\log4net.dll
+		DLL\Spring.Aop.dll = DLL\Spring.Aop.dll
+		DLL\Spring.Core.dll = DLL\Spring.Core.dll
+		DLL\Spring.Data.dll = DLL\Spring.Data.dll
+		DLL\Spring.Services.dll = DLL\Spring.Services.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "网站", "网站", "{96E6DDED-CBB8-437D-9373-7247C4EC84FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS", "PS\PS.csproj", "{93F21E02-22E7-46E7-A2B3-838ECF199E48}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{45B07F67-3EA0-4EBA-A1E5-C18AFC857B81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45B07F67-3EA0-4EBA-A1E5-C18AFC857B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45B07F67-3EA0-4EBA-A1E5-C18AFC857B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45B07F67-3EA0-4EBA-A1E5-C18AFC857B81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{356679C7-2B19-40D9-957E-DCAF1BC3F4F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{356679C7-2B19-40D9-957E-DCAF1BC3F4F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{356679C7-2B19-40D9-957E-DCAF1BC3F4F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{356679C7-2B19-40D9-957E-DCAF1BC3F4F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A55727F-A80B-4783-B776-ACB0E5CC177A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A55727F-A80B-4783-B776-ACB0E5CC177A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A55727F-A80B-4783-B776-ACB0E5CC177A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A55727F-A80B-4783-B776-ACB0E5CC177A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFF3FA91-26BE-45C8-A511-478144076A4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFF3FA91-26BE-45C8-A511-478144076A4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFF3FA91-26BE-45C8-A511-478144076A4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFF3FA91-26BE-45C8-A511-478144076A4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE6CF75A-E4D6-4BD9-A4F0-62AAF8ACB4E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE6CF75A-E4D6-4BD9-A4F0-62AAF8ACB4E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE6CF75A-E4D6-4BD9-A4F0-62AAF8ACB4E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE6CF75A-E4D6-4BD9-A4F0-62AAF8ACB4E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{284EB7A2-1F74-4EB6-A52C-7B2CBDE97159}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{284EB7A2-1F74-4EB6-A52C-7B2CBDE97159}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{284EB7A2-1F74-4EB6-A52C-7B2CBDE97159}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{284EB7A2-1F74-4EB6-A52C-7B2CBDE97159}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93F21E02-22E7-46E7-A2B3-838ECF199E48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93F21E02-22E7-46E7-A2B3-838ECF199E48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93F21E02-22E7-46E7-A2B3-838ECF199E48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93F21E02-22E7-46E7-A2B3-838ECF199E48}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		VisualSVNWorkingCopyRoot = .
+	EndGlobalSection
+EndGlobal

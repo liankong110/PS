@@ -1,0 +1,229 @@
+﻿@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model VisualSmart.Domain.SetUp.UserDomain
+<link rel="stylesheet" href="~/Content/components/chosen/chosen.css" />
+<div class="page-content">
+    <div class="page-header">
+        <h1>
+            @ViewBag.ViewTitle 用户
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                请填写下面内容(注：新增用户默认密码 123456)
+                <input type="hidden" id="error" value="@ViewBag.Error" />
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+
+
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal" role="form" action="/User/Add" method="post">
+
+                <div class="col-xs-12">
+                    <!-- PAGE CONTENT BEGINS -->
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="loginId"> <span style="color:red;">*</span>用户名 </label>
+
+                        <div class="col-sm-9">
+                            @Html.HiddenFor(t => t.Id)
+                            @Html.HiddenFor(T => T.CreateTime)  @Html.HiddenFor(T => T.Avatar)
+                            @Html.AntiForgeryToken()
+                            @Html.TextBoxFor(t => t.loginId, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入用户名", @placeholder = "请输入用户名", @data_trigger = "focus" })
+                        </div>
+                    </div>
+
+
+
+                    @*<div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="loginPwd"><span style="color:red;">*</span>登录密码</label>
+
+                            <div class="col-sm-9">
+                                @Html.PasswordFor(t => t.loginPwd, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入登录密码", @placeholder = "请输入登录密码" })
+                                <span class="help-inline col-xs-12 col-sm-7">
+                                    <span class="middle">密码至少6位长度</span>
+                                </span>
+                            </div>
+                        </div>*@
+
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="Name"> <span style="color:red;">*</span>真实姓名 </label>
+
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(t => t.Name, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入真实姓名", @placeholder = "请输入真实姓名" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="Phone">手机 </label>
+
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(t => t.Phone, new { @class = "col-xs-10 col-sm-5" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="Email">Email </label>
+
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(t => t.Email, new { @class = "col-xs-10 col-sm-5" })
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="Position">职位 </label>
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(t => t.Position, new { @class = "col-xs-10 col-sm-5" })
+                        </div>
+                    </div>
+
+                    @Html.HiddenFor(t => t.Leader)
+                    @*<div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="Leader">所属上级 </label>
+
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(t => t.Leader, new { @class = "col-xs-10 col-sm-5" })
+                            </div>
+                        </div>*@
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="Company">所属公司 </label>
+
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(t => t.Company, new { @class = "col-xs-10 col-sm-5" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="Company">角色: </label>
+
+                        <div class="col-sm-9">
+                            <select multiple="" class="chosen-select form-control" id="RoleId" name="RoleId" data-placeholder="选择角色">
+
+                                @{
+                                    var roleList = ViewBag.RoleList as List<VisualSmart.Domain.SetUp.RoleDomain>;
+                                    foreach (var m in roleList)
+                                    {
+                                        <option value="@m.Id" @(m.IsSelected ? "selected='selected' " : " ")>@m.RoleName</option>
+                                    }
+                                }
+
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+                <div class="row">
+                    <div class="col-xs-12">
+
+                        <div class="clearfix form-actions">
+                            <div class="col-md-offset-3 col-md-9">
+                                <button class="btn btn-info" type="submit" id="btnSave">
+                                    <i class="ace-icon fa fa-check bigger-110 "></i>
+                                    保存
+                                </button>
+
+                                &nbsp; &nbsp; &nbsp;
+                                <a class="btn" href="/User/Index">
+
+                                    <i class="ace-icon fa fa-undo bigger-110 "></i>
+                                    返回
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+            </form>
+        </div><!-- /.col -->
+        <!-- /.table-responsive -->
+    </div>
+
+</div><!-- /.row -->
+
+
+
+
+<script src="~/Content/components/chosen/chosen.jquery.js"></script>
+
+
+<script type="text/javascript">
+    jQuery(function ($) {
+
+        $('[data-rel=tooltip]').tooltip({ container: 'body' });
+        $('[data-rel=popover]').popover({ container: 'body' });
+
+        var error = $("#error").val();
+
+        if (error != "") {
+            var className = "gritter-error gritter-light";
+            if (error == 1) {
+                className = "gritter-info gritter-light";
+                error = "保存成功！";
+            }
+
+            $.gritter.add({
+                title: error,
+                text: "",
+                class_name: className
+            });
+        }
+
+        if (!ace.vars['touch']) {
+            $('.chosen-select').chosen({ allow_single_deselect: true });
+            //resize the chosen on window resize
+
+            $(window)
+            .off('resize.chosen')
+            .on('resize.chosen', function () {
+                $('.chosen-select').each(function () {
+
+                    var $this = $(this);
+                    $this.next().css({ 'width': $this.parent().width() });
+                })
+            }).trigger('resize.chosen');
+            //resize chosen on sidebar collapse/expand
+            $(document).on('settings.ace.chosen', function (e, event_name, event_val) {
+                if (event_name != 'sidebar_collapsed') return;
+                $('.chosen-select').each(function () {
+
+                    var $this = $(this);
+                    $this.next().css({ 'width': $this.parent().width() });
+                })
+            });
+        }
+    });
+
+
+
+
+    $("#btnSave").click(function () {
+
+        var result = CheckValue("loginId") && CheckValue("loginPwd") && CheckValue("Name");
+        return result;
+    });
+
+    function CheckValue(name) {
+        var control = $("#" + name + "");
+        if (control.val() == "") {
+            control.focus();
+            return false;
+        }
+        return true;
+    }
+
+</script>

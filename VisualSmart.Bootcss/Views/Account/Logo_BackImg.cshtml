@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "Logo_BackImg";
+}
+
+
+<link href="~/Content/animated/css/component.css" rel="stylesheet" />
+<div class="container demo-2" style="width:100%;padding:0px;">
+    <div class="content">
+        <div id="large-header" class="large-header">
+            <canvas id="demo-canvas"></canvas>
+            <div class="main-title" style="width:100%;">
+                @Html.Action("Logo", "Account")
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Content/animated/js/rAF.js"></script>
+<script src="~/Content/animated/js/demo-2.js"></script>

@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "系统登录";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/animated/css/component.css" rel="stylesheet" />
+
+<div class="container">
+
+    @using (Html.BeginForm())
+    {
+        <div style="max-width:450px; margin:0 auto; padding:20px;" class="panel panel-default">
+            @if (!string.IsNullOrEmpty(ViewBag.Error))
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>@ViewBag.Error</strong>
+                </div>
+            }
+            <h3>登录</h3>
+            <div class="form-group">
+                <div class="input-group" style="width:100%">
+                    <input type="text" name="txtName" id="txtName" placeholder="用户名" value="@ViewBag.Name" class="form-control" data-container="body" data-toggle="popover" data-placement="bottom" data-content="请输入用户名" data-trigger="focus" />
+                    <span class="glyphicon glyphicon-user form-control-feedback" aria-hidden="true"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group" style="width:100%">
+
+                    <input type="password" name="txtPwd" id="txtPwd" placeholder="密码" class="form-control  btn-block" data-container="body" data-toggle="popover" data-placement="bottom" data-content="请输入密码" data-trigger="focus" />
+                    <span class="glyphicon glyphicon-lock form-control-feedback" aria-hidden="true"></span>
+                </div>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="rd_remember" @ViewBag.Checked /> 记住密码
+                </label>
+            </div>
+            <button type="submit" class="btn btn-success btn-block active" id="myButton2">登录</button>
+        </div>
+    
+    <a href="tel:18688888888">18688888888</a>
+    }></div>
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover();
+    })
+    $("#myButton2").on("click", function () {
+        var name = $("#txtName");
+        var pass = $("#txtPwd");
+        if (name.val() == "") {
+            name.focus();
+            return false;
+        }
+        if (pass.val() == "") {
+            pass.focus();
+            return false;
+        }
+        $(this).text("提交中....");
+        $(this).attr('disabled', false);
+        return true;
+    })
+
+
+</script>

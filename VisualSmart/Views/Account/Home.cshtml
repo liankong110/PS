@@ -1,0 +1,117 @@
+﻿@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model VisualSmart.Models.HomeModel
+
+<script type="text/javascript">
+    function myInit() {
+        var myFrame = document.getElementById("myFram");
+        var myRight = document.getElementById("content_right");
+        var mtHight = 650 > myFrame.contentWindow.document.documentElement.scrollHeight ? 650 : myFrame.contentWindow.document.documentElement.scrollHeight;
+        myFrame.style.height = mtHight + "px";
+        myRight.style.height = mtHight + "px";
+    }
+</script>
+<div class="header">
+    <div class="inner clearfix">
+        <div class="fl">
+            <a href="/" class="header-logo">
+                <img src="/" />
+            </a>
+        </div>
+        <!-- end logo -->
+        <div class="header-nav fl">
+            <ul class="header-nav-list clearfix">
+                @{
+                    bool displayFrist = false;
+                }
+                @foreach (var menu in Model.MenuList)
+                {
+                    if (displayFrist == false)
+                    {
+                        <li class="fl active"><a href="/">@menu.DisplayName</a></li>
+                        displayFrist = true;
+                    }
+                    else
+                    {
+                        <li class="fl "><a href="/">@menu.DisplayName</a></li>
+                    }
+                }
+            </ul>
+        </div>
+        <!-- end header-nav -->
+
+        <div class="fr" id="usermenu">
+            <ul class="header-ctrl clearfix">
+                <li class="header-ctrl-item fl">
+                    <a href="javascript:;" class="header-ctrl-item-parent">
+                        账户
+                    </a>
+                </li>
+            </ul>
+            <div class="usermenu">
+                <div class="bdnuarrow">
+                    <ul class="header-ctrl-item-children">
+                        <li><a href="javascript:;" target="_blank">&nbsp;用户资料</a></li>
+                        <li><a href="javascript:;">账号设置</a></li>
+                        <li><a href="javascript:;">系统退出</a></li>
+                    </ul>
+                </div>
+                <s>
+                    <i></i>
+                </s>
+            </div>
+        </div>
+        <!-- end list -->
+        <span class="header-welcome fr">
+            <a href="javasecript:;" class="tips" data-trigger="hover" data-placement="top" data-content="<strong>版本：</strong><font style=&quot;color:red&quot;>免费版</font>">18962171655，欢迎回来</a>
+        </span>
+
+        <!-- end header-welcome -->
+    </div>
+</div>
+<div class="container">
+    <div class="inner clearfix">
+        <div class="content-left fl">
+            <dl class="left-menu" id="lMenu">
+                <dt>
+                    <!--图标-->
+                    <i class="icon-user"></i>
+                    <span id="shop_0" data-id="0">会员管理</span>
+                </dt>
+                @foreach (var form in Model.FormList)
+                {
+                    <dd><a href="#@form.Path">@form.FormName</a></dd>
+                }
+
+            </dl>
+        </div>
+        <!-- end content-left -->
+
+        <div class="content-right fl" id="content_right" style="min-height: 650px;">
+            <iframe id="myFram" allowtransparency="true" src="/Account/Welcome" frameborder="0" scrolling="no" width="100%" height="100%" onload="myInit()" style="height: 650px;"></iframe>
+        </div>
+        <!-- end content-right -->
+    </div>
+</div>
+<div class="footer">&copy; 2015 Visual Smart , Inc. All rights reserved.</div>
+<script type="text/javascript">
+    //左侧导航栏切换
+    $(function () {
+        $("#lMenu").find("dd").click(function () {
+            $("#lMenu").find("dd").removeClass("active");
+            $(this).addClass("active");
+            var url = $(this).children().attr("href");
+            var text = $(this).children().text();
+            getOOP("myFram").src = url.substr(url.indexOf("#") + 1);
+            document.title = text + " - 微逐云管理后台";
+        });
+        $("#usermenu").mouseover(function () {
+            $(".usermenu").show();
+        });
+        $("#usermenu").mouseleave(function () {
+            $(".usermenu").hide();
+        });
+    });
+</script>

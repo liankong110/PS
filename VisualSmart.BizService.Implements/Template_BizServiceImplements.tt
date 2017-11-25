@@ -1,0 +1,28 @@
+﻿<#@ template debug="true" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Data" #>
+<#@ assembly name="System.xml" #>
+<#@ assembly name="System" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Data.SqlClient" #>
+<#@ import namespace="System.Data" #>
+<# string className="Test" #> 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using VisualSmart.BizService.Implements.Base;
+using VisualSmart.BizService.SetUp;
+using VisualSmart.Dao.DataQuickStart.SetUp;
+using VisualSmart.Domain.SetUp;
+		 
+public class <#=className#>BizService : EntityBizService<<#=className#>Domain, <#=className#>Dao>, I<#=className#>BizService
+{ 
+		 
+}
+ 
+
+ 
+  

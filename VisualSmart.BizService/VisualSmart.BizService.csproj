@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CFF3FA91-26BE-45C8-A511-478144076A4B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VisualSmart.BizService</RootNamespace>
+    <AssemblyName>VisualSmart.BizService</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Alipay\IAlipayQRCodeBizService.cs" />
+    <Compile Include="Alipay\IAlipayDetailBizService.cs" />
+    <Compile Include="Alipay\ISceneryBizService.cs" />
+    <Compile Include="Alipay\IAlipayBizService.cs" />
+    <Compile Include="Base\IEntityBizService.cs" />
+    <Compile Include="Alipay\IAlipayTradeBizService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SceneryOrder\ISceneryOrderRefundBizService.cs" />
+    <Compile Include="SetUp\IFunctionBizService.cs" />
+    <Compile Include="SetUp\IRole_FunctionBizService.cs" />
+    <Compile Include="SetUp\IRole_FormBizService.cs" />
+    <Compile Include="SetUp\IRole_UserBizService.cs" />
+    <Compile Include="SetUp\IRoleBizService.cs" />
+    <Compile Include="SetUp\IFormBizService.cs" />
+    <Compile Include="SetUp\IMenuBizService.cs" />
+    <Compile Include="SetUp\IUserBizService.cs" />
+    <Compile Include="WeChat\INativePay.cs" />
+    <Compile Include="WeChat\IWeChatDetailBizService.cs" />
+    <Compile Include="WeChat\IWeChatQRCodeBizService.cs" />
+    <Compile Include="WeChat\IWxPayConfigBizService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VisualSmart.Domain\VisualSmart.Domain.csproj">
+      <Project>{356679c7-2b19-40d9-957e-dcaf1bc3f4f2}</Project>
+      <Name>VisualSmart.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VisualSmart.Util\VisualSmart.Util.csproj">
+      <Project>{45b07f67-3ea0-4eba-a1e5-c18afc857b81}</Project>
+      <Name>VisualSmart.Util</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

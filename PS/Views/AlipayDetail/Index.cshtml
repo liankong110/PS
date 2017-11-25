@@ -1,0 +1,255 @@
+﻿@{
+    ViewBag.Title = "支付宝交易明细";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using VisualSmart.Domain.Alipay;
+@using VisualSmart.Util;
+@model IList<AlipayDetailDomain>
+
+<div class="page-content">
+
+    <div class="page-header">
+        <h1>
+            支付宝交易明细
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                查询条件
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal " role="form" action="/AlipayDetail/Index" id="index" method="get">
+                <input type="hidden" id="page" name="page" />
+                @Html.AntiForgeryToken()
+                <!-- 查询条件-->
+                <div class="form-group">
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">景区名称：</label>
+                    <div class="col-sm-2 ">
+                        <input type="text" name="SceneryName" id="SceneryName" placeholder="景区名称" value="@ViewBag.SceneryName" />
+                    </div>
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-tags">商家订单号：</label>
+                    <div class="col-sm-2 ">
+                        <input type="text" name="Out_trade_no" id="Out_trade_no" placeholder="商家订单号" value="@ViewBag.Out_trade_no" />
+                    </div>
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-tags">订单号：</label>
+                    <div class="col-sm-2 ">
+                        <input type="text" name="SerialId" id="SerialId" placeholder="订单号" value="@ViewBag.SerialId" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">交易时间：</label>
+                    <div class="col-sm-2">
+                        <input type="text" name="PayDateFrom" id="PayDateFrom" value="@ViewBag.PayDateFrom" onclick="WdatePicker()" placeholder="交易开始时间" />
+                    </div>
+
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-tags">交易时间：</label>
+                    <div class="col-sm-2">
+                        <input type="text" name="PayDateTo" id="PayDateTo" value="@ViewBag.PayDateTo" onclick="WdatePicker()" placeholder="交易结束时间" />
+                    </div>
+
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-tags">批次号：</label>
+                    <div class="col-sm-2 ">
+                        <input type="text" name="BatchNumber" id="BatchNumber" placeholder="批次号" value="@ViewBag.BatchNumber" />
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">游玩时间：</label>
+                    <div class="col-sm-2">
+                        <input type="text" name="PlayDateFrom" id="PlayDateFrom" value="@ViewBag.PlayDateFrom" onclick="WdatePicker()" placeholder="游玩开始时间" />
+                    </div>
+
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-tags">游玩时间：</label>
+                    <div class="col-sm-2">
+                        <input type="text" name="PlayDateTo" id="PlayDateTo" value="@ViewBag.PlayDateTo" onclick="WdatePicker()" placeholder="游玩结束时间" />
+                    </div>
+                    <label class="col-sm-2 control-label no-padding-right" for="form-field-tags">交易状态：</label>
+                    <div class="col-sm-2 ">
+                        <input type="hidden" id="Status" name="Status" value="@ViewBag.Status" /> 
+                        <select class="chosen-select form-control" id="cboStatus" name="cboStatus" data-placeholder="选择">
+                            <option value="">全部</option>
+                            <option value="1">支付交易</option>
+                            <option value="2">退款交易</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr class="no-padding no-margin" />
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- 查询功能-->
+                        <div class="row">
+                            <div class="col-sm-12 " id="default-buttons">
+
+                                <p>
+                                    <input type="hidden" id="isExcel" name="isExcel" value="0" />
+                                    <button class="btn btn-sm btn-success" type="submit" onclick="GetExcel(0)">
+                                        <i class="ace-icon fa fa-search bigger-110 "></i>
+                                        查询
+                                    </button>
+                                    <button class="btn btn-sm btn-primary " type="submit" id="excel" onclick="GetExcel(1)">
+                                        <i class="ace-icon fa fa-file-excel-o bigger-110"></i>
+                                        导出Excel
+                                    </button>
+                                </p>
+                                <!-- /section:elements.button.white -->
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+
+                        <div class="space-4"></div>
+                        <!-- 查询列表 -->
+                        <div class="row">
+
+                            <div class="col-xs-12 table-responsive1">
+                                <table id="simple-table" class="table table-hover table-condensed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            @*<th>操作</th>*@
+                                            <th><span style="margin-right:50px;">景区名称</span></th>
+                                            <th>游玩时间</th>
+                                            <th>批次号</th>
+                                            <th>订单号</th>
+                                            <th>买家支付宝账号</th>
+                                            <th>支付宝APPID</th>
+                                            <th>商家订单号</th>
+                                            <th><span style="margin-right:80px;">交易时间</span></th>
+                                            <th>交易金额</th>
+                                            <th>支付宝交易号</th>
+                                            <th>交易状态</th>
+                                            <th>网关返回码</th>
+                                            <th>创建时间/创建人</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var m in Model)
+                                        {
+                                            <tr>
+                                                @*<td>
+                                                        @if(m.Total_amount>0)
+                                                        {
+                                                        <div class="btn-group">
+                                                            <a class="btn btn-xs btn-danger" title="退款" onclick="Refund('@m.Id');">
+                                                                退款
+                                                            </a>
+                                                        </div>
+                                                        }
+
+                                                    </td>*@
+                                                <td> @m.SceneryName</td>
+                                                <td> @m.AlipayPlayDate.ToString("yyyy-MM-dd")</td>
+                                                <td> @m.BatchNumber</td>
+                                                <td> @m.SerialId</td>
+                                                <td>@m.Buyer_logon_id</td>
+                                                <td>@m.AppId</td>
+                                                <td>@m.Out_trade_no</td>
+                                                <td>@m.Send_pay_date</td>
+                                                @if (m.Total_amount > 0)
+                                                {
+                                                    <td>@m.Total_amount</td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="red">@m.Total_amount</td>
+                                                }
+                                                <td>@m.Trade_no</td>
+                                                <td>@m.Msg</td>
+                                                <td>@m.Code</td>
+                                                <td>@m.Creater<br /> @m.CreateTime</td>
+                                            </tr>
+                                        }
+                                        @if (Model.Count == 0)
+                                        {
+                                            <tr><td colspan="11" class="center">暂无数据</td></tr>
+                                        }
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                            <!-- /.span -->
+
+
+                        </div><!-- /.row -->
+                        @{var page = ViewBag.Page as VisualSmart.Util.PagerDomain;}
+                        <!-- 分页 -->
+                        @Html.BootStrapPager("page", page.PageSize, page.TotalCount, page.CurrentPage, page.TotalPageCount)
+                        <div class="hr hr-18 dotted hr-double"></div>
+                        <!-- PAGE CONTENT ENDS -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-3">交易金额(合计)：<label class="red">@page.SumDT.Rows[0]["SumTotal_amount"] </label> </div>
+
+    </div>
+</div><!-- /.page-content -->
+
+<script src="~/Content/components/datatables/media/js/jquery.dataTables.js"></script>
+<script src="~/Content/components/_mod/datatables/jquery.dataTables.bootstrap.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/dataTables.buttons.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.flash.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.html5.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.print.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.colVis.js"></script>
+<script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+<link href="~/Content/StyleSheet1.css" rel="stylesheet" />
+<script type="text/javascript">
+
+    $("#cboStatus").val($("#Status").val());
+
+    function PostForm(page) {
+        $("#page").val(page);
+        $("#index").submit();
+    }
+    function GetExcel(val) {
+        $('#isExcel').val(val)
+    }
+    function Refund(id) {
+        if (confirm("确定要退款吗?") == true) {
+            var url = "/AlipayDetail/Refund/?id=" + id;
+            $.ajax({
+                url: url,
+                data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+                cache: false,
+                type: 'post',
+                async: false,
+                success: function (data) {
+                    if (data.Mess == "0") {
+                        $.gritter.add({
+                            title: '退款成功！',
+                            text: '',
+                            class_name: 'gritter-info gritter-light'
+                        });
+                        //setTimeout(function () { window.location.reload(); }, 500);
+                    }
+                    else if (data.Mess == "1") {
+                        $.gritter.add({
+                            title: '已经退款，不能重复退款！',
+                            text: '',
+                            class_name: 'gritter-error gritter-light'
+                        });
+                    } else if (data.Mess == "2") {
+                        $.gritter.add({
+                            title: '退款异常！',
+                            text: '',
+                            class_name: 'gritter-error gritter-light'
+                        });
+                    }
+
+                }
+            });
+        }
+    }
+
+</script>

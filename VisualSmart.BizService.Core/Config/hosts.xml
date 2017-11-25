@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net"
+         xmlns:db="http://www.springframework.net/database"
+          xmlns:tx="http://www.springframework.net/tx">
+
+  <object id="Smart" type="VisualSmart.BizService.Core.Smart,VisualSmart.BizService.Core">
+    <property name="UserBizService" ref="UserBizService"></property>
+    <property name="FormBizService" ref="FormBizService"></property>
+    <property name="MenuBizService" ref="MenuBizService"></property>
+    <property name="FunctionBizService" ref="FunctionBizService"></property>
+    <property name="Role_UserBizService" ref="Role_UserBizService"></property>
+    <property name="RoleBizService" ref="RoleBizService"></property>
+    <property name="Role_FunctionBizService" ref="Role_FunctionBizService"></property>
+    <property name="Role_FormBizService" ref="Role_FormBizService"></property>  
+ 
+    <!--支付宝模块-->
+    <property name="AlipayBizService" ref="AlipayBizService"></property>
+    <property name="SceneryBizService" ref="SceneryBizService"></property>
+    <property name="AlipayDetailBizService" ref="AlipayDetailBizService"></property>
+    <property name="AlipayQRCodeBizService" ref="AlipayQRCodeBizService"></property>
+    <property name="AlipayTradeBizService" ref="AlipayTradeBizService"></property>
+    <!--订单模块-->
+    <property name="SceneryOrderRefundBizService" ref="SceneryOrderRefundBizService"></property>
+    
+    <!--微信模块-->
+    <property name="WxPayConfigBizService" ref="WxPayConfigBizService"></property>
+    <property name="WeChatQRCodeBizService" ref="WeChatQRCodeBizService"></property>
+    <property name="WeChatDetailBizService" ref="WeChatDetailBizService"></property>
+    <property name="NativePay" ref="NativePay"></property>
+  </object>
+  <!-- 系统基础模块-->
+  <object id="UserBizService" type="VisualSmart.BizService.Implements.SetUp.UserBizService,VisualSmart.BizService.Implements"></object>
+  <object id="FormBizService" type="VisualSmart.BizService.Implements.SetUp.FormBizService,VisualSmart.BizService.Implements"></object>
+  <object id="MenuBizService" type="VisualSmart.BizService.Implements.SetUp.MenuBizService,VisualSmart.BizService.Implements"></object>
+  <object id="FunctionBizService" type="VisualSmart.BizService.Implements.SetUp.FunctionBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Role_UserBizService" type="VisualSmart.BizService.Implements.SetUp.Role_UserBizService,VisualSmart.BizService.Implements"></object>
+  <object id="RoleBizService" type="VisualSmart.BizService.Implements.SetUp.RoleBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Role_FunctionBizService" type="VisualSmart.BizService.Implements.SetUp.Role_FunctionBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Role_FormBizService" type="VisualSmart.BizService.Implements.SetUp.Role_FormBizService,VisualSmart.BizService.Implements"></object>
+
+  <!--支付宝 模块-->
+  <object id="AlipayBizService" type="VisualSmart.BizService.Implements.Alipay.AlipayBizService,VisualSmart.BizService.Implements"></object>
+  <object id="SceneryBizService" type="VisualSmart.BizService.Implements.Alipay.SceneryBizService,VisualSmart.BizService.Implements"></object>
+  <object id="AlipayDetailBizService" type="VisualSmart.BizService.Implements.Alipay.AlipayDetailBizService,VisualSmart.BizService.Implements"></object>
+  <object id="AlipayQRCodeBizService" type="VisualSmart.BizService.Implements.Alipay.AlipayQRCodeBizService,VisualSmart.BizService.Implements"></object>
+  <object id="AlipayTradeBizService" type="VisualSmart.BizService.Implements.Alipay.AlipayTradeBizService,VisualSmart.BizService.Implements"></object>
+  <!--订单模块-->
+  <object id="SceneryOrderRefundBizService" type="VisualSmart.BizService.Implements.SceneryOrder.SceneryOrderRefundBizService,VisualSmart.BizService.Implements"></object>
+
+  <!--微信 模块-->
+  <object id="WxPayConfigBizService" type="VisualSmart.BizService.Implements.WeChat.WxPayConfigBizService,VisualSmart.BizService.Implements"></object>
+  <object id="WeChatQRCodeBizService" type="VisualSmart.BizService.Implements.WeChat.WeChatQRCodeBizService,VisualSmart.BizService.Implements"></object>
+  <object id="WeChatDetailBizService" type="VisualSmart.BizService.Implements.WeChat.WeChatDetailBizService,VisualSmart.BizService.Implements"></object>
+  <object id="NativePay" type="VisualSmart.BizService.Implements.WeChat.NativePay,VisualSmart.BizService.Implements"></object>
+
+</objects>

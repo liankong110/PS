@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<objects xmlns="http://www.springframework.net" xmlns:tx="http://www.springframework.net/tx">
+  <object id="UserBizService" type="VisualSmart.BizService.Implements.SetUp.UserBizService,VisualSmart.BizService.Implements"></object>
+</objects>

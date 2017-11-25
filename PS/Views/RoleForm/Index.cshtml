@@ -1,0 +1,163 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model PS.Models.HomeModel
+
+<link rel="stylesheet" href="~/Content/components/chosen/chosen.css" />
+<div class="page-content" style=" height:1500px;">
+
+    <form class="form-horizontal" role="form" action="/RoleForm/Index" method="post">
+        <input type="hidden" id="RoleId" name="RoleId" value="@ViewBag.RoleId" />
+        <input type="hidden" id="RoleName" name="RoleName" value="@ViewBag.RoleName" />
+        <input type="hidden" id="error" value="@ViewBag.Error" />
+        @Html.AntiForgeryToken()
+        <div class="page-header">
+            <h1>
+                用户权限设置
+                <small>
+                    <i class="ace-icon fa fa-angle-double-right"></i>
+                    选择角色 设置权限，用户登录后显示对应的菜单
+
+                </small>
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-xs-3">
+
+                <select class="chosen-select form-control" id="form-field-select-3" data-placeholder="选择" onchange="ChangeRoleId(this.value)">
+                    @{
+                        var roleList = Model.RoleList.ToList();
+                        var roleId = Convert.ToInt32(ViewBag.RoleId);
+                        foreach (var role in roleList)
+                        {
+                            if (role.Id == roleId)
+                            {
+                                <option value="@role.Id" selected="selected">@role.RoleName</option>
+                            }
+                            else
+                            {
+                                <option value="@role.Id">@role.RoleName</option>
+                            }
+                        }
+                    }
+                </select>
+
+            </div>
+
+
+            <div class="col-xs-6">
+                <button class="btn btn-info" type="submit" id="btnSave">
+                    <i class="ace-icon fa fa-check bigger-110 "></i>
+                    保存
+                </button>
+            </div>
+
+
+        </div>
+
+
+        <script type="text/javascript">
+            try { ace.settings.loadState('main-container') } catch (e) { }
+        </script>
+
+        <!-- #section:basics/sidebar -->
+        <div id="sidebar" class="sidebar" style="float:none;width:auto;">
+            <script type="text/javascript">
+                try { ace.settings.loadState('sidebar') } catch (e) { }
+            </script>
+            <ul class="nav nav-list" id="lMenu">
+                @{
+                    var allForms = Model.FormList.ToList();
+                }
+                @foreach (var menu in Model.MenuList)
+                {
+
+                    var menu_Forms = allForms.FindAll(t => t.MenuId == menu.Id);
+                    if (menu_Forms.Count == 0)
+                    {
+                        continue;
+                    }
+                    <li>
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-list"></i>
+                            <span class="menu-text"> @menu.DisplayName </span>
+                            <input type="checkbox" checked='checked' value="@menu.Id" name="menu" style="display:none;" />
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            @foreach (var form in menu_Forms)
+                            {
+
+                                var allfuns = Model.FuntionList.ToList().FindAll(t => t.Form_Id == form.Id);
+                                <li>
+                                    <a>
+                                        <i class="menu-icon fa fa-caret-right"></i>
+                                        <div class="checkbox inline">
+                                            <label>
+                                                <input name="form" type="checkbox" class="ace" value="@form.Id" @(form.IsSelected ? "checked='checked' " : " ") />
+                                                <span class="lbl">@form.FormName</span>
+                                            </label>
+                                        </div>
+
+                                        @foreach (var funciton in allfuns)
+                                        {
+                                            <div class="checkbox inline">
+                                                <label>
+                                                    <input name="function" type="checkbox" class="ace" value="@(form.Id+"_"+funciton.Id)" @(funciton.IsSelected ? "checked='checked' " : " ") />
+                                                    <span class="lbl">@funciton.FunctionText</span>
+                                                </label>
+                                            </div>
+                                        }
+
+                                    </a>
+                                    <b class="arrow"></b>
+
+
+                                </li>
+                            }
+                        </ul>
+
+
+                    </li>
+                }
+
+            </ul>
+        </div>
+
+    </form>
+</div><!-- /.page-content -->
+<!-- page specific plugin scripts -->
+<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+    <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+</a>
+
+<script type="text/javascript">
+    $(function () {
+        
+        var error = $("#error").val();
+       
+        if (error != "") {
+            var className = "gritter-error gritter-light";
+            if (error == 1) {
+                className = "gritter-info gritter-light";
+                error = "保存成功！";
+            }
+            else {
+                error = "保存失败！";
+            }
+            $.gritter.add({
+                title: error,
+                text: "",
+                class_name: className
+            });
+        }
+    });
+
+    function ChangeRoleId(id) {
+        location.href = "/RoleForm/Index?RoleId=" + id;
+    }
+</script>
+

@@ -1,0 +1,176 @@
+﻿@{
+    ViewBag.Title = "微信账户";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model VisualSmart.Domain.WeChat.WxPayConfigDomain
+
+<div class="page-content">
+    <div class="page-header">
+        <h1>
+            @ViewBag.ViewTitle 微信账户
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                请填写下面内容
+                <input type="hidden" id="error" value="@ViewBag.Error" />
+                <span class="red">提示：新增/修改信息后，需要重新启动微信接口站点，重新加载缓存，才能进行支付</span>
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+
+
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal" role="form" action="/WxPayConfig/Add" method="post">
+
+                <div class="col-xs-12">
+                    <!-- PAGE CONTENT BEGINS -->
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="AppName"> <span style="color:red;">*</span>名称</label>
+
+                        <div class="col-sm-9">
+                            @Html.HiddenFor(t => t.Id)
+                            @Html.HiddenFor(T => T.CreateTime)
+                            @Html.HiddenFor(T => T.Creater)
+                            @Html.AntiForgeryToken()
+                            @Html.TextBoxFor(t => t.WeAppName, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入名称", @placeholder = "请输入名称", @data_trigger = "focus" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="APPID"> <span style="color:red;">*</span>公众账号ID/APPID</label>
+
+                        <div class="col-sm-9">
+
+                            @Html.TextBoxFor(t => t.APPID, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入APPID", @placeholder = "请输入APPID", @data_trigger = "focus" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="MCHID"> <span style="color:red;">*</span>商户号</label>
+
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(t => t.MCHID, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入商户号", @placeholder = "请输入商户号", @data_trigger = "focus" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="PAYKEY"> <span style="color:red;">*</span>商户支付密钥</label>
+
+                        <div class="col-sm-9">
+
+                            @Html.Password("PAYKEY", Model.PAYKEY, new { @class = "col-xs-10 col-sm-10", @data_rel = "tooltip", @data_placement = "right", @title = "请输入商户支付密钥", @placeholder = "请输入商户支付密钥", @data_trigger = "focus" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="APPSECRET"> 公众帐号secert</label>
+
+                        <div class="col-sm-9">
+
+                            @Html.Password("APPSECRET", Model.APPSECRET, new { @class = "col-xs-10 col-sm-10", @data_rel = "tooltip", @data_placement = "right", @title = "请输入应用私钥", @placeholder = "请输入应用私钥", @data_trigger = "focus" })
+                            (仅JSAPI支付的时候需要配置)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="SSLCERT_PATH"> <span style="color:red;">*</span>证书服务器地址：</label>
+
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(t => t.SSLCERT_PATH,
+                        new
+                        {
+                            @class = "col-xs-10 col-sm-10",
+                            @data_rel = "tooltip",
+                            @data_placement = "right",
+                            @title = "请输入证书",
+                            @placeholder = "请输入证书",
+                            @data_trigger = "focus"
+                        })
+
+                        </div> 
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="APP_PUBLIC_KEY">备注</label>
+
+                        <div class="col-sm-9">
+                            @Html.TextAreaFor(t => t.Remark, new { @class = "col-xs-10 col-sm-10" })
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+
+                            <div class="clearfix form-actions">
+                                <div class="col-md-offset-3 col-md-9">
+                                    <button class="btn btn-info" type="submit" id="btnSave">
+                                        <i class="ace-icon fa fa-check bigger-110 "></i>
+                                        保存
+                                    </button>
+
+                                    &nbsp; &nbsp; &nbsp;
+                                    <a class="btn" href="/WxPayConfig/Index">
+
+                                        <i class="ace-icon fa fa-undo bigger-110 "></i>
+                                        返回
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </form>
+        </div><!-- /.col -->
+        <!-- /.table-responsive -->
+    </div>
+</div><!-- /.row -->
+
+<script type="text/javascript">
+
+    $('#id-input-file-2').ace_file_input({
+        no_file: '请选择文件 ...',
+        btn_choose: '选择',
+        btn_change: 'Change',
+        droppable: false,
+        onchange: null,
+        thumbnail: false //| true | large
+        //whitelist:'gif|png|jpg|jpeg'
+        //blacklist:'exe|php'
+        //onchange:''
+        //
+    });
+
+    jQuery(function ($) {
+
+        $('[data-rel=tooltip]').tooltip({ container: 'body' });
+        $('[data-rel=popover]').popover({ container: 'body' });
+
+        var error = $("#error").val();
+
+        if (error != "") {
+            var className = "gritter-error gritter-light";
+            if (error == 1) {
+                className = "gritter-info gritter-light";
+                error = "保存成功！";
+            }
+
+            $.gritter.add({
+                title: error,
+                text: "",
+                class_name: className
+            });
+        }
+    });
+
+    $("#btnSave").click(function () {
+        var result = CheckValue("WeAppName")
+                    && CheckValue("APPID")
+                    && CheckValue("MCHID")
+                    && CheckValue("PAYKEY")
+                    && CheckValue("SSLCERT_PATH");
+        return result;
+    });
+
+    function CheckValue(name) {
+        var control = $("#" + name + "");
+        if (control.val() == "") {
+            control.focus();
+            return false;
+        }
+        return true;
+    }
+
+</script>

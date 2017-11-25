@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="~/Content/css/font-awesome.min.css" rel="stylesheet" />
+    <link type="text/css" rel="stylesheet" href="~/Content/css/login.css" />
+    <script src="~/Content/js/jquery-1.11.3.min.js"></script>
+
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="header"></div>
+    <div class="main">
+        <div class="container container-custom">
+            <div class="row wrap-login">
+                <div class="login-banner col-sm-6 col-md-7 col-lg-7 hidden-xs">
+                    <a href="home.html" target="_self">
+                        <!--<img src="img/login-banner.png" />--><div class="bg-left"></div>
+                    </a>
+                </div>
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    <div class="footer"></div>
+
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

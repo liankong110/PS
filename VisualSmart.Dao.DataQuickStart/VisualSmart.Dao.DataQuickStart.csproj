@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7A55727F-A80B-4783-B776-ACB0E5CC177A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VisualSmart.Dao.DataQuickStart</RootNamespace>
+    <AssemblyName>VisualSmart.Dao.DataQuickStart</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\VisualSmart\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Spring.Core">
+      <HintPath>..\DLL\Spring.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Data">
+      <HintPath>..\DLL\Spring.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Alipay\AlipayDetailDao.cs" />
+    <Compile Include="Alipay\AlipayQRCodeDao.cs" />
+    <Compile Include="Alipay\SceneryDao.cs" />
+    <Compile Include="Alipay\AlipayDao.cs" />
+    <Compile Include="Base\EntityDao.cs" />
+    <Compile Include="Base\IEntityDao.cs" />
+    <Compile Include="Base\Template_DaoDataQuickStartX.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SceneryOrder\SceneryOrderRefundDao.cs" />
+    <Compile Include="SetUp\FormDao.cs" />
+    <Compile Include="SetUp\MenuDao.cs" />
+    <Compile Include="SetUp\FunctionDao.cs" />
+    <Compile Include="SetUp\RoleDao.cs" />
+    <Compile Include="SetUp\Role_FunctionDao.cs" />
+    <Compile Include="SetUp\Role_FormDao.cs" />
+    <Compile Include="SetUp\Role_UserDao.cs" />
+    <Compile Include="SetUp\UserDao.cs" />
+    <Compile Include="Template_DaoDataQuickStart.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Template_DaoDataQuickStart.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WeChat\WeChatDetailDao.cs" />
+    <Compile Include="WeChat\WeChatQRCodeDao.cs" />
+    <Compile Include="WeChat\WxPayConfigDao.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VisualSmart.BizService.Core\VisualSmart.BizService.Core.csproj">
+      <Project>{284eb7a2-1f74-4eb6-a52c-7b2cbde97159}</Project>
+      <Name>VisualSmart.BizService.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VisualSmart.Domain\VisualSmart.Domain.csproj">
+      <Project>{356679c7-2b19-40d9-957e-dcaf1bc3f4f2}</Project>
+      <Name>VisualSmart.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VisualSmart.Util\VisualSmart.Util.csproj">
+      <Project>{45b07f67-3ea0-4eba-a1e5-c18afc857b81}</Project>
+      <Name>VisualSmart.Util</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Config\Dao.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Template_DaoDataQuickStart.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>Template_DaoDataQuickStart.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

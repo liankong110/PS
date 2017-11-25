@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{356679C7-2B19-40D9-957E-DCAF1BC3F4F2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VisualSmart.Domain</RootNamespace>
+    <AssemblyName>VisualSmart.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Alipay\AlipayDetailDomain.cs" />
+    <Compile Include="Alipay\AlipayQRCodeDomain.cs" />
+    <Compile Include="Alipay\Precreate\Extend_paramsRequest.cs" />
+    <Compile Include="Alipay\Precreate\GoodsDetailRequest.cs" />
+    <Compile Include="Alipay\Precreate\PrecreateRequest.cs" />
+    <Compile Include="Alipay\Precreate\PrecreateResponse.cs" />
+    <Compile Include="Alipay\Query\Alipay_trade_query_response.cs" />
+    <Compile Include="Alipay\Query\QueryRequest.cs" />
+    <Compile Include="Alipay\Query\QueryResponse.cs" />
+    <Compile Include="Alipay\Refund\RefundResponse.cs" />
+    <Compile Include="Alipay\SceneryDomain.cs" />
+    <Compile Include="Alipay\AlipayDomain.cs" />
+    <Compile Include="API\ErrorCode.cs" />
+    <Compile Include="API\Request.cs" />
+    <Compile Include="API\Response.cs" />
+    <Compile Include="BaseDomain\FormDomain.cs" />
+    <Compile Include="BaseDomain\FunctionDomain.cs" />
+    <Compile Include="BaseDomain\MenuDomain.cs" />
+    <Compile Include="BaseDomain\RoleDomain.cs" />
+    <Compile Include="BaseDomain\Role_FunctionDomain.cs" />
+    <Compile Include="BaseDomain\Role_FormDomain.cs" />
+    <Compile Include="BaseDomain\Role_UserDomain.cs" />
+    <Compile Include="BaseDomain\UserDomain.cs" />
+    <Compile Include="Base\Entity.cs" />
+    <Compile Include="Base\IEntity.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SceneryOrder\SceneryOrderRefundDomain.cs" />
+    <Compile Include="SetUp\Role_FormDomain.cs" />
+    <Compile Include="SetUp\Role_FunctionDomain.cs" />
+    <Compile Include="SetUp\FormDomain.cs" />
+    <Compile Include="SetUp\FunctionDomain.cs" />
+    <Compile Include="SetUp\MenuDomain.cs" />
+    <Compile Include="SetUp\RoleDomain.cs" />
+    <Compile Include="SetUp\Role_UserDomain.cs" />
+    <Compile Include="SetUp\UserDomain.cs" />
+    <Compile Include="Template_Domain.cs">
+      <DependentUpon>Template_Domain.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="WeChat\Query\QueryRequest.cs" />
+    <Compile Include="WeChat\Query\QueryResponse.cs" />
+    <Compile Include="WeChat\Unifiedorder\UnifiedorderRequest.cs" />
+    <Compile Include="WeChat\Unifiedorder\UnifiedorderResponse.cs" />
+    <Compile Include="WeChat\WeChatDetailDomain.cs" />
+    <Compile Include="WeChat\WeChatQRCodeDomain.cs" />
+    <Compile Include="WeChat\WxPayConfigDomain.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Template_Domain.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Template_Domain.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,182 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model VisualSmart.Bootcss.Models.HomeModel
+<style>
+    .tree {
+        min-height: 15px;
+        padding: 0px;
+        margin-bottom: 0px;
+        border: 1px solid #999;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    }
+
+        .tree li {
+            list-style-type: none;
+            margin: 0;
+            padding: 10px 5px 0 5px;
+            position: relative;
+        }
+
+            .tree li::before, .tree li::after {
+                content: '';
+                left: -20px;
+                position: absolute;
+                right: auto;
+            }
+
+            .tree li::before {
+                border-left: 1px solid #999;
+                bottom: 50px;
+                height: 100%;
+                top: 0;
+                width: 1px;
+            }
+
+            .tree li::after {
+                border-top: 1px solid #999;
+                height: 20px;
+                top: 25px;
+                width: 25px;
+            }
+
+            .tree li span {
+                -moz-border-radius: 5px;
+                -webkit-border-radius: 5px;
+                border: 1px solid #999;
+                border-radius: 5px;
+                display: inline-block;
+                padding: 3px 8px;
+                text-decoration: none;
+            }
+
+            .tree li.parent_li > span {
+                cursor: pointer;
+            }
+
+        .tree > ul > li::before, .tree > ul > li::after {
+            border: 0;
+        }
+
+        .tree li:last-child::before {
+            height: 30px;
+        }
+
+        .tree li.parent_li > span:hover, .tree li.parent_li > span:hover + ul li span {
+            background: #eee;
+            border: 1px solid #94a0b4;
+            color: #000;
+        }
+</style>
+@{
+    var allForms = Model.FormList.ToList();
+    var roleList = Model.RoleList.ToList();
+}
+<!-- Single button -->
+<div class="btn-group">
+    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @ViewBag.RoleName <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+        @foreach (var role in roleList)
+        {
+            <li><a href="/ROLEFORM/INDEX?id=@role.Id&RoleName=@role.RoleName">@role.RoleName</a></li>
+            <li role="separator" class="divider"></li>
+        }
+    </ul>
+</div>
+<div class="tree">
+
+    <ul style="margin:0px;padding:0px;">
+        @foreach (var menu in Model.MenuList)
+        {
+            <li>
+                <div class="list-group" style="margin:0px;padding:0px;">
+                    <a href="#" class="list-group-item list-group-item-success" style="margin:0px;padding:5px;">
+                        <span class="pull-left" style="margin:0px;padding:0px;"><i class="glyphicon glyphicon-triangle-bottom"></i></span>
+                        <p class="list-group-item-text" style="padding-left:20px;"><label class="checkbox-inline"><input type="checkbox" name="menu" value="@menu.Id" />@menu.DisplayName</label></p>
+                    </a>
+                </div>
+                <ul>
+                    @{
+            var menu_Forms = allForms.FindAll(t => t.MenuId == menu.Id);
+                    }
+                    @foreach (var form in menu_Forms)
+                    {
+                        <li style="display: none;">
+                            @*<span><i class="icon-time"></i>@form.FormName</span>*@
+
+                            <div class="list-group" style="margin:0px;padding:0px;">
+                                <a href="#" class="list-group-item" style="margin:0px;padding:5px;">
+                                    <span class="pull-left" style="margin:0px;padding:0px;"><i class="glyphicon glyphicon-triangle-right"></i></span>
+                                    <p class="list-group-item-text" style="padding-left:20px;"><label class="checkbox-inline"><input type="checkbox" name="form" value="@form.Id" />@form.FormName</label></p>
+                                </a>
+                            </div>
+
+                            <ul>
+                                <li style="display: none;">
+                                    <div class="list-group" style="margin:0px;padding:0px;">
+                                        <a href="#" class="list-group-item" style="margin:0px;padding:5px;">
+                                            <p><label class="checkbox-inline"><input type="checkbox" />增加</label></p>
+                                            <p><label class="checkbox-inline"><input type="checkbox" />删除</label></p>
+                                            <p><label class="checkbox-inline"><input type="checkbox" />修改</label></p>
+                                        </a>
+                                    </div>
+
+
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+    </ul>
+
+
+
+</div>
+
+<script>
+    $(function () {
+        $('.tree li:has(ul)').addClass('parent_li').find(' div a > span').attr('title', 'Collapse this branch');
+        $('.tree li div a > span').on('click', function (e) {
+            var children = $(this).parent().parent().parent('li.parent_li').find(' > ul > li');
+            if (children.is(":visible")) {
+                children.hide('fast');
+                $(this).attr('title', 'Expand this branch').find(' > i').addClass('glyphicon-triangle-right').removeClass('glyphicon-triangle-bottom');
+            } else {
+                children.show('fast');
+                $(this).attr('title', 'Collapse this branch').find(' > i').addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-right');
+            }
+            e.stopPropagation();
+        });
+
+        $('.tree :checkbox').on('click', function (e) {
+
+            var myCheck = $(this).prop('checked');
+
+            //$(".tree :checkbox").prop("checked", myCheck);
+
+            $(this).parent().parent().parent().parent().parent('li.parent_li').find("input[type='checkbox']").prop("checked", myCheck);
+            //var children = $(this).parent().parent().parent().parent().parent('li.parent_li').find(' > ul > li > div > a > p > label > :checkbox ');
+            //children.prop("checked", myCheck);
+
+            //children.each(function () {
+            //    $(this).prop("checked", myCheck);//全选
+            //   //alert($(this).attr("value"));
+            //});
+
+
+            //e.stopPropagation();
+        });
+    });
+
+
+</script>

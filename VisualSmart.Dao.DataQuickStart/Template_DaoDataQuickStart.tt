@@ -1,0 +1,172 @@
+﻿<#@ template debug="true" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Data" #>
+<#@ assembly name="System.xml" #>
+<#@ assembly name="System" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Data.SqlClient" #>
+<#@ import namespace="System.Data" #>
+<#@ import namespace="System.Text" #>
+
+ 
+using Spring.Data.Common;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using VisualSmart.Dao.DataQuickStart.Base;
+using VisualSmart.Domain;
+using VisualSmart.Domain.SetUp;
+using VisualSmart.Util;
+using VisualSmart.Dao.DataQuickStart;
+	namespace VisualSmart.Dao.DataQuickStart
+		{
+	 
+	<#
+	    string tableName="Alipay";
+		this.IniData(tableName);
+	 
+	#>
+	public class <#=tableName#>Dao :  EntityDao<<#=tableName#>Domain>
+	{ 
+		<#
+			string DoMain=tableName+"Domain";
+		#>
+		/// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public override bool Add(<#=DoMain#> entity)
+        {
+            try
+            {
+                StringBuilder strSql = new StringBuilder();
+                strSql.Append("insert into <#=DoMain#>(");
+				
+                strSql.AppendFormat("{0})",<#=AddSql#>);
+                strSql.Append(" values (");
+                strSql.AppendFormat("{0})",<#=AddSqlParameters#>);
+                strSql.Append(";select @@IDENTITY");
+                var parameters = GetBaseParams(entity);
+                return WriteAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public override bool Update(<#=DoMain#>  entity)
+        {
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("update <#=DoMain#> set ");
+            strSql.AppendFormat("{0}",<#=UpdateSql#>);           
+            strSql.Append(" where Id=@Id");
+            var parameters = GetBaseParams(entity);
+            parameters.Add("ID", DbType.Int32, 0).Value = entity.Id;
+            return WriteAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public override bool Delete(int Id)
+        {
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("delete from <#=DoMain#> ");
+            strSql.Append(" where ID=@ID ");
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            parameters.Add("ID", DbType.Int32, 0).Value = Id;
+            return WriteAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
+        }
+
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public override IList<<#=DoMain#> > GetAllDomain(QueryCondition query)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.AppendFormat("select {0}",<#=SelectSql#>);
+            strSql.Append(" FROM <#=DoMain#> ");
+            if (query.GetPager() != null)
+            {
+                strSql =new StringBuilder(GetPagerSql(strSql.ToString(), query, parameters));
+            }
+            else
+            {
+               strSql.Append(query.GetSQL_Where(parameters));
+               strSql.Append(query.GetSQL_Order());
+            }
+
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<<#=DoMain#> >(CommandType.Text, strSql.ToString(), MapRow, parameters);
+        }
+         
+        /// <summary>
+        /// 列表基本参数
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="rowNum"></param>
+        /// <returns></returns>
+        public <#=DoMain#>  MapRow(IDataReader dataReader, int rowNum)
+        {
+            <#=DoMain#>  model = new <#=DoMain#>();
+            object ojb;
+            ojb = dataReader["Id"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.Id = (int)ojb;
+            }
+            ojb = dataReader["MenuId"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.MenuId = (int)ojb;
+            }
+            model.FormName = dataReader["FormName"].ToString();
+            model.Path = dataReader["Path"].ToString();
+            ojb = dataReader["FormIndex"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.FormIndex = (int)ojb;
+            }
+            model.FormImgURL = dataReader["FormImgURL"].ToString();
+            return model;
+        }
+
+     
+
+        /// <summary>
+        /// 新增 修改 基本参数
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        private IDbParameters GetBaseParams(<#=DoMain#>  entity)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+
+            parameters.Add("@MenuId", SqlDbType.Int, 4).Value = entity.MenuId;
+            parameters.Add("@FormName", SqlDbType.NVarChar, 50).Value = entity.FormName;
+            parameters.Add("@Path", SqlDbType.NVarChar, 50).Value = entity.Path;
+            parameters.Add("@FormIndex", SqlDbType.Int, 4).Value = entity.FormIndex;
+            parameters.Add("@FormImgURL", SqlDbType.NVarChar, 50).Value = entity.FormImgURL;
+            return parameters;
+        }
+	 }
+}
+
+ 
+  

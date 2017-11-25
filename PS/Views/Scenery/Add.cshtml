@@ -1,0 +1,153 @@
+﻿@{
+    ViewBag.Title = "景区支付";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model VisualSmart.Domain.Alipay.SceneryDomain
+    <div class="page-content">
+        <div class="page-header">
+            <h1>
+                @ViewBag.ViewTitle 景区支付
+                <small>
+                    <i class="ace-icon fa fa-angle-double-right"></i>
+                    请填写下面内容
+                    <input type="hidden" id="error" value="@ViewBag.Error" />
+                    <span class="red">提示：存在交易记录后，景区名称和同程景区ID 不允许修改！！！</span>
+                </small>
+            </h1>
+        </div><!-- /.page-header -->
+
+
+        <div class="row">
+            <div class="col-xs-12">
+                <form class="form-horizontal" role="form" action="/Scenery/Add" method="post">
+
+                    <div class="col-xs-12">
+                        <!-- PAGE CONTENT BEGINS -->
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="SceneryName"> <span style="color:red;">*</span>景区名称</label>
+
+                            <div class="col-sm-9">
+                                @Html.HiddenFor(t => t.Id)
+                                @Html.HiddenFor(T => T.CreateTime)
+                                @Html.HiddenFor(T => T.Creater)
+                                @Html.AntiForgeryToken()
+                                @Html.TextBoxFor(t => t.SceneryName, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入景区名称", @placeholder = "请输入景区名称", @data_trigger = "focus" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="SceneryTCId"> <span style="color:red;">*</span>同程景区ID</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(t => t.SceneryTCId, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入同程景区ID", @placeholder = "请输入同程景区ID", @data_trigger = "focus" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="AccountId"> <span style="color:red;">*</span>分销接口帐号</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(t => t.AccountId, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "分销接口帐号", @placeholder = "分销接口帐号", @data_trigger = "focus" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="AccountPwd"> <span style="color:red;">*</span>分销接口密码</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(t => t.AccountPwd, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "分销接口密码", @placeholder = "分销接口密码", @data_trigger = "focus" })
+                            </div>
+                        </div>
+                      
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="AlipayId"> <span style="color:red;">*</span>支付宝类型</label>
+
+                            <div class="col-sm-9"> 
+                           
+                                 @Html.DropDownListFor(t => t.AlipayId, (IEnumerable<SelectListItem>)ViewBag.AlipayList, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请选择支付宝类型", @placeholder = "请选择支付宝类型", @data_trigger = "focus" })
+                             </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="AccountPwd"> <span style="color:red;">*</span>支付宝费率</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(t => t.Rate, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "支付宝费率", @placeholder = "支付宝费率", @data_trigger = "focus" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="AlipayId"> <span style="color:red;">*</span>微信类型</label>
+
+                            <div class="col-sm-9">
+
+                                @Html.DropDownListFor(t => t.WeChatId, (IEnumerable<SelectListItem>)ViewBag.WeChatList, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请选择微信类型", @placeholder = "请选择支付宝类型", @data_trigger = "focus" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right" for="AccountPwd"> <span style="color:red;">*</span>微信费率</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(t => t.WeChatRate, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "微信费率", @placeholder = "微信费率", @data_trigger = "focus" })
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12">
+
+                                <div class="clearfix form-actions">
+                                    <div class="col-md-offset-3 col-md-9">
+                                        <button class="btn btn-info" type="submit" id="btnSave">
+                                            <i class="ace-icon fa fa-check bigger-110 "></i>
+                                            保存
+                                        </button>
+
+                                        &nbsp; &nbsp; &nbsp;
+                                        <a class="btn" href="/Scenery/Index">
+
+                                            <i class="ace-icon fa fa-undo bigger-110 "></i>
+                                            返回
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </form>
+            </div><!-- /.col -->
+            <!-- /.table-responsive -->
+        </div>
+    </div><!-- /.row -->
+
+    <script type="text/javascript">
+        jQuery(function ($) {
+
+            $('[data-rel=tooltip]').tooltip({ container: 'body' });
+            $('[data-rel=popover]').popover({ container: 'body' });
+
+            var error = $("#error").val();
+
+            if (error != "") {
+                var className = "gritter-error gritter-light";
+                if (error == 1) {
+                    className = "gritter-info gritter-light";
+                    error = "保存成功！";
+                }
+
+                $.gritter.add({
+                    title: error,
+                    text: "",
+                    class_name: className
+                });
+            }
+        });
+
+        $("#btnSave").click(function () {
+
+            var result = CheckValue("SceneryName") && CheckValue("SceneryTCId") && CheckValue("AlipayId")
+            && CheckValue("WeChatId");
+            return result;
+        });
+
+        function CheckValue(name) {
+            var control = $("#" + name + "");
+            if (control.val() == "") {
+                control.focus();
+                return false;
+            }
+            return true;
+        }
+
+    </script>

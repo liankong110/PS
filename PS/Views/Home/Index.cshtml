@@ -1,0 +1,268 @@
+﻿@{
+    ViewBag.Title = "欢迎使用本系统";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model PS.Models.HomeModel
+<!-- #section:basics/navbar.layout -->
+<div id="navbar" class="navbar navbar-default          ace-save-state">
+    <div class="navbar-container ace-save-state" id="navbar-container">
+        <!-- #section:basics/sidebar.mobile.toggle -->
+        <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
+            <span class="sr-only">Toggle sidebar</span>
+
+            <span class="icon-bar"></span>
+
+            <span class="icon-bar"></span>
+
+            <span class="icon-bar"></span>
+        </button>
+
+        <!-- /section:basics/sidebar.mobile.toggle 标题-->
+        <div class="navbar-header pull-left">
+            <!-- #section:basics/navbar.layout.brand -->
+            <a href="#" class="navbar-brand">
+                <small>
+                    
+                    <img src="~/Content/images/logo1.ico"  width="30" height="30"/>
+                    生产计划系统
+                </small>
+            </a>
+
+            <!-- /section:basics/navbar.layout.brand -->
+            <!-- #section:basics/navbar.toggle -->
+            <!-- /section:basics/navbar.toggle -->
+        </div>
+
+        <!-- #section:basics/navbar.dropdown  头像-->
+        <div class="navbar-buttons navbar-header pull-right" role="navigation">
+            <ul class="nav ace-nav  ">
+
+                @{   var userModel = Session["User"] as VisualSmart.Domain.SetUp.UserDomain;
+                   var Name = "";
+                   var Avatar = "";
+                   if (userModel != null)
+                   {
+                       Name = userModel.Name;
+                       Avatar = userModel.Avatar;
+                   }
+                }
+                <!-- #section:basics/navbar.user_menu -->
+
+
+
+                <li class="light-blue dropdown-modal">
+                    <a data-toggle="dropdown" href="#" class="dropdown-toggle">
+                        <img class="nav-user-photo" src="@Avatar" alt="@Name" />
+                        <span class="user-info">
+                            <small>欢迎,</small>
+                            @Name
+                        </span>
+
+                        @*<i class="ace-icon fa fa-caret-down"></i>*@
+                    </a>
+
+                    @*<ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                        <li>
+                            <a href="#/User/ChangePassword">
+                                <i class="ace-icon fa fa-cog"></i>
+                                密码修改
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="#/User/Detail">
+                                <i class="ace-icon fa fa-user"></i>
+                                个人资料
+                            </a>
+                        </li>
+
+                        <li class="divider"></li>
+
+                        <li>
+                            <a href="/Account/Login">
+                                <i class="ace-icon fa fa-power-off"></i>
+                                退出系统
+                            </a>
+                        </li>
+                    </ul>*@
+                </li>
+                <li class="purple dropdown-modal">
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#/User/ChangePassword">
+                        <i class="ace-icon fa fa-cog"></i>
+                        密码修改
+                    </a>
+
+                </li>
+                <li class="green">
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#/User/Detail">
+                        <i class="ace-icon fa fa-user"></i>
+                        个人资料
+                    </a>
+
+                </li>
+                <li class="grey">
+                    <a href="/Account/Login">
+                        <i class="ace-icon fa fa-power-off"></i>
+                        退出
+                    </a>
+
+                </li>
+                <!-- /section:basics/navbar.user_menu -->
+            </ul>
+
+        </div>
+
+        <!-- /section:basics/navbar.dropdown -->
+    </div><!-- /.navbar-container -->
+</div>
+
+
+<!-- /section:basics/navbar.layout -->
+<div class="main-container ace-save-state" id="main-container">
+    <script type="text/javascript">
+            try { ace.settings.loadState('main-container') } catch (e) { }
+    </script>
+
+    <!-- #section:basics/sidebar -->
+    <div id="sidebar" class="sidebar                  responsive                    ace-save-state">
+        <script type="text/javascript">
+                try { ace.settings.loadState('sidebar') } catch (e) { }
+        </script>
+
+   
+        @* 左侧菜单 *@
+        <!-- /.nav-list -->
+
+        <ul class="nav nav-list" id="lMenu">
+            @{
+                var allForms = Model.FormList.ToList();
+                int i = 0;
+            }
+            @foreach (var menu in Model.MenuList)
+            {
+
+                var menu_Forms = allForms.FindAll(t => t.MenuId == menu.Id);
+                if (menu_Forms.Count == 0)
+                {
+                    continue;
+                }
+
+                <li id="TopMenu_@menu.Id" >
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-list"></i>
+                        <span class="menu-text"> @menu.DisplayName </span>
+
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        @foreach (var form in menu_Forms)
+                        {
+                            <li pp="TopMenu_@menu.Id">
+                                <a href="#@form.Path">
+                                    <i class="menu-icon fa fa-caret-right"></i>
+                                    @form.FormName
+
+                                </a>
+                            </li>
+                        }
+                    </ul>
+
+
+                </li>
+                        i++;
+            }
+
+        </ul>
+
+        <!-- #section:basics/sidebar.layout.minimize -->
+        <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+            <i id="sidebar-toggle-icon" class="ace-icon fa fa-angle-double-left ace-save-state" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+        </div>
+
+        <!-- /section:basics/sidebar.layout.minimize -->
+    </div>
+
+    <!-- /section:basics/sidebar -->
+    <div class="main-content">
+        <div class="main-content-inner">
+            @* 导航栏 *@
+            <!-- #section:basics/content.breadcrumbs  -->
+            @*<div class="breadcrumbs ace-save-state" id="breadcrumbs">
+                <ul class="breadcrumb">
+                    <li>
+                        <i class="ace-icon fa fa-home home-icon"></i>
+                        <a href="#">首页</a>
+                    </li>
+
+                    <li>
+                        <a href="#" id="TopMenuNavigation">表格</a>
+                    </li>
+                    <li class="active" id="SecondMenuNavigation">表格列表</li>
+                </ul><!-- /.breadcrumb -->
+                <!-- #section:basics/content.searchbox -->
+                <div class="nav-search" id="nav-search">
+                    <form class="form-search">
+                        <span class="input-icon">
+                            <input type="text" placeholder="Search ~/Content." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+                            <i class="ace-icon fa fa-search nav-search-icon"></i>
+                        </span>
+                    </form>
+                </div><!-- /.nav-search -->
+                <!-- /section:basics/content.searchbox -->
+            </div>*@
+
+            <!-- /section:basics/content.breadcrumbs -->
+             
+              
+    <iframe  src="/Home/Welcome" id="iframepage" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" width="100%" onload="iFrameHeight()"></iframe>
+               
+                <!-- /.page-content -->
+        </div>
+    </div><!-- /.main-content -->
+
+   @Html.Action("Footer","Home")
+
+    <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+        <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+    </a>
+</div><!-- /.main-container -->
+
+<script src="~/Content/components/jquery/dist/jquery.js"></script>
+
+<script type="text/javascript" language="javascript">
+    function iFrameHeight() {
+        var ifm = document.getElementById("iframepage");
+        var subWeb = document.frames ? document.frames["iframepage"].document : ifm.contentDocument;
+        if (ifm != null && subWeb != null) {
+            ifm.height = subWeb.body.scrollHeight;
+             
+        }
+    }
+
+   
+
+    $(function () {
+        $(".submenu,.user-menu,.nav").find("li").click(function () {
+            var url = $(this).children().attr("href");
+            if (url == "#")
+            {
+                return;
+            }
+            $(".submenu").find("li").removeClass("active");
+            //$(".topMenu").removeClass("active open");
+            
+            $(this).addClass("active");
+           
+            var text = $(this).children().text();
+           
+            document.getElementById("iframepage").src = url.substr(url.indexOf("#") + 1);
+            document.title = text + " - 支付平台";            
+
+        });
+
+        
+       
+    });
+</script>
