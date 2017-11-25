@@ -276,6 +276,9 @@
     <Content Include="Views\Ship\Index.cshtml" />
     <Content Include="Views\Stock\Index.cshtml" />
     <Content Include="Views\ShipPlan\Index.cshtml" />
+    <Content Include="Views\Role\Index.cshtml" />
+    <Content Include="Views\AlipayQRCode\Index.cshtml" />
+    <Content Include="Views\AlipayDetail\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -283,13 +286,10 @@
     <Folder Include="Content\angular\" />
     <Folder Include="Content\assets\" />
     <Folder Include="Content\components\" />
-    <Folder Include="Views\AlipayDetail\" />
-    <Folder Include="Views\AlipayQRCode\" />
     <Folder Include="Views\Alipay\" />
     <Folder Include="Views\Base_Ship\" />
     <Folder Include="Views\ProductionLines\" />
     <Folder Include="Views\RoleForm\" />
-    <Folder Include="Views\Role\" />
     <Folder Include="Views\SceneryOrderRefund\" />
     <Folder Include="Views\Scenery\" />
     <Folder Include="Views\User\" />
