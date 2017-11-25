@@ -195,6 +195,11 @@
     <Compile Include="Controllers\Alipay\SceneryOrderRefundController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ProBase\GoodsController.cs" />
+    <Compile Include="Controllers\ProBase\ProductionLineController.cs" />
+    <Compile Include="Controllers\ProBase\ShipController.cs" />
+    <Compile Include="Controllers\ProBase\StockController.cs" />
+    <Compile Include="Controllers\Pro\ShipPlanController.cs" />
     <Compile Include="Controllers\SetUp\RoleController.cs" />
     <Compile Include="Controllers\SetUp\RoleFormController.cs" />
     <Compile Include="Controllers\SetUp\UserController.cs" />
@@ -266,6 +271,11 @@
     <Content Include="Views\Home\Footer.cshtml" />
     <Content Include="Views\Home\InadequatePermissions.cshtml" />
     <Content Include="Views\Home\Welcome.cshtml" />
+    <Content Include="Views\Goods\Index.cshtml" />
+    <Content Include="Views\ProductionLine\Index.cshtml" />
+    <Content Include="Views\Ship\Index.cshtml" />
+    <Content Include="Views\Stock\Index.cshtml" />
+    <Content Include="Views\ShipPlan\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -276,6 +286,8 @@
     <Folder Include="Views\AlipayDetail\" />
     <Folder Include="Views\AlipayQRCode\" />
     <Folder Include="Views\Alipay\" />
+    <Folder Include="Views\Base_Ship\" />
+    <Folder Include="Views\ProductionLines\" />
     <Folder Include="Views\RoleForm\" />
     <Folder Include="Views\Role\" />
     <Folder Include="Views\SceneryOrderRefund\" />

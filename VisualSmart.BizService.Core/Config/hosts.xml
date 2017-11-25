@@ -11,8 +11,8 @@
     <property name="Role_UserBizService" ref="Role_UserBizService"></property>
     <property name="RoleBizService" ref="RoleBizService"></property>
     <property name="Role_FunctionBizService" ref="Role_FunctionBizService"></property>
-    <property name="Role_FormBizService" ref="Role_FormBizService"></property>  
- 
+    <property name="Role_FormBizService" ref="Role_FormBizService"></property>
+
     <!--支付宝模块-->
     <property name="AlipayBizService" ref="AlipayBizService"></property>
     <property name="SceneryBizService" ref="SceneryBizService"></property>
@@ -21,12 +21,23 @@
     <property name="AlipayTradeBizService" ref="AlipayTradeBizService"></property>
     <!--订单模块-->
     <property name="SceneryOrderRefundBizService" ref="SceneryOrderRefundBizService"></property>
-    
+
     <!--微信模块-->
     <property name="WxPayConfigBizService" ref="WxPayConfigBizService"></property>
     <property name="WeChatQRCodeBizService" ref="WeChatQRCodeBizService"></property>
     <property name="WeChatDetailBizService" ref="WeChatDetailBizService"></property>
     <property name="NativePay" ref="NativePay"></property>
+
+    <!--基本数据管理-->
+    <property name="Base_GoodsBizService" ref="Base_GoodsBizService"></property>
+    <property name="Base_ProductionLineBizService" ref="Base_ProductionLineBizService"></property>
+    <property name="Base_ProductionLinesBizService" ref="Base_ProductionLinesBizService"></property>
+    <property name="Base_ShipBizService" ref="Base_ShipBizService"></property>
+    <property name="Base_StockBizService" ref="Base_StockBizService"></property>
+    <!--生产计划管理-->
+    <property name="Pro_ShipPlanBizService" ref="Pro_ShipPlanBizService"></property>
+    <property name="Pro_ShipPlanMainBizService" ref="Pro_ShipPlanMainBizService"></property>
+    <property name="Pro_ShipPlansBizService" ref="Pro_ShipPlansBizService"></property>
   </object>
   <!-- 系统基础模块-->
   <object id="UserBizService" type="VisualSmart.BizService.Implements.SetUp.UserBizService,VisualSmart.BizService.Implements"></object>
@@ -52,5 +63,18 @@
   <object id="WeChatQRCodeBizService" type="VisualSmart.BizService.Implements.WeChat.WeChatQRCodeBizService,VisualSmart.BizService.Implements"></object>
   <object id="WeChatDetailBizService" type="VisualSmart.BizService.Implements.WeChat.WeChatDetailBizService,VisualSmart.BizService.Implements"></object>
   <object id="NativePay" type="VisualSmart.BizService.Implements.WeChat.NativePay,VisualSmart.BizService.Implements"></object>
+
+
+  <!--基本数据管理-->
+  <object id="Base_GoodsBizService" type="VisualSmart.BizService.Implements.ProBase.Base_GoodsBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Base_ProductionLineBizService" type="VisualSmart.BizService.Implements.ProBase.Base_ProductionLineBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Base_ProductionLinesBizService" type="VisualSmart.BizService.Implements.ProBase.Base_ProductionLinesBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Base_ShipBizService" type="VisualSmart.BizService.Implements.ProBase.Base_ShipBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Base_StockBizService" type="VisualSmart.BizService.Implements.ProBase.Base_StockBizService,VisualSmart.BizService.Implements"></object>
+
+  <!--生产计划管理-->
+  <object id="Pro_ShipPlanBizService" type="VisualSmart.BizService.Implements.Pro.Pro_ShipPlanBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Pro_ShipPlanMainBizService" type="VisualSmart.BizService.Implements.Pro.Pro_ShipPlanMainBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Pro_ShipPlansBizService" type="VisualSmart.BizService.Implements.Pro.Pro_ShipPlansBizService,VisualSmart.BizService.Implements"></object>
 
 </objects>

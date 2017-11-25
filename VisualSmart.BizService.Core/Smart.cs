@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VisualSmart.BizService.Alipay;
+using VisualSmart.BizService.Pro;
+using VisualSmart.BizService.ProBase;
 using VisualSmart.BizService.SceneryOrder;
 using VisualSmart.BizService.SetUp;
 using VisualSmart.BizService.WeChat;
@@ -81,6 +83,43 @@ namespace VisualSmart.BizService.Core
         /// </summary>
         public ISceneryOrderRefundBizService SceneryOrderRefundBizService { get; set; }
         #endregion
+
+        /// <summary>
+        /// 发运计划主表
+        /// </summary>
+        public IPro_ShipPlanBizService Pro_ShipPlanBizService { get; set; }
+     
+        /// <summary>
+        /// 发运计划子表
+        /// </summary>
+        public IPro_ShipPlansBizService Pro_ShipPlansBizService { get; set; }
+
+        /// <summary>
+        /// 发运计划主表
+        /// </summary>
+        public IPro_ShipPlanMainBizService Pro_ShipPlanMainBizService { get; set; }
+
+        /// <summary>
+        /// 零件信息
+        /// </summary>
+        public IBase_GoodsBizService Base_GoodsBizService { get; set; }
+        /// <summary>
+        /// 生产产能主表
+        /// </summary>
+        public IBase_ProductionLineBizService Base_ProductionLineBizService { get; set; }
+        /// <summary>
+        /// 生产产能子表
+        /// </summary>
+        public IBase_ProductionLinesBizService Base_ProductionLinesBizService { get; set; }
+        /// <summary>
+        /// 发运信息
+        /// </summary>
+        public IBase_ShipBizService Base_ShipBizService { get; set; }
+        /// <summary>
+        /// 库存信息
+        /// </summary>
+        public IBase_StockBizService Base_StockBizService { get; set; }
+
         public static void Init()
         {
             ctx = ContextRegistry.GetContext();

@@ -68,7 +68,15 @@
     <Compile Include="Alipay\SceneryBizService.cs" />
     <Compile Include="Alipay\AlipayBizService.cs" />
     <Compile Include="Base\EntityBizService.cs" />
+    <Compile Include="ProBase\Base_GoodsBizService.cs" />
+    <Compile Include="ProBase\Base_ProductionLineBizService.cs" />
+    <Compile Include="ProBase\Base_ProductionLinesBizService.cs" />
+    <Compile Include="ProBase\Base_ShipBizService.cs" />
+    <Compile Include="ProBase\Base_StockBizService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Pro\Pro_ShipPlanBizService.cs" />
+    <Compile Include="Pro\Pro_ShipPlanMainBizService.cs" />
+    <Compile Include="Pro\Pro_ShipPlansBizService.cs" />
     <Compile Include="SceneryOrder\SceneryOrderRefundBizService.cs" />
     <Compile Include="SetUp\FunctionBizService.cs" />
     <Compile Include="SetUp\Role_FunctionBizService.cs" />

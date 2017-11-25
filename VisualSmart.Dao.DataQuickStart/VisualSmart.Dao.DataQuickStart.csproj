@@ -52,7 +52,15 @@
     <Compile Include="Base\EntityDao.cs" />
     <Compile Include="Base\IEntityDao.cs" />
     <Compile Include="Base\Template_DaoDataQuickStartX.cs" />
+    <Compile Include="ProBase\Base_GoodsDao.cs" />
+    <Compile Include="ProBase\Base_ProductionLineDao.cs" />
+    <Compile Include="ProBase\Base_ProductionLinesDao.cs" />
+    <Compile Include="ProBase\Base_ShipDao.cs" />
+    <Compile Include="ProBase\Base_StockDao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Pro\Pro_ShipPlanDao.cs" />
+    <Compile Include="Pro\Pro_ShipPlanMainDao.cs" />
+    <Compile Include="Pro\Pro_ShipPlansDao.cs" />
     <Compile Include="SceneryOrder\SceneryOrderRefundDao.cs" />
     <Compile Include="SetUp\FormDao.cs" />
     <Compile Include="SetUp\MenuDao.cs" />
