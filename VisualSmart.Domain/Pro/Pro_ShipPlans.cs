@@ -45,13 +45,14 @@ namespace VisualSmart.Domain.Pro
             get { return _plandate; }
         }
         /// <summary>
-        /// 
+        /// 需求
         /// </summary>
         public int PlanNum
         {
             set { _plannum = value; }
             get { return _plannum; }
         }
+
         #endregion Model
 
     }

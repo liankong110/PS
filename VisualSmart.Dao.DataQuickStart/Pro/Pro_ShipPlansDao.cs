@@ -138,5 +138,22 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             parameters.Add("PlanNum", DbType.Int32).Value = entity.PlanNum;           
             return parameters;
         }
+
+
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Pro_ShipPlans> GetAllDomainByLineNos(QueryCondition query)
+        {
+            var lineNos = query.GetCondition("LineNos").Value;
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("select ID,PlanId,PlanDate,PlanNum ");
+            strSql.Append(" FROM Pro_ShipPlans ");
+            strSql.AppendFormat(" WHERE [PlanId] IN (SELECT ID FROM [dbo].[Pro_ShipPlan] WHERE GoodNo IN (select GoodNo from [dbo].[Base_ProductionLine] where ProLineNo IN ({0}))) ", lineNos);
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlans>(CommandType.Text, strSql.ToString(), MapRow, parameters);
+        }
     }
 }

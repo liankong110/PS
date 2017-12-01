@@ -143,5 +143,53 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
             parameters.Add("RowState", SqlDbType.TinyInt).Value = entity.RowState;
             return parameters;
         }
+
+
+        /// <summary>
+        /// 根据产线 和 商品获取对应的产能信息
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Base_ProductionLines> GetAllDomainByLineNoAndGoodNos(QueryCondition query)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("select GoodNo,People,Number from[Base_ProductionLines]");
+            strSql.Append("left join [Base_ProductionLine] on Base_ProductionLine.ID=[Base_ProductionLines].ProLineId");
+           
+            strSql.AppendFormat(" where ProLineNo='{0}'", query.GetCondition("LineNo").Value);
+            strSql.AppendFormat(" and GoodNo in ({0})", query.GetCondition("GoodNos").Value);
+            strSql.AppendFormat(" and People in({0})", query.GetCondition("People").Value);
+
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Base_ProductionLines>(CommandType.Text, strSql.ToString(), MapRowByLineNoAndGoodNos, parameters);
+        }
+
+        /// <summary>
+        /// 列表基本参数
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="rowNum"></param>
+        /// <returns></returns>
+        public Base_ProductionLines MapRowByLineNoAndGoodNos(IDataReader dataReader, int rowNum)
+        {
+            Base_ProductionLines model = new Base_ProductionLines();
+            object ojb;             
+            ojb = dataReader["GoodNo"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.GoodNo = ojb.ToString();
+            }
+            ojb = dataReader["People"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.People = (int)ojb;
+            }
+            ojb = dataReader["Number"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.Number = (int)ojb;
+            }
+            return model;
+        }
     }
 }

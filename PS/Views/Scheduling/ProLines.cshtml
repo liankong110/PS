@@ -1,0 +1,118 @@
+﻿@{
+    ViewBag.Title = "产线选择";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model IList<string>
+<link rel="stylesheet" href="~/Content/components/bootstrap-duallistbox/dist/bootstrap-duallistbox.css" />
+<div class="page-content">
+
+    <div class="page-header">
+        <h1>
+            第一步 产线选择
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                查询条件
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal " role="form" action="/Scheduling/Index" id="index" method="get">
+                <input type="hidden" id="page" name="page" />
+                @Html.AntiForgeryToken()
+                <!-- 查询条件-->
+                <div class="form-group">
+                    <label class="col-sm-2 control-label no-padding-top" for="duallist">生产线</label>
+                    <input type="hidden" name="proLineNosList" id="proLineNosList"/>
+                    <div class="col-sm-9">
+                        <!-- #section:plugins/input.duallist -->
+                        <select multiple="multiple" size="10" name="proLineNos" id="duallist" >                           
+                            @foreach (var m in Model)
+                            {
+                                <option value="'@m'">@m</option>
+                            }
+
+                        </select>
+
+                        <!-- /section:plugins/input.duallist -->
+                        <div class="hr hr-16 hr-dotted"></div>
+                    </div>
+                </div>
+                <hr class="no-padding no-margin" />
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- 查询功能-->
+                        <div class="row">
+                            <div class="col-sm-12" id="default-buttons">
+
+                                <p>
+                                    <button class="btn btn-sm btn-warning" style="float:right;" type="submit" onclick="return check();">
+                                        <i class="ace-icon glyphicon glyphicon-ok bigger-110 "></i>
+                                        下一步
+                                    </button>
+
+                                </p>
+                                <!-- /section:elements.button.white -->
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+
+                        <div class="space-4"></div>
+                        <!-- 查询列表 -->
+
+                        <div class="hr hr-18 dotted hr-double"></div>
+                        <!-- PAGE CONTENT ENDS -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </form>
+        </div>
+    </div>
+</div><!-- /.page-content -->
+<script src="~/Content/components/_mod/bootstrap-duallistbox/jquery.bootstrap-duallistbox.js"></script>
+<script src="~/Content/components/datatables/media/js/jquery.dataTables.js"></script>
+<script src="~/Content/components/_mod/datatables/jquery.dataTables.bootstrap.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/dataTables.buttons.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.flash.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.html5.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.print.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.colVis.js"></script>
+<script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
+<script type="text/javascript">
+    jQuery(function ($) {
+
+        $('[data-rel=tooltip]').tooltip({ container: 'body' });
+        $('[data-rel=popover]').popover({ container: 'body' });
+
+        var demo1 = $('select[name="proLineNos"]').bootstrapDualListbox({ infoTextFiltered: '<span class="label label-purple label-lg">查询条件</span>' });
+        var container1 = demo1.bootstrapDualListbox('getContainer');
+        container1.find('.btn').addClass('btn-white btn-info btn-bold');
+
+
+        $(document).one('ajaxloadstart.page', function (e) {
+            $('[class*=select2]').remove();
+            $('select[name="proLineNos"]').bootstrapDualListbox('destroy');
+            $('.rating').raty('destroy');
+            $('.multiselect').multiselect('destroy');
+        });
+
+        
+    });
+
+    function check() {
+      
+       
+        if ($("#duallist").val() == null) {
+            var className = "gritter-error gritter-light";
+            error = "请选择生产线信息！";
+            $.gritter.add({
+                title: error,
+                text: "",
+                class_name: className
+            });             
+            return false;
+        }
+        $("#proLineNosList").val($("#duallist").val());
+        return true;
+    }
+</script>

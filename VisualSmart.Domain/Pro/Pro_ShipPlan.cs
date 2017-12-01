@@ -26,7 +26,7 @@ namespace VisualSmart.Domain.Pro
         private string _shiptoname = "";
         private string _goodno = "";
         private string _goodname = "";
-       
+
         /// <summary>
         /// 
         /// </summary>
@@ -107,8 +107,18 @@ namespace VisualSmart.Domain.Pro
             set { _goodname = value; }
             get { return _goodname; }
         }
-        
+
         #endregion Model
+
+        /// <summary>
+        /// 生产线
+        /// </summary>
+        public string ProLineNo{ get; set; }
+
+        /// <summary>
+        /// 库存信息
+        /// </summary>
+        public int Qty { get; set; }
 
     }
 }

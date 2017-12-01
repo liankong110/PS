@@ -54,6 +54,11 @@ namespace VisualSmart.Domain.ProBase
         }
         #endregion Model
 
+        /// <summary>
+        /// 商品名称
+        /// </summary>
+        public string GoodNo { get; set; }
+
     }
  
 }

@@ -180,5 +180,69 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             parameters.Add("RowState", SqlDbType.TinyInt).Value = entity.RowState;
             return parameters;
         }
+
+
+        /// <summary>
+        /// 根据生产线信息获取对应的发运信息
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Pro_ShipPlan> GetAllDomainByLineNos(QueryCondition query)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append(@"select Distinct ProLineNo,Qty, Pro_ShipPlan.ID,MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
+Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName
+FROM Pro_ShipPlan
+left join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=Pro_ShipPlan.GoodNo
+left join [dbo].[Base_Stock] on [dbo].[Base_Stock].GoodNo=Pro_ShipPlan.GoodNo");
+            
+
+            var lineNos=query.GetCondition("LineNos").Value;
+            strSql.AppendFormat(" where ProLineNo IN ({0}) ", lineNos);          
+
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlan>(CommandType.Text, strSql.ToString(), MapRowByLineNos, parameters);
+        }
+
+        /// <summary>
+        /// 列表基本参数
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="rowNum"></param>
+        /// <returns></returns>
+        public Pro_ShipPlan MapRowByLineNos(IDataReader dataReader, int rowNum)
+        {
+            Pro_ShipPlan model = new Pro_ShipPlan();
+            object ojb;
+            ojb = dataReader["ID"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.ID = (int)ojb;
+            }
+            ojb = dataReader["MainId"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.MainId = (int)ojb;
+            }
+            model.ScheduleNo = dataReader["ScheduleNo"].ToString();
+            ojb = dataReader["Term"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.Term = (int)ojb;
+            }
+            model.EditionNo = dataReader["EditionNo"].ToString();
+            model.CityNo = dataReader["CityNo"].ToString();
+            model.ShipTo = dataReader["ShipTo"].ToString();
+            model.ShipToName = dataReader["ShipToName"].ToString();
+            model.GoodNo = dataReader["GoodNo"].ToString();
+            model.GoodName = dataReader["GoodName"].ToString();
+            model.ProLineNo = dataReader["ProLineNo"].ToString();
+            ojb = dataReader["Qty"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.Qty = Convert.ToInt32(ojb);
+            }
+            return model;
+        }
     }
 }

@@ -11,11 +11,12 @@ using VisualSmart.Util;
 namespace VisualSmart.Dao.DataQuickStart.ProBase
 {
     public class Base_ProductionLineDao : EntityDao<Base_ProductionLine>
-    {/// <summary>
-     /// 新增
-     /// </summary>
-     /// <param name="entity"></param>
-     /// <returns></returns>
+    {
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public override bool Add(Base_ProductionLine entity)
         {
             try
@@ -201,6 +202,20 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
             parameters.Add("Updater", SqlDbType.NVarChar).Value = entity.Updater ?? "";
             parameters.Add("RowState", SqlDbType.TinyInt).Value = entity.RowState;
             return parameters;
+        }
+
+        /// <summary>
+        /// 获取所有产线信息
+        /// </summary>
+        /// <returns></returns>
+        public IList<string> GetAllProLineNos()
+        {
+            string sql = string.Format("select ProLineNo from [dbo].[Base_ProductionLine] group by ProLineNo");
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<string>(CommandType.Text, sql, delegate (IDataReader dataReader, int rowNum)
+            {
+                return dataReader["ProLineNo"].ToString(); ;
+            });
+
         }
     }
 }
