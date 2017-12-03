@@ -59,6 +59,7 @@
     <Compile Include="LogHelper.cs" />
     <Compile Include="MailHelper.cs" />
     <Compile Include="MD5Util.cs" />
+    <Compile Include="Menus\ClassType.cs" />
     <Compile Include="Menus\PayTypeMenu.cs" />
     <Compile Include="PageHelper.cs" />
     <Compile Include="QueryCondition.cs" />

@@ -1,0 +1,112 @@
+﻿@{
+    ViewBag.Title = "生产计划列表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using VisualSmart.Domain.Pro;
+@using VisualSmart.Util;
+@model IList<Pro_SchedulingGoods>
+@{
+    List<Pro_SchedulingGoodsNum> goodsNumList = ViewBag.GoodNumlist as List<Pro_SchedulingGoodsNum>;
+    var mainModel = ViewBag.SchedulingModel as Pro_Scheduling;
+}
+
+<div class="page-content">
+
+    <div class="page-header">
+        <h1>
+            生产计划明细
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                查询条件
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal " role="form" action="/Scheduling/DetailList" id="index" method="get">
+                <input type="hidden" id="page" name="page" />
+                @Html.AntiForgeryToken()
+
+                <hr class="no-padding no-margin" />
+                <div class="row">
+                    <div class="col-xs-12">
+
+                        <!-- 查询列表 -->
+                        <div class="row">
+
+                            <div class="col-xs-12 table-responsive1">
+                                <table id="simple-table" class="table table-hover table-condensed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>零件号</th>
+                                            <th>零件名称</th>
+                                            <th>生产线</th>
+                                            <th>班次</th>
+                                            <th>客户(ship-to)</th>
+                                            <th>Package</th>
+                                            @for (int i = 0; i < 21; i++)
+                                            {
+                                                var date = mainModel.PlanFromDate.AddDays(i);
+                                                <th>@date.ToString("MM-dd")</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var m in Model)
+                                        {
+                                            var currentGoods = goodsNumList.FindAll(t => t.SGoodId == m.Id && t.SType == m.SType);
+
+                                            <tr>
+                                                <td>@m.GoodNo</td>
+                                                <td>@m.GoodName</td>
+                                                <td>@m.ProLineNo</td>
+                                                <td>
+                                                    @(EnumOperate.GetEnumDesc((VisualSmart.Util.Menus.ClassType)m.SType))
+                                                </td>
+                                                <td>@m.ShipTo</td>
+                                                <td>@m.PackNum</td>
+                                                @for (int i = 0; i < 21; i++)
+                                                {
+                                                    var date = mainModel.PlanFromDate.AddDays(i);
+                                                    var dateNum = currentGoods.Find(t => t.SDate == date);
+                                                    if (dateNum != null)
+                                                    {
+                                                        <th>@dateNum.SNum</th>
+                                                    }
+                                                    else
+                                                    {
+                                                        <th></th>
+                                                    }
+
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                            <!-- /.span -->
+
+
+                        </div><!-- /.row -->
+
+                        <div class="hr hr-18 dotted hr-double"></div>
+                        <!-- PAGE CONTENT ENDS -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </form>
+        </div>
+    </div>
+</div><!-- /.page-content -->
+
+<script src="~/Content/components/datatables/media/js/jquery.dataTables.js"></script>
+<script src="~/Content/components/_mod/datatables/jquery.dataTables.bootstrap.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/dataTables.buttons.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.flash.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.html5.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.print.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.colVis.js"></script>
+<script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
+<link href="~/Content/StyleSheet1.css" rel="stylesheet" />

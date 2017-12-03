@@ -173,5 +173,53 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             return parameters;
         }
 
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Pro_SchedulingGoods> GetDetailList(QueryCondition query)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append(@"select  GoodNo,GoodName,ProLineNo,ShipTo,ShipToName,PackNum,Pro_SchedulingGoods.Id,SType from Pro_SchedulingLine 
+LEFT JOIN Pro_SchedulingGoods ON Pro_SchedulingGoods.SLineId=Pro_SchedulingLine.Id 
+LEFT JOIN Pro_SchedulingGoodsNum ON Pro_SchedulingGoodsNum.SGoodId=Pro_SchedulingGoods.Id");
+
+            strSql.AppendFormat(" where SType IN (2,3,4) and Pro_SchedulingLine.MainId={0}", query.GetCondition("MainId").Value);
+            strSql.Append(" and GoodNo is not null");
+            strSql.Append(" GROUP BY  GoodNo,GoodName,ProLineNo,ShipTo,ShipToName,PackNum,Pro_SchedulingGoods.Id,SType;");
+
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_SchedulingGoods>(CommandType.Text, strSql.ToString(), MapRowByDetailList, parameters);
+        }
+
+        /// <summary>
+        /// 列表基本参数
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="rowNum"></param>
+        /// <returns></returns>
+        public Pro_SchedulingGoods MapRowByDetailList(IDataReader dataReader, int rowNum)
+        {
+            Pro_SchedulingGoods model = new Pro_SchedulingGoods();
+            object ojb;
+            ojb = dataReader["Id"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.Id = (int)ojb;
+            }           
+            model.GoodNo = dataReader["GoodNo"].ToString();
+            model.GoodName = dataReader["GoodName"].ToString();
+            model.ShipTo = dataReader["ShipTo"].ToString();
+            model.ShipToName = dataReader["ShipToName"].ToString();           
+            ojb = dataReader["PackNum"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.PackNum = (int)ojb;
+            }
+            model.ProLineNo = dataReader["ProLineNo"].ToString();
+            model.SType = Convert.ToInt32(dataReader["SType"]);
+            return model;
+        }
     }
 }

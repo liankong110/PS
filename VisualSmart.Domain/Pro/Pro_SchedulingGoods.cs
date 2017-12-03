@@ -108,6 +108,14 @@ namespace VisualSmart.Domain.Pro
             get { return _eveningnum; }
         }
         #endregion Model
+        /// <summary>
+        /// 产线
+        /// </summary>
+        public string ProLineNo { get; set; }
+        /// <summary>
+        /// 产线班次
+        /// </summary>
+        public int SType { get; set; }
 
     }
 }

@@ -283,6 +283,9 @@
     <Content Include="Views\Scheduling\Index.cshtml" />
     <Content Include="Views\User\Add.cshtml" />
     <Content Include="Views\Scheduling\ProLines.cshtml" />
+    <Content Include="Views\Scheduling\List.cshtml" />
+    <Content Include="Views\Scheduling\DetailList.cshtml" />
+    <Content Include="Views\SceneryOrderRefund\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -294,7 +297,6 @@
     <Folder Include="Views\Base_Ship\" />
     <Folder Include="Views\ProductionLines\" />
     <Folder Include="Views\RoleForm\" />
-    <Folder Include="Views\SceneryOrderRefund\" />
     <Folder Include="Views\Scenery\" />
     <Folder Include="Views\WeChatDetail\" />
     <Folder Include="Views\WeChatQRCode\" />

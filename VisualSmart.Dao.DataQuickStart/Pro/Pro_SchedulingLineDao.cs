@@ -113,25 +113,41 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             {
                 model.Id = (int)ojb;
             }
-            ojb = dataReader["SGoodId"];
+            ojb = dataReader["MainId"];
             if (ojb != null && ojb != DBNull.Value)
             {
-                model.SGoodId = (int)ojb;
+                model.MainId = (int)ojb;
             }
-            ojb = dataReader["SType"];
+            model.ProLineNo = dataReader["ProLineNo"].ToString();
+            ojb = dataReader["MorningShift"];
             if (ojb != null && ojb != DBNull.Value)
             {
-                model.SType = (int)ojb;
+                model.MorningShift = (int)ojb;
             }
-            ojb = dataReader["SDate"];
+            ojb = dataReader["MorningNum"];
             if (ojb != null && ojb != DBNull.Value)
             {
-                model.SDate = (DateTime)ojb;
+                model.MorningNum = (int)ojb;
             }
-            ojb = dataReader["SNum"];
+            ojb = dataReader["MiddleShift"];
             if (ojb != null && ojb != DBNull.Value)
             {
-                model.SNum = (int)ojb;
+                model.MiddleShift = (int)ojb;
+            }
+            ojb = dataReader["MiddleNum"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.MiddleNum = (int)ojb;
+            }
+            ojb = dataReader["EveningShift"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.EveningShift = (int)ojb;
+            }
+            ojb = dataReader["EveningNum"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.EveningNum = (int)ojb;
             }
             return model;
         }
@@ -155,5 +171,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             return parameters;
         }
 
+
+       
     }
 }

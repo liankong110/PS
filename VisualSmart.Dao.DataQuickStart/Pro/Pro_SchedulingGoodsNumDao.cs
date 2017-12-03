@@ -147,5 +147,24 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             return parameters;
         }
 
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Pro_SchedulingGoodsNum> GetDetailList(QueryCondition query)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append(@"select SType,SDate,SNum,SGoodId,Pro_SchedulingGoodsNum.Id from Pro_SchedulingLine 
+LEFT JOIN Pro_SchedulingGoods ON Pro_SchedulingGoods.SLineId=Pro_SchedulingLine.Id
+LEFT JOIN Pro_SchedulingGoodsNum ON Pro_SchedulingGoodsNum.SGoodId=Pro_SchedulingGoods.Id ");
+
+            strSql.AppendFormat(" WHERE SType IN (2,3,4) and Pro_SchedulingLine.MainId={0}", query.GetCondition("MainId").Value);
+            strSql.Append(" and GoodNo is not null");
+
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_SchedulingGoodsNum>(CommandType.Text, strSql.ToString(), MapRow, parameters);
+        }
+
     }
 }

@@ -11,5 +11,9 @@ namespace VisualSmart.BizService.Implements.Pro
 {
     public class Pro_SchedulingGoodsNumBizService : EntityBizService<Pro_SchedulingGoodsNum, Pro_SchedulingGoodsNumDao>, IPro_SchedulingGoodsNumBizService
     {
+        public IList<Pro_SchedulingGoodsNum> GetDetailList(QueryCondition query)
+        {
+            return EntityDao.GetDetailList(query);
+        }
     }
 }

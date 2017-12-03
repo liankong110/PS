@@ -19,7 +19,12 @@ namespace PS.Controllers.Pro
         {
             return View(Smart.Instance.Base_ProductionLineBizService.GetAllProLineNos());
         }
-
+        /// <summary>
+        /// 排产
+        /// </summary>
+        /// <param name="proLineNosList"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
         [ViewPageAttribute]
         public ActionResult Index(string proLineNosList, int page = 1)
         {        
@@ -41,7 +46,13 @@ namespace PS.Controllers.Pro
             return View(shipPlanList);
         }
 
-
+        /// <summary>
+        /// 获取产能，根据产线 商品 人数
+        /// </summary>
+        /// <param name="ProLineNo"></param>
+        /// <param name="GoodNos"></param>
+        /// <param name="People"></param>
+        /// <returns></returns>
 
         [ValidateAntiForgeryToken]
         [HttpPost]
@@ -56,6 +67,39 @@ namespace PS.Controllers.Pro
                 .AddEqual("GoodNos", GoodNos)
                 .AddEqual("People", People));
             return Json(new { Mess = "success",Data= list });
+        }
+
+
+        /// <summary>
+        /// 产线主表列表
+        /// </summary>
+        /// <returns></returns>
+        [ViewPageAttribute]
+        public ActionResult List(int page = 1)
+        {
+            var query = QueryCondition.Instance.AddOrderBy("Id", false).SetPager(page, 10);
+            query.AddEqual("RowState", "1");
+            ViewBag.Page = query.GetPager();
+            var list = Smart.Instance.Pro_SchedulingBizService.GetAllDomain(query);
+            return View(list);
+        }
+
+        /// <summary>
+        /// 根据主表ID 来查询具体生产计划信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        [ViewPageAttribute]
+        public ActionResult DetailList(int id,int page = 1)
+        {
+            var query = QueryCondition.Instance.AddEqual("MainId", id.ToString()); 
+            var list = Smart.Instance.Pro_SchedulingGoodsBizService.GetDetailList(query);
+            ViewBag.GoodNumlist = Smart.Instance.Pro_SchedulingGoodsNumBizService.GetDetailList(query).ToList();
+
+            ViewBag.SchedulingModel = Smart.Instance.Pro_SchedulingBizService.GetAllDomain(QueryCondition.Instance.AddEqual("Id", id.ToString()))[0];
+
+            return View(list);
         }
     }
 }
