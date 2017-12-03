@@ -44,7 +44,7 @@
                             @{
                                 List<string> proLineNos = ViewBag.ProLineNos as List<string>;
                             }
-                        
+
                             <div class="col-xs-12 table-responsive">
                                 <table id="simple-table" class="table table-hover table-condensed table-bordered">
                                     <thead>
@@ -101,16 +101,16 @@
             <!-- PAGE CONTENT BEGINS -->
             <div class="tabbable">
                 <!-- #section:pages/faq -->
-               
+
                 <ul class="nav nav-tabs padding-18 tab-size-bigger" id="myTab">
-                    @{ 
+                    @{
                         string allLines = "";
 
                     }
                     @for (int ii = 0; ii < proLineNos.Count; ii++)
                     {
                         string line = proLineNos[ii];
-                        allLines=string.Format("{0}", line);
+                        allLines = string.Format("{0}", line);
                         if (ii == 0)
                         {
                             <li class="active">
@@ -128,10 +128,10 @@
                             </li>
                         }
                     }
-                    
+
                 </ul>
                 @Html.AntiForgeryToken()
-                <input type="hidden"  id="allLineCount" value="@proLineNos.Count"/>
+                <input type="hidden" id="allLineCount" value="@proLineNos.Count" />
                 <!-- /section:pages/faq -->
                 <div class="tab-content no-border padding-24">
                     @{
@@ -159,7 +159,7 @@
                         startIndex++;
                         var ZBPeople = line + "ZB";
                         var MBPeople = line + "MB";
-                        var WBPeople = line + "WB";                   
+                        var WBPeople = line + "WB";
                         var goodsLine = line + "Goods";
                         var tempGoodsLine = "temp" + line + "Goods";
                         <div id="@line" class="tab-pane fade @startClass">
@@ -172,21 +172,21 @@
                                         <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">早班人数：</label>
                                         <div class="col-sm-3 ">
                                             <input type="text" name="@ZBPeople" id="@ZBPeople" placeholder="早班人数" onchange="channeng('@line',@currentLineList.Count,@startIndex);" value="@ViewBag.RoleName" />
-                                          
+
                                         </div>
                                         <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">中班人数：</label>
                                         <div class="col-sm-3 ">
                                             <input type="text" name="@MBPeople" id="@MBPeople" placeholder="中班人数" onchange="channeng('@line',@currentLineList.Count,@startIndex);" value="@ViewBag.RoleName" />
-                                           
+
                                         </div>
                                         <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">晚班人数：</label>
                                         <div class="col-sm-3 ">
                                             <input type="text" name="@WBPeople" id="@WBPeople" placeholder="晚班人数" onchange="channeng('@line',@currentLineList.Count,@startIndex);" value="@ViewBag.RoleName" />
-                                         
+
                                         </div>
                                     </div>
                                     <hr class="no-padding" />
-                                   
+
                                     <!-- 产品 时间 数量明细 -->
                                     <div class="row">
                                         <div class="col-xs-12">
@@ -235,13 +235,17 @@
                                                                 List<SchedulingDateNumModel> dateNumList = new List<SchedulingDateNumModel>();
                                                                 //库存ID
                                                                 var qtyId = line + goodIndex + "Qty";
+
+                                                                //早中晚产能ID
+                                                                var cnZB = line + goodIndex + "ZB";
+                                                                var cnMB = line + goodIndex + "MB";
+                                                                var cnWB = line + goodIndex + "WB";
                                                                 <tr>
                                                                     <td rowspan="5">@m.GoodNo</td>
                                                                     <td rowspan="5">@m.GoodName</td>
                                                                     <td rowspan="5">@m.ShipTo</td>
                                                                     <td rowspan="5">@m.ShipToName</td>
                                                                     <td>需求</td>
-
                                                                     <td rowspan="5"><label id="@qtyId">@m.Qty</label></td>
 
                                                                     @if (mainPlan != null)
@@ -278,7 +282,7 @@
                                                                     }
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>早班</td>
+                                                                    <td>早班<label id="@cnZB" style="color:cornflowerblue"></label></td>
                                                                     @if (mainPlan != null)
                                                                     {
                                                                         for (int i = 0; i < 21; i++)
@@ -294,7 +298,7 @@
                                                                     }
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>中班</td>
+                                                                    <td>中班<label id="@cnMB" style="color:cornflowerblue"></label></td>
                                                                     @if (mainPlan != null)
                                                                     {
                                                                         for (int i = 0; i < 21; i++)
@@ -308,7 +312,7 @@
                                                                     }
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>晚班</td>
+                                                                    <td>晚班<label id="@cnWB" style="color:cornflowerblue"></label></td>
                                                                     @if (mainPlan != null)
                                                                     {
                                                                         for (int i = 0; i < 21; i++)
@@ -410,11 +414,12 @@
 <script src="~/Content/components/datatables.net-buttons/js/buttons.colVis.js"></script>
 <script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
 <link href="~/Content/StyleSheet1.css" rel="stylesheet" />
-<script type="text/javascript">   
-  
+<script type="text/javascript">
+
+
     //纪录所有产线对应的产能信息
     var lineData=new Array(parseInt($("#allLineCount").val()));
-    
+
     function PostForm(page) {
         $("#page").val(page);
         $("#index").submit();
@@ -522,7 +527,7 @@
 
         //计算i 以后的所有信息。
         //判断是否要循环，防止无限循环
-        if (isXunHuan == 1) {           
+        if (isXunHuan == 1) {
             for (var i = (dateIndex + 1) ; i < 21; i++) {
                 ChangeNum(lineIndex, line, goodIndex, i,currentDateIndex, 0);
             }
@@ -547,7 +552,7 @@
             val = parseInt(obj.html());
         }
 
-        if (val == "NaN") {
+        if (isNaN(val)) {
             if (type == 1) {
                 obj.val("");
             }
@@ -563,46 +568,15 @@
         return rgb = "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
     }
     //重新计算当前日期，下所有的产能信息
-    function goodsChanNeng(proLineNo,lineIndex,day){   
+    function goodsChanNeng(proLineNo,lineIndex,day){
 
         var lineGoodData= lineData[lineIndex];
         if(lineGoodData==null){
             return;
         }
-        currentIsGoodData=false;
-        var nums=GetProductionLines(lineGoodData,proLineNo);
-        if(currentIsGoodData==null){
-            return;
-        }
-
         var tempLineGoodsList = $("#temp" + proLineNo + "Goods").val().split(',');
-        show(tempLineGoodsList.length,proLineNo,nums,day);       
-    }
-  
-    var currentIsGoodData=false;
-    //查找对应商品的产能信息
-    function GetProductionLines(lineGoodData,proLineNo){
-       
-        var tempLineGoodsList = $("#temp" + proLineNo + "Goods").val().split(',');
-        var goodCount=tempLineGoodsList.length;
-        var nums = new Array(goodCount);
-        for (var i = 0; i < goodCount; i++) {
-            nums[i] = 0;
-        }
-
-        $.each(lineGoodData, function (index, item) {
-            for (var i = 0; i < goodCount; i++) {
-                var currentGoodNo = tempLineGoodsList[i];
-                if (item.GoodNo == currentGoodNo) {
-                    nums[i] = item.Number;  
-                    currentIsGoodData=true;
-                    break;
-                }
-            }
-        });
-
-        return nums;
-    }
+        show(tempLineGoodsList.length,proLineNo,day);
+    } 
 
     //根据产线，人数获取对应的产能信息，如果没有获取到 则为0
     function channeng(proLineNo, goodCount,lineIndex) {
@@ -619,10 +593,10 @@
             }
             return;
         }
-     
+
         var tempLineGoodsList = $("#temp" + proLineNo + "Goods").val().split(',');
         var url = "/Scheduling/GetProductions/?proLineNo=" + proLineNo + "&goodNos=" + $("#" + proLineNo + "Goods").val() + "&people=" + people;
-     
+
         $.ajax({
             data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
             url: url,
@@ -630,81 +604,56 @@
             async: false,
             cache: false,
             success: function (data) {
-                if (data.Mess == "success") {                    
+                if (data.Mess == "success") {
                     //保存对应的产能信息
                     lineData[lineIndex]=data.Data;
-                    var nums = new Array(goodCount);
-                    for (var i = 0; i < goodCount; i++) {
-                        nums[i] = 0;
-                    } 
-
-                    //查找对应的商品的产能信息
-                    var isNum = false;
-                    $.each(data.Data, function (index, item) {
-                        for (var i = 0; i < goodCount; i++) {
-                            var currentGoodNo = tempLineGoodsList[i];
-                            if (item.GoodNo == currentGoodNo) {
-                                nums[i] = item.Number;
-                                isNum = true;
-                                break;
-                            }
-                        }
-                    });
-
                     //如果没有找到对应的人数产能的信息则情况
-                    if (isNum==false) {
+                    if (data.Data.length==0) {
                         for (var i = 0; i < 21; i++) {
                             $("#sum" + proLineNo + i).html("");
                         }
                         return;
                     }
+                    for (var i = 0; i < goodCount; i++) {
+                        //早中晚班的产能信息
+                        var cnZB = proLineNo + i + "ZB";
+                        var cnMB = proLineNo + i + "MB";
+                        var cnWB = proLineNo + i + "WB";
+
+                        //初始化为空
+                        $("#"+cnZB).html("");
+                        $("#"+cnMB).html("");
+                        $("#"+cnWB).html("");
+                    }
+                    //查找对应的商品的产能信息
+                    $.each(data.Data, function (index, item) {
+                        for (var i = 0; i < goodCount; i++) {
+                            var currentGoodNo = tempLineGoodsList[i];
+                            //早中晚班的产能信息
+                            var cnZB = proLineNo + i + "ZB";
+                            var cnMB = proLineNo + i + "MB";
+                            var cnWB = proLineNo + i + "WB"; 
+                            
+
+                            //早中晚的人数信息
+                            if (item.GoodNo == currentGoodNo&&item.People==zbPeople) {
+                                //早班
+                                $("#"+cnZB).html(item.Number);
+
+                            }else if (item.GoodNo == currentGoodNo&&parseInt(item.People)==mbPeople) {
+                                //中班
+                                $("#"+cnMB).html(item.Number);
+                            }
+                            else if (item.GoodNo == currentGoodNo&&parseInt(item.People)==wbPeople) {
+                                //晚班
+                                $("#"+cnWB).html(item.Number);
+                            }
+                        }
+                    });
 
                     //按照天进行计算
                     for (var day = 0; day < 21; day++) {
-
-                        show(goodCount,proLineNo,nums,day);
-                        //SumTotal(nums,proLineNo,day);     
-                        //var zbSumNum = 0;
-                        //var mbSumNum = 0;
-                        //var wbSumNum = 0;
-                        ////JSON DATA查找对应的商品信息
-                        //var jsonSumZBNum = 0;
-                        //var jsonSumMBNum = 0;
-                        //var jsonSumWBNum = 0;
-                        //for (var i = 0; i < goodCount; i++) {
-
-                        //    //早班id=产线+行号+ZB+日期索引
-                        //    var ZBNum = parseToInt($("#" + proLineNo + i + "ZB" + day), 1);
-                        //    if (nums[i] != 0) {
-                        //        jsonSumZBNum += ZBNum / nums[i]*60*60;//转换成秒
-                        //    }
-                        //    //中班id=产线+行号+MB+日期索引
-                        //    var MBNum = parseToInt($("#" + proLineNo + i + "MB" + day), 1);
-                        //    if (nums[i] != 0) {
-                        //        jsonSumMBNum += MBNum / nums[i] * 60 * 60;//转换成秒
-                        //    }
-                        //    //晚班id=产线+行号+WB+日期索引
-                        //    var WBNum = parseToInt($("#" + proLineNo + i + "WB" + day), 1);
-                        //    if (nums[i] != 0) {
-                        //        jsonSumWBNum += WBNum / nums[i] * 60 * 60;//转换成秒
-                        //    }
-
-                        //    zbSumNum += ZBNum;
-                        //    mbSumNum += MBNum;
-                        //    wbSumNum += WBNum;
-                        //}
-                        ////实际工时数=SUM（零件的早班生产量/早班人数的产能量+零件的中班生产量/中班人数的产能量+零件的晚班生产量/晚班人数的产能量）
-                        ////注意：1）早中晚班的工时要换算成秒，才可以相加，最终的总工时才可以换算成小时。
-                        ////2）SUM是将所有零件的所有工时，加总到一起。
-                        ////3）建议，每更新一个生产计划，相关的需求差异和实际工时数会自动更新。
-                        //var sumtotal=(jsonSumZBNum + jsonSumMBNum + jsonSumWBNum)/3600;
-                        //if (sumtotal == 0) {
-                        //    $("#sum" + proLineNo + day).html("");
-                        //} else {
-                        //    $("#sum" + proLineNo + day).html(sumtotal.toFixed(2));
-                        //}
-
-                     
+                        show(goodCount,proLineNo,day);
                     }
                 }
 
@@ -713,8 +662,8 @@
 
     }
 
-
-    function show(goodCount,proLineNo,nums,day)
+    //显示实际工时数
+    function show(goodCount,proLineNo,day)
     {
         var zbSumNum = 0;
         var mbSumNum = 0;
@@ -725,20 +674,25 @@
         var jsonSumWBNum = 0;
         for (var i = 0; i < goodCount; i++) {
 
+            //早中晚班的产能信息
+            var cnZB = parseToInt($("#"+proLineNo + i+ "ZB"),2);
+            var cnMB = parseToInt($("#"+proLineNo + i + "MB"),2);
+            var cnWB = parseToInt($("#"+proLineNo + i + "WB"),2);
+
             //早班id=产线+行号+ZB+日期索引
             var ZBNum = parseToInt($("#" + proLineNo + i + "ZB" + day), 1);
-            if (nums[i] != 0) {
-                jsonSumZBNum += ZBNum / nums[i]*60*60;//转换成秒
+            if (cnZB != 0) {
+                jsonSumZBNum += ZBNum / cnZB*60*60;//转换成秒
             }
             //中班id=产线+行号+MB+日期索引
             var MBNum = parseToInt($("#" + proLineNo + i + "MB" + day), 1);
-            if (nums[i] != 0) {
-                jsonSumMBNum += MBNum / nums[i] * 60 * 60;//转换成秒
+            if (cnMB != 0) {
+                jsonSumMBNum += MBNum / cnMB* 60 * 60;//转换成秒
             }
             //晚班id=产线+行号+WB+日期索引
             var WBNum = parseToInt($("#" + proLineNo + i + "WB" + day), 1);
-            if (nums[i] != 0) {
-                jsonSumWBNum += WBNum / nums[i] * 60 * 60;//转换成秒
+            if (cnWB != 0) {
+                jsonSumWBNum += WBNum /cnWB * 60 * 60;//转换成秒
             }
 
             zbSumNum += ZBNum;

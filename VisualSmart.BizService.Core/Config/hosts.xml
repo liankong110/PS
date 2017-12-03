@@ -38,6 +38,10 @@
     <property name="Pro_ShipPlanBizService" ref="Pro_ShipPlanBizService"></property>
     <property name="Pro_ShipPlanMainBizService" ref="Pro_ShipPlanMainBizService"></property>
     <property name="Pro_ShipPlansBizService" ref="Pro_ShipPlansBizService"></property>
+    <property name="Pro_SchedulingBizService" ref="Pro_SchedulingBizService"></property>
+    <property name="Pro_SchedulingLineBizService" ref="Pro_SchedulingLineBizService"></property>
+    <property name="Pro_SchedulingGoodsBizService" ref="Pro_SchedulingGoodsBizService"></property>
+    <property name="Pro_SchedulingGoodsNumBizService" ref="Pro_SchedulingGoodsNumBizService"></property>
   </object>
   <!-- 系统基础模块-->
   <object id="UserBizService" type="VisualSmart.BizService.Implements.SetUp.UserBizService,VisualSmart.BizService.Implements"></object>
@@ -76,5 +80,9 @@
   <object id="Pro_ShipPlanBizService" type="VisualSmart.BizService.Implements.Pro.Pro_ShipPlanBizService,VisualSmart.BizService.Implements"></object>
   <object id="Pro_ShipPlanMainBizService" type="VisualSmart.BizService.Implements.Pro.Pro_ShipPlanMainBizService,VisualSmart.BizService.Implements"></object>
   <object id="Pro_ShipPlansBizService" type="VisualSmart.BizService.Implements.Pro.Pro_ShipPlansBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Pro_SchedulingLineBizService" type="VisualSmart.BizService.Implements.Pro.Pro_SchedulingLineBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Pro_SchedulingBizService" type="VisualSmart.BizService.Implements.Pro.Pro_SchedulingBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Pro_SchedulingGoodsBizService" type="VisualSmart.BizService.Implements.Pro.Pro_SchedulingGoodsBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Pro_SchedulingGoodsNumBizService" type="VisualSmart.BizService.Implements.Pro.Pro_SchedulingGoodsNumBizService,VisualSmart.BizService.Implements"></object>
 
 </objects>

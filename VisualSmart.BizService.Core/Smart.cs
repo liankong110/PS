@@ -119,6 +119,22 @@ namespace VisualSmart.BizService.Core
         /// 库存信息
         /// </summary>
         public IBase_StockBizService Base_StockBizService { get; set; }
+        /// <summary>
+        /// 生产计划-1 主表纪录单号信息
+        /// </summary>
+        public IPro_SchedulingBizService Pro_SchedulingBizService { get; set; }
+        /// <summary>
+        /// 生产计划-2 次表 纪录所有产线的信息
+        /// </summary>
+        public IPro_SchedulingLineBizService Pro_SchedulingLineBizService { get; set; }
+        /// <summary>
+        /// 生产计划-3 次表 纪录所有产品的信息
+        /// </summary>
+        public IPro_SchedulingGoodsBizService Pro_SchedulingGoodsBizService { get; set; }
+        /// <summary>
+        /// 生产计划-4 次表 纪录所有产品日期数量信息（需求早中晚数量）
+        /// </summary>
+        public IPro_SchedulingGoodsNumBizService Pro_SchedulingGoodsNumBizService { get; set; }
 
         public static void Init()
         {

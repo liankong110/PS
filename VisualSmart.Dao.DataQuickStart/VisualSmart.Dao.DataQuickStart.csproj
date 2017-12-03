@@ -58,6 +58,10 @@
     <Compile Include="ProBase\Base_ShipDao.cs" />
     <Compile Include="ProBase\Base_StockDao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Pro\Pro_SchedulingDao.cs" />
+    <Compile Include="Pro\Pro_SchedulingGoodsDao.cs" />
+    <Compile Include="Pro\Pro_SchedulingGoodsNumDao.cs" />
+    <Compile Include="Pro\Pro_SchedulingLineDao.cs" />
     <Compile Include="Pro\Pro_ShipPlanDao.cs" />
     <Compile Include="Pro\Pro_ShipPlanMainDao.cs" />
     <Compile Include="Pro\Pro_ShipPlansDao.cs" />
