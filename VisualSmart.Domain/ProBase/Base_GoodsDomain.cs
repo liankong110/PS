@@ -16,7 +16,7 @@ namespace VisualSmart.Domain.ProBase
         public Base_Goods()
         { }
         #region Model
-        private int _id;
+      
         private string _goodno = "";
         private string _goodname = "";
         private string _shipto = "";
@@ -25,14 +25,7 @@ namespace VisualSmart.Domain.ProBase
         private string _shippkgqty = "";
         private string _um = "";
         private decimal _standarddays = 0M;      
-        /// <summary>
-        /// 
-        /// </summary>
-        public int ID
-        {
-            set { _id = value; }
-            get { return _id; }
-        }
+        
         /// <summary>
         /// 产品编码
         /// </summary>

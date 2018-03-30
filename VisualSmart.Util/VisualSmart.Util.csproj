@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="CacheHelper.cs" />
     <Compile Include="CommonMethod.cs" />
+    <Compile Include="DynamicHelp.cs" />
     <Compile Include="LogHelper.cs" />
     <Compile Include="MailHelper.cs" />
     <Compile Include="MD5Util.cs" />

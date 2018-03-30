@@ -27,9 +27,16 @@
                 @Html.AntiForgeryToken()
                 <!-- 查询条件-->
                 <div class="form-group" style="margin-bottom:6px;">
-                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">角色名称：</label>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产品编码：</label>
                     <div class="col-sm-3 ">
                         <input type="text" name="roleName" id="roleName" placeholder="名称" value="@ViewBag.RoleName" />
+                        <button class="btn btn-sm btn-success" type="submit">
+                            <i class="ace-icon fa fa-search bigger-110 "></i>
+                            查询
+                        </button>   
+                    </div>
+                    <div class="col-sm-1 control-label no-padding-right">
+                       
                     </div>
 
                 </div>
@@ -41,14 +48,8 @@
                             <div class="col-sm-12 " id="default-buttons">
 
                                 <p>
-                                    <button class="btn btn-sm btn-success" type="submit">
-                                        <i class="ace-icon fa fa-search bigger-110 "></i>
-                                        查询
-                                    </button>
-                                    <a class="btn btn-sm btn-primary " href="/ShipPlan/Add">
-                                        <i class="ace-icon fa fa-plus bigger-110"></i>
-                                        添加
-                                    </a>
+
+
                                 </p>
                                 <!-- /section:elements.button.white -->
                             </div><!-- /.col -->
@@ -67,10 +68,10 @@
                                             <th>项</th>
                                             <th>版本ID</th>
                                             <th>地点</th>
-                                            <th>发运地</th>
-                                            <th>发运地说明</th>
-                                            <th>物料号</th>
-                                            <th><span style="margin-right:50px;">物料说明</span></th>
+                                            <th>发运地编码</th>
+                                            <th>发运地名称</th>
+                                            <th>产品编码</th>
+                                            <th><span style="margin-right:50px;">产品名称</span></th>
 
                                             @if (mainPlan != null)
                                             {

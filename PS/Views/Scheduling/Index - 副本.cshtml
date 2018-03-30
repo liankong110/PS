@@ -1,0 +1,721 @@
+﻿@{
+    ViewBag.Title = "生产排产";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using VisualSmart.Domain.Pro;
+@using VisualSmart.Util;
+@using PS.Models;
+@model IList<Pro_ShipPlan>
+@{
+    var mainPlan = ViewBag.MainDate as Pro_ShipPlanMain;
+    var shipPlansList = ViewBag.ShipPlansList as IList<Pro_ShipPlans>;
+}
+<div class="page-content">
+
+    <div class="page-header">
+        <h1>
+            生产排产
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                填写信息后，进行保存
+                <a class="btn btn-sm btn-primary " href="/ShipPlan/Add">
+                    <i class="ace-icon fa fa-save bigger-110"></i>
+                    保存
+                </a>
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal " role="form" action="/ShipPlan/Index" id="index" method="get">
+                <input type="hidden" id="page" name="page" />
+                @Html.AntiForgeryToken()
+                <!-- 查询条件-->
+
+                <hr class="no-padding no-margin" />
+                <div class="row">
+                    <div class="col-xs-12">
+
+
+                        <div class="space-4"></div>
+                        <!-- 查询列表 -->
+                        <div class="row">
+
+                            @{
+                                List<string> proLineNos = ViewBag.ProLineNos as List<string>;
+                            }
+
+                            <div class="col-xs-12 table-responsive">
+                                <table id="simple-table" class="table table-hover table-condensed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>实际工时数</th>
+
+                                            @if (mainPlan != null)
+                                            {
+                                                for (int i = 0; i < 21; i++)
+                                                {
+                                                    var date = mainPlan.PlanFromDate.AddDays(i);
+                                                    <th>@date.ToString("MM-dd")</th>
+                                                }
+                                            }
+
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var line in proLineNos)
+                                        {
+                                            <tr>
+                                                <td>@line</td>
+                                                @if (mainPlan != null)
+                                                {
+                                                    for (int i = 0; i < 21; i++)
+                                                    {
+
+                                                        string id = "sum" + line + i;
+                                                        <td><lable id="@id"></lable></td>
+                                                    }
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                            <!-- /.span -->
+
+
+                        </div><!-- /.row -->
+                        <!-- PAGE CONTENT ENDS -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- PAGE CONTENT BEGINS -->
+            <div class="tabbable">
+                <!-- #section:pages/faq -->
+
+                <ul class="nav nav-tabs padding-18 tab-size-bigger" id="myTab">
+                    @{
+                        string allLines = "";
+
+                    }
+                    @for (int ii = 0; ii < proLineNos.Count; ii++)
+                    {
+                        string line = proLineNos[ii];
+                        allLines = string.Format("{0}", line);
+                        if (ii == 0)
+                        {
+                            <li class="active">
+                                <a data-toggle="tab" href="#@line">
+                                    @line
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a data-toggle="tab" href="#@line">
+                                    @line
+                                </a>
+                            </li>
+                        }
+                    }
+
+                </ul>
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="allLineCount" value="@proLineNos.Count" />
+                <!-- /section:pages/faq -->
+                <div class="tab-content no-border padding-24">
+                    @{
+                        int startIndex = 0;
+
+                    }
+                    @foreach (var line in proLineNos)
+                    {
+                        var currentLineList = Model.ToList().FindAll(t => t.ProLineNo == line);
+
+                        string goodNos = "";
+                        string temoGoodNos = "";
+                        foreach (var m in currentLineList)
+                        {
+                            goodNos += string.Format("'{0}',", m.GoodNo);
+                            temoGoodNos += string.Format("{0},", m.GoodNo);
+                        }
+                        goodNos = goodNos.Trim(',');
+
+                        string startClass = "";
+                        if (startIndex == 0)
+                        {
+                            startClass = "  in active";
+                        }
+                        startIndex++;
+                        var ZBPeople = line + "ZB";
+                        var MBPeople = line + "MB";
+                        var WBPeople = line + "WB";
+                        var goodsLine = line + "Goods";
+                        var tempGoodsLine = "temp" + line + "Goods";
+                        <div id="@line" class="tab-pane fade @startClass">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <!--早中晚人数信息-->
+                                    <div class="form-group" style="margin-bottom:6px;">
+                                        <input type="hidden" value="@goodNos" id="@goodsLine" />
+                                        <input type="hidden" value="@temoGoodNos" id="@tempGoodsLine" />
+                                        <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">早班人数：</label>
+                                        <div class="col-sm-2 ">
+                                            <input type="text" name="@ZBPeople" id="@ZBPeople" placeholder="早班人数" onchange="channeng('@line',@currentLineList.Count,@startIndex);" value="@ViewBag.RoleName" />
+
+                                        </div>
+                                        <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">中班人数：</label>
+                                        <div class="col-sm-2 ">
+                                            <input type="text" name="@MBPeople" id="@MBPeople" placeholder="中班人数" onchange="channeng('@line',@currentLineList.Count,@startIndex);" value="@ViewBag.RoleName" />
+
+                                        </div>
+                                        <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">晚班人数：</label>
+                                        <div class="col-sm-3 ">
+                                            <input type="text" name="@WBPeople" id="@WBPeople" placeholder="晚班人数" onchange="channeng('@line',@currentLineList.Count,@startIndex);" value="@ViewBag.RoleName" />
+
+                                        </div>
+
+                                        @*<div class="col-sm-2 ">
+                                            <a class="btn btn-sm btn-success" href="/PS/edit?SchedulingLineId=1&SDate=2017-11-26" target="_blank">
+                                                <i class="ace-icon fa fa-undo bigger-110 "></i>
+                                                PS 确认
+                                            </a>
+                                        </div>*@
+                                    </div>
+                                    <hr class="no-padding" />
+
+                                    <!-- 产品 时间 数量明细 -->
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="row">
+                                                <div class="col-xs-12 table-responsive1">
+                                                    <table id="simple-table" class="table table-hover table-condensed table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th colspan="6"></th>
+                                                                @if (mainPlan != null)
+                                                                {
+                                                                    string[] Day = new string[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+                                                                    for (int i = 0; i < 21; i++)
+                                                                    {
+                                                                        var date = mainPlan.PlanFromDate.AddDays(i);
+                                                                        string week = Day[Convert.ToInt32(date.DayOfWeek.ToString("d"))].ToString();
+                                                                        <th>@week</th>
+                                                                    }
+                                                                }
+
+                                                            </tr>
+                                                            <tr>
+                                                                <th>零件号</th>
+                                                                <th>零件名称</th>
+                                                                <th>发运地</th>
+                                                                <th>发运地说明</th>
+                                                                <th><span style="margin-right:50px;">类型</span></th>
+                                                                <th>库存</th>
+                                                                @if (mainPlan != null)
+                                                                {
+                                                                    for (int i = 0; i < 21; i++)
+                                                                    {
+                                                                        var date = mainPlan.PlanFromDate.AddDays(i);
+                                                                        <th>@date.ToString("MM-dd")</th>
+                                                                    }
+                                                                }
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @{
+
+                                                                int goodIndex = 0;
+                                                            }
+                                                            @foreach (var m in currentLineList)
+                                                            {
+                                                                List<SchedulingDateNumModel> dateNumList = new List<SchedulingDateNumModel>();
+                                                                //库存ID
+                                                                var qtyId = line + goodIndex + "Qty";
+
+                                                                //早中晚产能ID
+                                                                var cnZB = line + goodIndex + "ZB";
+                                                                var cnMB = line + goodIndex + "MB";
+                                                                var cnWB = line + goodIndex + "WB";
+                                                                <tr>
+                                                                    <td rowspan="5">@m.GoodNo</td>
+                                                                    <td rowspan="5">@m.GoodName</td>
+                                                                    <td rowspan="5">@m.ShipTo</td>
+                                                                    <td rowspan="5">@m.ShipToName</td>
+                                                                    <td>需求</td>
+                                                                    <td rowspan="5"><label id="@qtyId">@m.Qty</label></td>
+
+                                                                    @if (mainPlan != null)
+                                                                    {
+                                                                        for (int i = 0; i < 21; i++)
+                                                                        {
+                                                                            SchedulingDateNumModel dateNumModel = new SchedulingDateNumModel();
+                                                                            if (i == 0)
+                                                                            {
+                                                                                dateNumModel.TopGongRequestDiffNum = m.Qty;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                dateNumModel.TopGongRequestDiffNum = dateNumList[i - 1].RequestDiffNum;
+                                                                            }
+
+                                                                            var date = mainPlan.PlanFromDate.AddDays(i);
+                                                                            var item = shipPlansList.FirstOrDefault(t => t.PlanId == m.ID && t.PlanDate == date);
+                                                                            dateNumModel.date = date;
+
+                                                                            if (item != null)
+                                                                            {
+                                                                                //需求id=产线+行号+XQ+日期索引
+                                                                                var id = line + goodIndex + "XQ" + i;
+                                                                                dateNumModel.RequestNum = item.PlanNum;
+                                                                                <td style="background-color:lemonchiffon;"><label id="@id">@item.PlanNum</label></td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <td style="background-color:lemonchiffon;"></td>
+                                                                            }
+                                                                            dateNumList.Add(dateNumModel);
+                                                                        }
+                                                                    }
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>早班<label id="@cnZB" style="color:cornflowerblue"></label></td>
+                                                                    @if (mainPlan != null)
+                                                                    {
+                                                                        for (int i = 0; i < 21; i++)
+                                                                        {
+
+                                                                            //早班id=产线+行号+ZB+日期索引
+                                                                            var id = line + goodIndex + "ZB" + i;
+
+                                                                            <td>
+                                                                                <input type="text" style=" width:40px;" id="@id" onchange="ChangeNum(@startIndex,'@line','@goodIndex',@goodIndex,@i,1);" />
+                                                                            </td>
+                                                                        }
+                                                                    }
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>中班<label id="@cnMB" style="color:cornflowerblue"></label></td>
+                                                                    @if (mainPlan != null)
+                                                                    {
+                                                                        for (int i = 0; i < 21; i++)
+                                                                        {
+                                                                            //中班id=产线+行号+MB+日期索引
+                                                                            var id = line + goodIndex + "MB" + i;
+                                                                            <td>
+                                                                                <input type="text" id="@id" style=" width:40px;" onchange="ChangeNum(@startIndex,'@line','@goodIndex',@goodIndex,@i,1);" />
+                                                                            </td>
+                                                                        }
+                                                                    }
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>晚班<label id="@cnWB" style="color:cornflowerblue"></label></td>
+                                                                    @if (mainPlan != null)
+                                                                    {
+                                                                        for (int i = 0; i < 21; i++)
+                                                                        {
+                                                                            //晚班id=产线+行号+WB+日期索引
+                                                                            var id = line + goodIndex + "WB" + i;
+                                                                            <td>
+                                                                                <input type="text" id="@id" style=" width:40px;" onchange="ChangeNum(@startIndex,'@line','@goodIndex',@goodIndex,@i,1);" />
+                                                                            </td>
+                                                                        }
+                                                                    }
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>需求差异</td>
+                                                                    @if (mainPlan != null)
+                                                                    {
+                                                                        for (int i = 0; i < 21; i++)
+                                                                        {
+                                                                            //需求差异id=产线+行号+XQCY+日期索引
+                                                                            var id = line + goodIndex + "XQCY" + i;
+
+                                                                            var RequestDiffNum = dateNumList[i].RequestDiffNum;
+                                                                            if (RequestDiffNum == null)
+                                                                            {
+                                                                                <td style="background-color:aliceblue;"></td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                string color = "";
+                                                                                if (RequestDiffNum.Value < 0)
+                                                                                {
+                                                                                    color = "color:red;";
+                                                                                }
+                                                                                <td style="background-color:aliceblue;@color "><label id="@id">@Math.Abs(RequestDiffNum.Value)</label></td>
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                </tr>
+                                                                <tr style="background-color:aliceblue;">
+                                                                    <td>整箱包装数</td>
+                                                                    <td>10</td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td>供需求差异</td>
+                                                                    <td></td>
+                                                                    @if (mainPlan != null)
+                                                                    {
+                                                                        for (int i = 0; i < 21; i++)
+                                                                        {
+                                                                            //供需求差异id=产线+行号+GQXQCY+日期索引
+                                                                            var id = line + goodIndex + "GQXQCY" + i;
+                                                                            var GongRequestDiffNum = dateNumList[i].GongRequestDiffNum;
+                                                                            if (GongRequestDiffNum == null)
+                                                                            {
+                                                                                <td></td>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                string color = "";
+                                                                                if (GongRequestDiffNum.Value < 0)
+                                                                                {
+                                                                                    color = "color:red;";
+                                                                                }
+                                                                                <td style="@color "><label id="@id">@Math.Abs(GongRequestDiffNum.Value)</label></td>
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                </tr>
+                                                                goodIndex++;
+                                                            }
+                                                        </tbody>
+
+
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                                                }
+
+                    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+                </div>
+            </div>
+
+            <!-- PAGE CONTENT ENDS -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+</div><!-- /.page-content -->
+
+<script src="~/Content/components/datatables/media/js/jquery.dataTables.js"></script>
+<script src="~/Content/components/_mod/datatables/jquery.dataTables.bootstrap.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/dataTables.buttons.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.flash.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.html5.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.print.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.colVis.js"></script>
+<script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
+<link href="~/Content/StyleSheet1.css" rel="stylesheet" />
+<script type="text/javascript">
+
+
+    //纪录所有产线对应的产能信息
+    var lineData=new Array(parseInt($("#allLineCount").val()));
+
+    function PostForm(page) {
+        $("#page").val(page);
+        $("#index").submit();
+    }
+
+    //删除
+    function Delete(id) {
+        if (confirm("确定要删除此数据吗?") == true) {
+            var url = "/ShipPlan/Delete/?id=" + id;
+            $.ajax({
+                data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+                url: url,
+                type: 'post',
+                async: false,
+                cache: false,
+                success: function (data) {
+                    if (data.Mess == "success") {
+                        $.gritter.add({
+                            title: '删除成功！',
+                            text: '',
+                            class_name: 'gritter-info gritter-light'
+                        });
+                        setTimeout(function () { window.location.reload(); }, 500);
+                    }
+
+                }
+            });
+        }
+    }
+
+
+    //核心JQ 填写早中晚信息后 对需求差异，供需求差异 重新计算
+    //obj 当前编辑的对应，line 当前的产线，goodIndex 当前产线产品索引 竖列，dateIndex 日期索引 横列
+    function ChangeNum(lineIndex, line, goodIndex, dateIndex,currentDateIndex, isXunHuan) {
+        //需求id=产线+行号+XQ+日期索引
+        var XQNum = parseToInt($("#" + line + goodIndex + "XQ" + dateIndex), 2);
+
+        //早班id=产线+行号+ZB+日期索引
+        var ZBNum = parseToInt($("#" + line + goodIndex + "ZB" + dateIndex), 1);
+
+        //中班id=产线+行号+MB+日期索引
+        var MBNum = parseToInt($("#" + line + goodIndex + "MB" + dateIndex), 1);
+
+        //晚班id=产线+行号+WB+日期索引
+        var WBNum = parseToInt($("#" + line + goodIndex + "WB" + dateIndex), 1);
+
+        ////需求差异id=产线+行号+XQCY+日期索引
+        //var XQCYNum=$("#"+line+goodIndex+"XQCY"+dateIndex).html();
+        //if(XQCYNum==""){
+        //    XQCYNum=0;
+        //}
+        ////供需求差异id=产线+行号+GQXQCY+日期索引
+        //var GQXQCYNum=$("#"+line+goodIndex+"GQXQCY"+dateIndex).html();
+        //if(GQXQCYNum==""){
+        //    GQXQCYNum=0;
+        //}
+
+        //计算当前需求差异 、 供需求差异 信息
+
+        //当等于0 时 初期库存= 供需求差异
+        var topGongRequestDiffNum = 0;
+        if (dateIndex == 0) {
+            var qtyId = parseToInt($("#" + line + goodIndex + "Qty"), 2);
+            topGongRequestDiffNum = qtyId;
+        }
+        else {
+            if (rgb($("#" + line + goodIndex + "GQXQCY" + (dateIndex - 1))) == "#ff0000") {
+                topGongRequestDiffNum = -parseToInt($("#" + line + goodIndex + "GQXQCY" + (dateIndex - 1)), 2);
+
+            }
+            else {
+                topGongRequestDiffNum = parseToInt($("#" + line + goodIndex + "GQXQCY" + (dateIndex - 1)), 2);
+            }
+
+        }
+
+        //计算当前的信息。
+        var requestDiffNum = 0;
+        if (XQNum != "") {
+            requestDiffNum = topGongRequestDiffNum - XQNum;
+        }
+        var gongRequestDiffNum = requestDiffNum + ZBNum + MBNum + WBNum;
+
+        //console.log(topGongRequestDiffNum + " " + XQNum + " " + ZBNum + " " + MBNum + " " + WBNum);
+
+
+        //判断颜色 正数为黑色 负数为红色
+        if (requestDiffNum >= 0) {
+            $("#" + line + goodIndex + "XQCY" + dateIndex).css("color", "black");
+            $("#" + line + goodIndex + "XQCY" + dateIndex).html(requestDiffNum);
+        } else {
+            $("#" + line + goodIndex + "XQCY" + dateIndex).css("color", "red");
+            //重新赋值
+            $("#" + line + goodIndex + "XQCY" + dateIndex).html(-requestDiffNum);
+        }
+
+        if (gongRequestDiffNum >= 0) {
+            $("#" + line + goodIndex + "GQXQCY" + dateIndex).css("color", "black");
+            $("#" + line + goodIndex + "GQXQCY" + dateIndex).html(gongRequestDiffNum);
+        } else {
+            $("#" + line + goodIndex + "GQXQCY" + dateIndex).css("color", "red");
+            //重新赋值
+            $("#" + line + goodIndex + "GQXQCY" + dateIndex).html(-gongRequestDiffNum);
+        }
+
+        //计算i 以后的所有信息。
+        //判断是否要循环，防止无限循环
+        if (isXunHuan == 1) {
+            for (var i = (dateIndex + 1) ; i < 21; i++) {
+                ChangeNum(lineIndex, line, goodIndex, i,currentDateIndex, 0);
+            }
+        }
+
+        //计算实际工时数
+        //计算到第21天的时候 进行计算
+        if(dateIndex==20){
+            goodsChanNeng(line,lineIndex,currentDateIndex);
+        }
+    }
+
+    //转化成int 类型， 1是val 2是html
+    function parseToInt(obj, type) {
+        var val = 0;
+        if (type == 1) {
+            if (obj.val() == "") {
+                return 0;
+            }
+            val = parseInt(obj.val());
+        } else {
+            val = parseInt(obj.html());
+        }
+
+        if (isNaN(val)) {
+            if (type == 1) {
+                obj.val("");
+            }
+            val = 0;
+        }
+        return val;
+    }
+    //颜色
+    function rgb(obj) {
+        var rgb = obj.css('color');
+        rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+        function hex(x) { return ("0" + parseInt(x).toString(16)).slice(-2); }
+        return rgb = "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+    //重新计算当前日期，下所有的产能信息
+    function goodsChanNeng(proLineNo,lineIndex,day){
+
+        var lineGoodData= lineData[lineIndex];
+        if(lineGoodData==null){
+            return;
+        }
+        var tempLineGoodsList = $("#temp" + proLineNo + "Goods").val().split(',');
+        show(tempLineGoodsList.length,proLineNo,day);
+    } 
+
+    //根据产线，人数获取对应的产能信息，如果没有获取到 则为0
+    function channeng(proLineNo, goodCount,lineIndex) {
+
+        var zbPeople = parseToInt($("#" + proLineNo + "ZB"), 1);
+        var mbPeople = parseToInt($("#" + proLineNo + "MB"), 1);
+        var wbPeople = parseToInt($("#" + proLineNo + "WB"), 1);
+        var people = zbPeople + "," + mbPeople + "," + wbPeople;
+
+        //如果全部都是0 则统计为0
+        if (zbPeople == 0 && mbPeople == 0 && wbPeople == 0) {
+            for (var i = 0; i < 21; i++) {
+                $("#sum" + proLineNo + i).html("");
+            }
+            return;
+        }
+
+        var tempLineGoodsList = $("#temp" + proLineNo + "Goods").val().split(',');
+        var url = "/Scheduling/GetProductions/?proLineNo=" + proLineNo + "&goodNos=" + $("#" + proLineNo + "Goods").val() + "&people=" + people;
+
+        $.ajax({
+            data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+            url: url,
+            type: 'post',
+            async: false,
+            cache: false,
+            success: function (data) {
+                if (data.Mess == "success") {
+                    //保存对应的产能信息
+                    lineData[lineIndex]=data.Data;
+                    //如果没有找到对应的人数产能的信息则情况
+                    if (data.Data.length==0) {
+                        for (var i = 0; i < 21; i++) {
+                            $("#sum" + proLineNo + i).html("");
+                        }
+                        return;
+                    }
+                    for (var i = 0; i < goodCount; i++) {
+                        //早中晚班的产能信息
+                        var cnZB = proLineNo + i + "ZB";
+                        var cnMB = proLineNo + i + "MB";
+                        var cnWB = proLineNo + i + "WB";
+
+                        //初始化为空
+                        $("#"+cnZB).html("");
+                        $("#"+cnMB).html("");
+                        $("#"+cnWB).html("");
+                    }
+                    //查找对应的商品的产能信息
+                    $.each(data.Data, function (index, item) {
+                        for (var i = 0; i < goodCount; i++) {
+                            var currentGoodNo = tempLineGoodsList[i];
+                            //早中晚班的产能信息
+                            var cnZB = proLineNo + i + "ZB";
+                            var cnMB = proLineNo + i + "MB";
+                            var cnWB = proLineNo + i + "WB"; 
+                            
+
+                            //早中晚的人数信息
+                            if (item.GoodNo == currentGoodNo&&item.People==zbPeople) {
+                                //早班
+                                $("#"+cnZB).html(item.Number);
+
+                            }else if (item.GoodNo == currentGoodNo&&parseInt(item.People)==mbPeople) {
+                                //中班
+                                $("#"+cnMB).html(item.Number);
+                            }
+                            else if (item.GoodNo == currentGoodNo&&parseInt(item.People)==wbPeople) {
+                                //晚班
+                                $("#"+cnWB).html(item.Number);
+                            }
+                        }
+                    });
+
+                    //按照天进行计算
+                    for (var day = 0; day < 21; day++) {
+                        show(goodCount,proLineNo,day);
+                    }
+                }
+
+            }
+        });
+
+    }
+
+    //显示实际工时数
+    function show(goodCount,proLineNo,day)
+    {
+        var zbSumNum = 0;
+        var mbSumNum = 0;
+        var wbSumNum = 0;
+        //JSON DATA查找对应的商品信息
+        var jsonSumZBNum = 0;
+        var jsonSumMBNum = 0;
+        var jsonSumWBNum = 0;
+        for (var i = 0; i < goodCount; i++) {
+
+            //早中晚班的产能信息
+            var cnZB = parseToInt($("#"+proLineNo + i+ "ZB"),2);
+            var cnMB = parseToInt($("#"+proLineNo + i + "MB"),2);
+            var cnWB = parseToInt($("#"+proLineNo + i + "WB"),2);
+
+            //早班id=产线+行号+ZB+日期索引
+            var ZBNum = parseToInt($("#" + proLineNo + i + "ZB" + day), 1);
+            if (cnZB != 0) {
+                jsonSumZBNum += ZBNum / cnZB*60*60;//转换成秒
+            }
+            //中班id=产线+行号+MB+日期索引
+            var MBNum = parseToInt($("#" + proLineNo + i + "MB" + day), 1);
+            if (cnMB != 0) {
+                jsonSumMBNum += MBNum / cnMB* 60 * 60;//转换成秒
+            }
+            //晚班id=产线+行号+WB+日期索引
+            var WBNum = parseToInt($("#" + proLineNo + i + "WB" + day), 1);
+            if (cnWB != 0) {
+                jsonSumWBNum += WBNum /cnWB * 60 * 60;//转换成秒
+            }
+
+            zbSumNum += ZBNum;
+            mbSumNum += MBNum;
+            wbSumNum += WBNum;
+        }
+        //实际工时数=SUM（零件的早班生产量/早班人数的产能量+零件的中班生产量/中班人数的产能量+零件的晚班生产量/晚班人数的产能量）
+        //注意：1）早中晚班的工时要换算成秒，才可以相加，最终的总工时才可以换算成小时。
+        //2）SUM是将所有零件的所有工时，加总到一起。
+        //3）建议，每更新一个生产计划，相关的需求差异和实际工时数会自动更新。
+        var sumtotal=(jsonSumZBNum + jsonSumMBNum + jsonSumWBNum)/3600;
+        if (sumtotal == 0) {
+            $("#sum" + proLineNo + day).html("");
+        } else {
+            $("#sum" + proLineNo + day).html(sumtotal.toFixed(2));
+        }
+
+    }
+</script>

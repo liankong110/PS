@@ -7,15 +7,14 @@
 <link rel="stylesheet" href="~/Content/components/bootstrap-duallistbox/dist/bootstrap-duallistbox.css" />
 <div class="page-content">
 
+    
     <div class="page-header">
         <h1>
-            第一步 产线选择
-            <small>
-                <i class="ace-icon fa fa-angle-double-right"></i>
-                查询条件
-            </small>
+            发运计划单：2018001           
         </h1>
     </div><!-- /.page-header -->
+
+    
     <div class="row">
         <div class="col-xs-12">
             <form class="form-horizontal " role="form" action="/Scheduling/Index" id="index" method="get">
@@ -23,7 +22,7 @@
                 @Html.AntiForgeryToken()
                 <!-- 查询条件-->
                 <div class="form-group">
-                    <label class="col-sm-2 control-label no-padding-top" for="duallist">生产线</label>
+                    <label class="col-sm-2 control-label no-padding-top" for="duallist">选择生产线</label>
                     <input type="hidden" name="proLineNosList" id="proLineNosList"/>
                     <div class="col-sm-9">
                         <!-- #section:plugins/input.duallist -->

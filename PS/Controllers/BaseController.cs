@@ -177,5 +177,50 @@ namespace PS.Controllers
             return url;
         }
 
+
+        public string GetFileName(string filename)
+        {
+            var random = new Random();
+            var extension = filename.Substring(filename.LastIndexOf('.')).Length > 0
+                             ? filename.Substring(filename.LastIndexOf('.'))
+                             : ".jpg";
+            return DateTime.Now.ToString("yyyyMMddHHmmss") + DateTime.Now.Millisecond + random.Next(10, 99) + extension;
+        }
+
+        /// <summary>
+        /// 上传附件
+        /// </summary>
+        /// <param name="folderName">对应的文件夹</param>
+        /// <returns></returns>
+        public string Upload(string folderName)
+        {
+            var urlpath = string.Format(@"/Attachment/{0}/{1}/", folderName, DateTime.Now.ToString("yyyyMM"));
+            var dirpath = Server.MapPath(urlpath);
+            if (!Directory.Exists(dirpath))
+            {
+                Directory.CreateDirectory(dirpath);
+            }
+            var postedFile = System.Web.HttpContext.Current.Request.Files[0];
+            if (postedFile == null)
+            {
+                return "";
+            }
+            var filename = GetFileName(postedFile.FileName.ToLower());
+            postedFile.SaveAs(dirpath + filename);
+
+            //开始解析Excel
+            var error = LoadExcel(dirpath + filename);
+            if (error != "")
+            {
+                return error;
+            }
+
+            return urlpath + filename;
+        }
+
+        public virtual string LoadExcel(string file)
+        {
+            throw new Exception("请实现方法");
+        }
     }
 }

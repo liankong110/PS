@@ -193,6 +193,27 @@ LEFT JOIN Pro_SchedulingGoodsNum ON Pro_SchedulingGoodsNum.SGoodId=Pro_Schedulin
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_SchedulingGoods>(CommandType.Text, strSql.ToString(), MapRowByDetailList, parameters);
         }
 
+
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Pro_SchedulingGoods> GetListBySchedulingLineId(QueryCondition query)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append(@"select  SDate,GoodNo,GoodName,ProLineNo,ShipTo,ShipToName,PackNum,Pro_SchedulingGoods.Id,SType,SNum,Pro_SchedulingGoods.MorningNum,Pro_SchedulingGoods.MiddleNum,Pro_SchedulingGoods.EveningNum from Pro_SchedulingLine 
+LEFT JOIN Pro_SchedulingGoods ON Pro_SchedulingGoods.SLineId=Pro_SchedulingLine.Id 
+LEFT JOIN Pro_SchedulingGoodsNum ON Pro_SchedulingGoodsNum.SGoodId=Pro_SchedulingGoods.Id");
+
+            strSql.AppendFormat(" where SType IN (2,3,4) and Pro_SchedulingLine.Id={0}", query.GetCondition("Id").Value);
+            strSql.AppendFormat(" and SDate='{0}'", query.GetCondition("SDate").Value);
+           
+
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_SchedulingGoods>(CommandType.Text, strSql.ToString(), MapRowBySchedulingLineId, parameters);
+        }
+
         /// <summary>
         /// 列表基本参数
         /// </summary>
@@ -219,6 +240,23 @@ LEFT JOIN Pro_SchedulingGoodsNum ON Pro_SchedulingGoodsNum.SGoodId=Pro_Schedulin
             }
             model.ProLineNo = dataReader["ProLineNo"].ToString();
             model.SType = Convert.ToInt32(dataReader["SType"]);
+            return model;
+        }
+
+
+        /// <summary>
+        /// 列表基本参数
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="rowNum"></param>
+        /// <returns></returns>
+        public Pro_SchedulingGoods MapRowBySchedulingLineId(IDataReader dataReader, int rowNum)
+        {
+            Pro_SchedulingGoods model = MapRowByDetailList(dataReader, rowNum);            
+            model.SNum =Convert.ToInt32( dataReader["SNum"]);
+            model.MorningNum = Convert.ToInt32(dataReader["MorningNum"]);
+            model.MiddleNum = Convert.ToInt32(dataReader["MiddleNum"]);
+            model.EveningNum = Convert.ToInt32(dataReader["EveningNum"]);            
             return model;
         }
     }

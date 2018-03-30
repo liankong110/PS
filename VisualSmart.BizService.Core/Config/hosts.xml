@@ -42,6 +42,9 @@
     <property name="Pro_SchedulingLineBizService" ref="Pro_SchedulingLineBizService"></property>
     <property name="Pro_SchedulingGoodsBizService" ref="Pro_SchedulingGoodsBizService"></property>
     <property name="Pro_SchedulingGoodsNumBizService" ref="Pro_SchedulingGoodsNumBizService"></property>
+
+    <property name="Pro_PSBizService" ref="Pro_PSBizService"></property>
+    <property name="Pro_PSDetailBizService" ref="Pro_PSDetailBizService"></property>
   </object>
   <!-- 系统基础模块-->
   <object id="UserBizService" type="VisualSmart.BizService.Implements.SetUp.UserBizService,VisualSmart.BizService.Implements"></object>
@@ -84,5 +87,7 @@
   <object id="Pro_SchedulingBizService" type="VisualSmart.BizService.Implements.Pro.Pro_SchedulingBizService,VisualSmart.BizService.Implements"></object>
   <object id="Pro_SchedulingGoodsBizService" type="VisualSmart.BizService.Implements.Pro.Pro_SchedulingGoodsBizService,VisualSmart.BizService.Implements"></object>
   <object id="Pro_SchedulingGoodsNumBizService" type="VisualSmart.BizService.Implements.Pro.Pro_SchedulingGoodsNumBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Pro_PSBizService" type="VisualSmart.BizService.Implements.Pro.Pro_PSBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Pro_PSDetailBizService" type="VisualSmart.BizService.Implements.Pro.Pro_PSDetailBizService,VisualSmart.BizService.Implements"></object>
 
 </objects>

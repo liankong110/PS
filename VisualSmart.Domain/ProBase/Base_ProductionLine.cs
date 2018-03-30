@@ -16,7 +16,7 @@ namespace VisualSmart.Domain.ProBase
         public Base_ProductionLine()
         { }
         #region Model
-        private int _id;
+       
         private string _prolineno = "";
         private string _goodno = "";
         private string _goodname = "";
@@ -28,14 +28,7 @@ namespace VisualSmart.Domain.ProBase
         private int _proshift = 0;
         private string _procapacitydesc = "";
       
-        /// <summary>
-        /// 
-        /// </summary>
-        public int ID
-        {
-            set { _id = value; }
-            get { return _id; }
-        }
+        
         /// <summary>
         /// 生产线
         /// </summary>

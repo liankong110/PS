@@ -1,0 +1,183 @@
+﻿@{
+    ViewBag.Title = "PS确认";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using VisualSmart.Domain.Pro;
+@using VisualSmart.Util;
+@model IList<Pro_PSDetail>
+@{
+
+    Pro_PS PSModel = ViewBag.PSModel as Pro_PS;
+}
+
+<div class="page-content">
+
+    <div class="page-header">
+        <h1>
+            PS确认
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                选择日期+生产线进行PS信息确认
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal " role="form" action="/PS/Edit" id="index" method="get">
+                <input type="hidden" id="page" name="page" />
+                @Html.AntiForgeryToken()
+                <!-- 查询条件-->
+                <div class="form-group" style="margin-bottom:6px;">
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">生产日期：</label>
+                    <div class="col-sm-3 ">
+                        <input type="text" name="ProDate" id="ProDate" placeholder="生产日期" value="@PSModel.ProDate.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">生产线：</label>
+                    <div class="col-sm-3">
+                        @*<label>@PSModel.ProLineNo</label>*@
+                        <select class="chosen-select form-control" style="width:60%" id="form-field-select-3" data-placeholder="选择">
+                            <option>APAB03</option>
+                            <option>APAB06</option>
+                            <option>APAB08</option>
+                        </select>
+
+                    </div>
+
+                </div>
+                <div class="form-group" style="margin-bottom:6px;">
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">早班人数：</label>
+                    <div class="col-sm-3 ">
+                        <input type="text" name="FinalMorningNum" id="FinalMorningNum" placeholder="早班人数" value="@PSModel.FinalMorningNum" />
+                    </div>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">中班人数：</label>
+                    <div class="col-sm-3 ">
+                        <input type="text" name="FinalMiddleNum" id="FinalMiddleNum" placeholder="中班人数" value="@PSModel.FinalMiddleNum" />
+                    </div>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">晚班人数：</label>
+                    <div class="col-sm-3 ">
+                        <input type="text" name="FinalEveningNum" id="FinalEveningNum" placeholder="晚班人数" value="@PSModel.FinalEveningNum" />
+                    </div>
+                </div>
+                <hr class="no-padding no-margin" />
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- 查询功能-->
+                        <div class="row">
+                            <div class="col-sm-12 " id="default-buttons">
+                                <p>
+                                    <button class="btn btn-sm btn-success" type="submit">
+                                        <i class="ace-icon fa fa-search bigger-110 "></i>
+                                        查询
+                                    </button>
+                                    <button class="btn btn-sm btn-primary " type="submit" id="excel" onclick="GetExcel(1)">
+                                        <i class="ace-icon fa fa-file-excel-o bigger-110"></i>
+                                        导出Excel
+                                    </button>
+                                    <button class="btn btn-sm btn-primary " type="submit" id="excel" onclick="GetExcel(1)">
+                                        <i class="ace-icon fa fa-file-excel-o bigger-110"></i>
+                                        保存
+                                    </button>
+                                    <button class="btn btn-sm btn-primary " type="submit" id="excel" onclick="GetExcel(1)">
+                                        <i class="ace-icon fa fa-file-excel-o bigger-110"></i>
+                                        重新计算
+                                    </button>
+                                </p>
+                                <!-- /section:elements.button.white -->
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+
+                        <div class="space-4"></div>
+                        <!-- 查询列表 -->
+                        <div class="row">
+
+                            <div class="col-xs-12 table-responsive">
+                                <table id="simple-table" class="table table-hover table-condensed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>序号</th>
+                                            <th>零件号</th>
+                                            <th>零件名称</th>
+                                            <th>班次</th>
+                                            <th>客户（ship-to）</th>
+                                            <th>整箱包装数</th>
+                                            <th>数量</th>
+                                            <th>开始时间</th>
+                                            <th>结束时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var m in Model)
+                                        {
+                                            <tr>
+                                                <td><input type="text" style=" width:40px;" value="@m.ProOrderIndex" id="@m.Id" /></td>
+                                                <td>@m.GoodNo</td>
+                                                <td>@m.GoodName</td>
+                                                <td>@(EnumOperate.GetEnumDesc((VisualSmart.Util.Menus.ClassType)m.SType))</td>
+                                                <td>@m.ShipTo</td>
+                                                <td>@m.PackNum</td>
+                                                <td>@m.Qty</td>
+                                                <td><input type="text" name="ProDate" value="@m.StartTime.ToString("yyyy-MM-dd HH:mm:ss")" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" /></td>
+                                                <td><input type="text" name="ProDate" value="@m.EndTime.ToString("yyyy-MM-dd HH:mm:ss")" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" /></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                            <!-- /.span -->
+
+
+                        </div><!-- /.row -->
+
+                        <div class="hr hr-18 dotted hr-double"></div>
+                        <!-- PAGE CONTENT ENDS -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </form>
+        </div>
+    </div>
+</div><!-- /.page-content -->
+
+<script src="~/Content/components/datatables/media/js/jquery.dataTables.js"></script>
+<script src="~/Content/components/_mod/datatables/jquery.dataTables.bootstrap.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/dataTables.buttons.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.flash.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.html5.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.print.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.colVis.js"></script>
+<script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+
+    function PostForm(page) {
+        $("#page").val(page);
+        $("#index").submit();
+    }
+
+    //删除
+    function Delete(id) {
+        if (confirm("确定要删除此数据吗?") == true) {
+            var url = "/Stock/Delete/?id=" + id;
+            $.ajax({
+                data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+                url: url,
+                type: 'post',
+                async: false,
+                cache: false,
+                success: function (data) {
+                    if (data.Mess == "success") {
+                        $.gritter.add({
+                            title: '删除成功！',
+                            text: '',
+                            class_name: 'gritter-info gritter-light'
+                        });
+                        setTimeout(function () { window.location.reload(); }, 500);
+                    }
+
+                }
+            });
+        }
+    }
+</script>

@@ -44,7 +44,9 @@ namespace VisualSmart.Domain.Pro
             set { _planfromto = value; }
             get { return _planfromto; }
         }
-       
+
+        public string ProNo { get; set; }
+
         #endregion Model
 
     }

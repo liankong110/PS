@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "生产产能参数设置";
+    ViewBag.Title = "产线信息设置";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @using VisualSmart.Domain.ProBase;
@@ -10,7 +10,7 @@
 
     <div class="page-header">
         <h1>
-            生产产能参数设置
+            产线信息设置
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 查询条件
@@ -24,11 +24,14 @@
                 @Html.AntiForgeryToken()
                 <!-- 查询条件-->
                 <div class="form-group" style="margin-bottom:6px;">
-                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">角色名称：</label>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产品编号：</label>
                     <div class="col-sm-3 ">
-                        <input type="text" name="roleName" id="roleName" placeholder="名称" value="@ViewBag.RoleName" />
+                        <input type="text" name="GoodNo" id="GoodNo" placeholder="名称" value="@ViewBag.GoodNo" />
                     </div>
-
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产品名称：</label>
+                    <div class="col-sm-3 ">
+                        <input type="text" name="GoodName" id="GoodName" placeholder="名称" value="@ViewBag.GoodName" />
+                    </div>
                 </div>
                 <hr class="no-padding no-margin" />
                 <div class="row">
@@ -44,7 +47,11 @@
                                     </button>
                                     <a class="btn btn-sm btn-primary " href="/ProductionLine/Add">
                                         <i class="ace-icon fa fa-plus bigger-110"></i>
-                                        添加
+                                        手工添加
+                                    </a>
+                                    <a class="btn btn-sm btn-primary " href="/ProductionLine/ImportData">
+                                        <i class="ace-icon fa fa-plus bigger-110"></i>
+                                        Excel导入添加
                                     </a>
                                 </p>
                                 <!-- /section:elements.button.white -->
@@ -61,16 +68,18 @@
                                         <tr>
                                             <th>操作</th>
                                             <th>生产线</th>
-                                            <th>产品名称</th>
                                             <th>产品编码</th>
+                                            <th>产品名称</th>
+                                         
                                             <th>人员配置及每小时产出</th>
-                                            <th>标配产能（PCS/H)</th>
+                                            @*<th>标配产能（PCS/H)</th>
                                             <th>标配人员</th>
-                                            <th>最小批量</th>
-                                            <th>整托包装数</th>
+                                            <th>最小批量</th>*@
+                                            <th>整箱包装数</th>
+                                            @*<th>整托包装数</th>*@
                                             <th>换线时间（Min）</th>
-                                            <th>班次</th>
-                                        
+                                            @*<th>班次</th>*@
+                                            <th>修改时间/修改人</th>
 
                                         </tr>
                                     </thead>
@@ -94,14 +103,15 @@
                                                 <td>@m.GoodNo</td>
                                                 <td>@m.GoodName</td>
                                                 <td>@m.ProCapacityDesc</td>
-                                                <td>@m.PCS</td>
+                                                @*<td>@m.PCS</td>
                                                 <td>@m.StandPers</td>
-                                                <td>@m.MinProNum</td>
+                                                <td>@m.MinProNum</td>*@
                                                 <td>@m.BoxNum</td>
+                                          
                                                 <td>@m.LineMins</td>
-                                                <td>@m.ProShift</td>
+                                                @*<td>@m.ProShift</td>*@
                                               
-
+                                                <td class="am-hide-sm-only">@m.CreateTime/@m.Creater</td>
 
                                             </tr>
                                         }

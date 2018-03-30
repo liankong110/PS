@@ -83,7 +83,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("select Id,SGoodId,SType,SDate,SNum ");
+            strSql.Append("select Id,MainId,ProLineNo,MorningShift,MorningNum,MiddleShift,MiddleNum,EveningShift,EveningNum ");
             strSql.Append(" FROM Pro_SchedulingLine ");
             if (query.GetPager() != null)
             {

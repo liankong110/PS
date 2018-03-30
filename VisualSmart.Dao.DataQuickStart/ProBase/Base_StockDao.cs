@@ -121,7 +121,7 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
             ojb = dataReader["Qty"];
             if (ojb != null && ojb != DBNull.Value)
             {
-                model.Qty = (decimal)ojb;
+                model.Qty =Convert.ToDecimal(ojb);
             }
             model.Batch = dataReader["Batch"].ToString();
             ojb = dataReader["CreateTime"];

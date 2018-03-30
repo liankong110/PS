@@ -61,6 +61,8 @@
                                         <tr>
                                             <th>操作</th>
                                             <th>单号</th>
+                                            <th>计划时间</th>
+                                            <th>发运计划单号</th>
                                             <th>创建时间/创建人</th>
                                             <th>修改时间/修改人</th>
                                         </tr>
@@ -71,12 +73,7 @@
                                             <tr>
                                                 <td>
 
-                                                    <div class="btn-group">
-
-                                                        <a href="/Scheduling/DetailList?Id=@m.Id" target="_blank" class="btn btn-xs btn-success" title="查看">
-                                                            <i class="ace-icon fa fa-search bigger-120"></i>
-                                                        </a>
-
+                                                    <div class="btn-group"> 
                                                         <a href="/Stock/Add?Id=@m.Id" class="btn btn-xs btn-info" title="编辑">
                                                             <i class="ace-icon fa fa-pencil bigger-120"></i>
                                                         </a>
@@ -84,11 +81,19 @@
                                                         <a class="btn btn-xs btn-danger" title="删除" onclick="Delete('@m.Id');">
                                                             <i class="ace-icon fa fa-trash-o bigger-120"></i>
                                                         </a>
+                                                        <a href="/Scheduling/DetailList?Id=@m.Id" target="_blank" class="btn btn-xs btn-success" title="查看">
+                                                            <i class="ace-icon fa fa-search bigger-120"></i>
+                                                            查看明细
+                                                        </a>
+
+                                                        <a href="/PS/edit?SchedulingLineId=1&SDate=2017-11-26" class="btn btn-xs btn-info" title="编辑">
+                                                            <i class="ace-icon fa fa-pencil bigger-120"></i>新增PS信息
+                                                        </a>
                                                     </div>
                                                 </td>
                                                 <td>@m.ProNo</td>
-
-
+                                                <td>@m.PlanFromDate.ToString("yyyy-MM-dd")~@m.PlanToDate.ToString("yyyy-MM-dd")</td>
+                                                <td>2018001</td>
                                                 <td class="am-hide-sm-only">@m.CreateTime/@m.Creater</td>
                                                 <td class="am-hide-sm-only">@m.UpdateTime/@m.Updater</td>
 

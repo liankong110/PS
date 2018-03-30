@@ -136,6 +136,15 @@ namespace VisualSmart.BizService.Core
         /// </summary>
         public IPro_SchedulingGoodsNumBizService Pro_SchedulingGoodsNumBizService { get; set; }
 
+        /// <summary>
+        /// PS 主表
+        /// </summary>
+        public IPro_PSBizService Pro_PSBizService { get; set; }
+        /// <summary>
+        /// PS 次表
+        /// </summary>
+        public IPro_PSDetailBizService Pro_PSDetailBizService { get; set; }
+
         public static void Init()
         {
             ctx = ContextRegistry.GetContext();

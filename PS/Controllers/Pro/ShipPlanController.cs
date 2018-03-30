@@ -10,6 +10,25 @@ namespace PS.Controllers.Pro
 {
     public class ShipPlanController : Controller
     {
+
+        /// <summary>
+        /// 发运计划主表列表
+        /// </summary>
+        /// <returns></returns>
+        [ViewPageAttribute]
+        public ActionResult MainList(int page = 1)
+        {
+            var query = QueryCondition.Instance.AddOrderBy("Id", false).SetPager(page, 10);
+            query.AddEqual("RowState", "1");
+            ViewBag.Page = query.GetPager();
+            var list = Smart.Instance.Pro_ShipPlanMainBizService.GetAllDomain(query);
+            return View(list);
+        }
+        /// <summary>
+        /// 详细信息列表
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
         [ViewPageAttribute]
         public ActionResult Index(int page = 1)
         {

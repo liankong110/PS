@@ -16,7 +16,7 @@ namespace PS.Controllers
         /// HOME
         /// </summary>
         /// <returns></returns>
-        //[ViewPageAttribute]        
+        [ViewPageAttribute]        
         public ActionResult Index()
         { 
             HomeModel homeModel = new HomeModel();

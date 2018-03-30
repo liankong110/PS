@@ -70,6 +70,8 @@
     <Compile Include="ProBase\Base_Ship.cs" />
     <Compile Include="ProBase\Base_Stock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Pro\Pro_PS.cs" />
+    <Compile Include="Pro\Pro_PSDetail.cs" />
     <Compile Include="Pro\Pro_Scheduling.cs" />
     <Compile Include="Pro\Pro_SchedulingGoods.cs" />
     <Compile Include="Pro\Pro_SchedulingGoodsNum.cs" />

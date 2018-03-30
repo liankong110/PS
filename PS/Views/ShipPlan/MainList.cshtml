@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.Title = "发运计划管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using VisualSmart.Domain.Pro;
+@using VisualSmart.Util;
+@model IList<Pro_ShipPlanMain>
+
+<div class="page-content">
+
+    <div class="page-header">
+        <h1>
+            生产计划管理
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                查询条件
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal " role="form" action="/ShipPlan/MainList" id="index" method="get">
+                <input type="hidden" id="page" name="page" />
+                @Html.AntiForgeryToken()
+                <!-- 查询条件-->
+                <div class="form-group" style="margin-bottom:6px;">
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">单号：</label>
+                    <div class="col-sm-3 ">
+                        <input type="text" name="roleName" id="roleName" placeholder="名称" value="@ViewBag.RoleName" />
+                    </div>
+
+                </div>
+                <hr class="no-padding no-margin" />
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- 查询功能-->
+                        <div class="row">
+                            <div class="col-sm-12 " id="default-buttons">
+
+                                <p>
+                                    <button class="btn btn-sm btn-success" type="submit">
+                                        <i class="ace-icon fa fa-search bigger-110 "></i>
+                                        查询
+                                    </button>
+                                    <a class="btn btn-sm btn-primary " href="/Stock/Add">
+                                        <i class="ace-icon fa fa-plus bigger-110"></i>
+                                        Excel导入添加
+                                    </a>
+                                </p>
+                                <!-- /section:elements.button.white -->
+                            </div><!-- /.col -->
+                        </div><!-- /.row -->
+
+                        <div class="space-4"></div>
+                        <!-- 查询列表 -->
+                        <div class="row">
+
+                            <div class="col-xs-12 table-responsive">
+                                <table id="simple-table" class="table table-hover table-condensed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>操作</th>
+                                            <th>单号</th>
+                                            <th>计划时间</th>
+                                            <th>创建时间/创建人</th>
+                                            <th>修改时间/修改人</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var m in Model)
+                                        {
+                                            <tr>
+                                                <td>
+
+                                                    <div class="btn-group">
+                                                        @*<a href="/ShipPlan/Add?Id=@m.Id" class="btn btn-xs btn-info" title="编辑">
+                                                            <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                                        </a>*@
+
+                                                        <a class="btn btn-xs btn-danger" title="删除" onclick="Delete('@m.Id');">
+                                                            <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                                        </a>
+                                                        <a href="/ShipPlan/Index?Id=@m.Id" target="_blank" class="btn btn-xs btn-success" title="查看">
+                                                            <i class="ace-icon fa fa-search bigger-120"></i>查看明细
+                                                        </a>
+
+                                                        <a href="/Scheduling/ProLines?Id=@m.Id" class="btn btn-xs btn-info" target="_blank" title="编辑">
+                                                            <i class="ace-icon fa fa-pencil bigger-120"></i>新增生产计划单
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                <td>@m.ProNo</td>
+                                                <td>@m.PlanFromDate.ToString("yyyy-MM-dd")~@m.PlanFromTo.ToString("yyyy-MM-dd")</td>
+
+                                                <td class="am-hide-sm-only">@m.CreateTime/@m.Creater</td>
+                                                <td class="am-hide-sm-only">@m.UpdateTime/@m.Updater</td>
+
+
+                                            </tr>
+                                        }
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                            <!-- /.span -->
+
+
+                        </div><!-- /.row -->
+                        @{var page = ViewBag.Page as VisualSmart.Util.PagerDomain;}
+                        <!-- 分页 -->
+                        @Html.BootStrapPager("page", page.PageSize, page.TotalCount, page.CurrentPage, page.TotalPageCount)
+                        <div class="hr hr-18 dotted hr-double"></div>
+                        <!-- PAGE CONTENT ENDS -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </form>
+        </div>
+    </div>
+</div><!-- /.page-content -->
+
+<script src="~/Content/components/datatables/media/js/jquery.dataTables.js"></script>
+<script src="~/Content/components/_mod/datatables/jquery.dataTables.bootstrap.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/dataTables.buttons.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.flash.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.html5.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.print.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.colVis.js"></script>
+<script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
+<script type="text/javascript">
+
+    function PostForm(page) {
+        $("#page").val(page);
+        $("#index").submit();
+    }
+
+    //删除
+    function Delete(id) {
+        if (confirm("确定要删除此数据吗?") == true) {
+            var url = "/Stock/Delete/?id=" + id;
+            $.ajax({
+                data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+                url: url,
+                type: 'post',
+                async: false,
+                cache: false,
+                success: function (data) {
+                    if (data.Mess == "success") {
+                        $.gritter.add({
+                            title: '删除成功！',
+                            text: '',
+                            class_name: 'gritter-info gritter-light'
+                        });
+                        setTimeout(function () { window.location.reload(); }, 500);
+                    }
+
+                }
+            });
+        }
+    }
+</script>

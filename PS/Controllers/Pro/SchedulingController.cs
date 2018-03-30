@@ -27,10 +27,19 @@ namespace PS.Controllers.Pro
         /// <returns></returns>
         [ViewPageAttribute]
         public ActionResult Index(string proLineNosList, int page = 1)
-        {        
+        {
             var query = QueryCondition.Instance.AddEqual("LineNos", proLineNosList);
             //发运计划产品信息
-            var shipPlanList = Smart.Instance.Pro_ShipPlanBizService.GetAllDomainByLineNos(query);
+            var shipPlanList = Smart.Instance.Pro_ShipPlanBizService.GetAllDomainByLineNos(query).ToList();
+
+            for (int i = 0; i < 8; i++)
+            {
+                shipPlanList.AddRange(shipPlanList);
+                if (shipPlanList.Count > 2000)
+                {
+                    break;
+                }
+            }
 
             //发运计划时间段
             var mainDate = Smart.Instance.Pro_ShipPlanMainBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", false))[0];
@@ -41,9 +50,9 @@ namespace PS.Controllers.Pro
             ViewBag.ShipPlansList = shipPlansList;
 
             //生产线
-            ViewBag.ProLineNos = proLineNosList.Replace("'","").Split(',').ToList();
+            ViewBag.ProLineNos = proLineNosList.Replace("'", "").Split(',').ToList();
 
-            return View(shipPlanList);
+            return View(shipPlanList); 
         }
 
         /// <summary>

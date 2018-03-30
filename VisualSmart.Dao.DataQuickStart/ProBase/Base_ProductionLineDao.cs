@@ -105,7 +105,26 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
 
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Base_ProductionLine>(CommandType.Text, strSql.ToString(), MapRow, parameters);
         }
-
+        /// <summary>
+        /// 获取id
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public int GetId(QueryCondition query)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("select Id ");
+            strSql.Append(" FROM Base_ProductionLine ");
+            strSql.Append(query.GetSQL_Where(parameters));
+            strSql.Append(query.GetSQL_Order());
+            var result = ReadAdoTemplate.ExecuteScalar(CommandType.Text, strSql.ToString(), parameters);
+            if (result == null || result is DBNull)
+            {
+                return -1;
+            }
+            return Convert.ToInt32(result);
+        }
         /// <summary>
         /// 列表基本参数
         /// </summary>
@@ -119,7 +138,7 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
             ojb = dataReader["ID"];
             if (ojb != null && ojb != DBNull.Value)
             {
-                model.ID = (int)ojb;
+                model.Id = (int)ojb;
             }
             model.ProLineNo = dataReader["ProLineNo"].ToString();
             model.GoodNo = dataReader["GoodNo"].ToString();

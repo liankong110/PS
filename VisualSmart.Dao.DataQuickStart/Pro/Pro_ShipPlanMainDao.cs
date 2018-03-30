@@ -23,9 +23,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             {
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Pro_ShipPlanMain(");
-                strSql.Append("PlanFromDate,PlanFromTo,CreateTime,Creater,UpdateTime,Updater,RowState)");
+                strSql.Append("ProNo,PlanFromDate,PlanFromTo,CreateTime,Creater,UpdateTime,Updater,RowState)");
                 strSql.Append(" values (");
-                strSql.Append("@PlanFromDate,@PlanFromTo,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
+                strSql.Append("@ProNo,@PlanFromDate,@PlanFromTo,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
                 strSql.Append(";select @@IDENTITY");
                 var parameters = GetBaseParams(entity);
                 return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
@@ -83,7 +83,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("select ID,PlanFromDate,PlanFromTo,CreateTime,Creater,UpdateTime,Updater,RowState ");
+            strSql.Append("select ID,ProNo,PlanFromDate,PlanFromTo,CreateTime,Creater,UpdateTime,Updater,RowState ");
             strSql.Append(" FROM Pro_ShipPlanMain ");
             if (query.GetPager() != null)
             {
@@ -134,6 +134,8 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             {
                 model.UpdateTime = (DateTime)ojb;
             }
+
+            model.ProNo = dataReader["ProNo"].ToString();
             model.Updater = dataReader["Updater"].ToString();
             ojb = dataReader["RowState"];
             if (ojb != null && ojb != DBNull.Value)
@@ -153,7 +155,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             var parameters = ReadAdoTemplate.CreateDbParameters();
             parameters.Add("PlanFromDate", DbType.DateTime).Value = entity.PlanFromDate;
             parameters.Add("PlanFromTo", DbType.DateTime).Value = entity.PlanFromTo;
-        
+            parameters.Add("ProNo", SqlDbType.NVarChar).Value = entity.ProNo;
             parameters.Add("CreateTime", SqlDbType.NVarChar).Value = DateTime.Now;
             parameters.Add("Creater", SqlDbType.NVarChar).Value = entity.Creater ?? "";
             parameters.Add("UpdateTime", SqlDbType.DateTime).Value = DateTime.Now;

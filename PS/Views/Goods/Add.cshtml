@@ -1,0 +1,164 @@
+﻿@{
+    ViewBag.Title = "产品编辑";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model VisualSmart.Domain.ProBase.Base_Goods
+<div class="page-content">
+    <div class="page-header">
+        <h1>
+            @ViewBag.ViewTitle 产品
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                请填写下面内容
+                <input type="hidden" id="error" value="@ViewBag.Error" />
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+
+
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal" role="form" action="/Goods/Add" method="post">
+
+                <div class="col-xs-12">
+                    <!-- PAGE CONTENT BEGINS -->
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>发运地编号</label>
+
+                        <div class="col-sm-9">
+                            @Html.HiddenFor(t => t.Id)
+                            @Html.HiddenFor(T => T.CreateTime)
+                            @Html.AntiForgeryToken()
+                            @Html.TextBoxFor(t => t.ShipTo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入发运地编号", @placeholder = "请输入发运地编号", @data_trigger = "focus" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>发运地名称</label>
+
+                        <div class="col-sm-9">
+
+                            @Html.TextBoxFor(t => t.ShipToName, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入发运地名称", @placeholder = "请输入发运地名称", @data_trigger = "focus" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>产品编号</label>
+
+                        <div class="col-sm-9">
+
+                            @Html.TextBoxFor(t => t.GoodNo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入产品编号", @placeholder = "请输入产品编号", @data_trigger = "focus" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>产品名称</label>
+
+                        <div class="col-sm-9">
+
+                            @Html.TextBoxFor(t => t.GoodName, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入产品名称", @placeholder = "请输入产品名称", @data_trigger = "focus" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleDec">P/M/L</label>
+
+                        <div class="col-sm-9">
+                            @Html.TextAreaFor(t => t.PML, new { @class = "col-xs-10 col-sm-5" })
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleDec">整托包装数</label>
+
+                        <div class="col-sm-9">
+                            @Html.TextAreaFor(t => t.ShipPkgQty, new { @class = "col-xs-10 col-sm-5" })
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleDec">UM</label>
+
+                        <div class="col-sm-9">
+                            @Html.TextAreaFor(t => t.UM, new { @class = "col-xs-10 col-sm-5" })
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleDec">库存标准天数</label>
+
+                        <div class="col-sm-9">
+                            @Html.TextAreaFor(t => t.StandardDays, new { @class = "col-xs-10 col-sm-5" })
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+
+                        <div class="clearfix form-actions">
+                            <div class="col-md-offset-3 col-md-9">
+                                <button class="btn btn-info" type="submit" id="btnSave">
+                                    <i class="ace-icon fa fa-check bigger-110 "></i>
+                                    保存
+                                </button>
+
+                                &nbsp; &nbsp; &nbsp;
+                                <a class="btn" href="/Goods/Index">
+
+                                    <i class="ace-icon fa fa-undo bigger-110 "></i>
+                                    返回
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div><!-- /.col -->
+        <!-- /.table-responsive -->
+    </div>
+</div><!-- /.row -->
+
+<script type="text/javascript">
+    jQuery(function ($) {
+
+        $('[data-rel=tooltip]').tooltip({ container: 'body' });
+        $('[data-rel=popover]').popover({ container: 'body' });
+
+        var error = $("#error").val();
+
+        if (error != "") {
+            var className = "gritter-error gritter-light";
+            if (error == 1) {
+                className = "gritter-info gritter-light";
+                error = "保存成功！";
+            }
+
+            $.gritter.add({
+                title: error,
+                text: "",
+                class_name: className
+            });
+        }
+    });
+
+
+
+
+    $("#btnSave").click(function () {
+
+        var result = CheckValue("GoodNo") && CheckValue("GoodName") && CheckValue("ShipTo") && CheckValue("ShipToName");
+        return result;
+    });
+
+    function CheckValue(name) {
+        var control = $("#" + name + "");
+        if (control.val() == "") {
+            control.focus();
+            return false;
+        }
+        return true;
+    }
+
+</script>

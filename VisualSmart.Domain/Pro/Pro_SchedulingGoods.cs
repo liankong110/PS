@@ -117,5 +117,9 @@ namespace VisualSmart.Domain.Pro
         /// </summary>
         public int SType { get; set; }
 
+        /// <summary>
+        /// 生产数量
+        /// </summary>
+        public int SNum { get; set; }
     }
 }
