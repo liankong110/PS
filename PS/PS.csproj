@@ -195,6 +195,7 @@
     <Compile Include="Controllers\Alipay\SceneryOrderRefundController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ProBase\BomController.cs" />
     <Compile Include="Controllers\ProBase\GoodsController.cs" />
     <Compile Include="Controllers\ProBase\ProductionLineController.cs" />
     <Compile Include="Controllers\ProBase\ShipController.cs" />
@@ -345,6 +346,12 @@
     <Content Include="Scripts\webuploader-0.1.5\README.md" />
     <Content Include="Views\ProductionLine\Add.cshtml" />
     <Content Include="Views\ProductionLine\ImportData.cshtml" />
+    <Content Include="Views\Stock\Add.cshtml" />
+    <Content Include="Views\Stock\MainList.cshtml" />
+    <Content Include="Views\Stock\ImportData.cshtml" />
+    <Content Include="Views\Bom\Index.cshtml" />
+    <Content Include="Views\Bom\Add.cshtml" />
+    <Content Include="Views\Bom\ImportData.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

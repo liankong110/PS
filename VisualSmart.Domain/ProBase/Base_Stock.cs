@@ -16,21 +16,14 @@ namespace VisualSmart.Domain.ProBase
         public Base_Stock()
         { }
         #region Model
-        private int _id;
+        
         private string _location;
         private string _wh = "";
         private string _goodno = "";
         private decimal? _qty = 0M;
         private string _batch = "";
       
-        /// <summary>
-        /// 
-        /// </summary>
-        public int ID
-        {
-            set { _id = value; }
-            get { return _id; }
-        }
+        
         /// <summary>
         /// 域
         /// </summary>
@@ -72,6 +65,14 @@ namespace VisualSmart.Domain.ProBase
             get { return _batch; }
         }
         
+        /// <summary>
+        /// 商品名称
+        /// </summary>
+        public string GoodName { get; set; }
+        /// <summary>
+        /// 主表ID
+        /// </summary>
+        public int MainId { get; set; }
         #endregion Model
 
     }

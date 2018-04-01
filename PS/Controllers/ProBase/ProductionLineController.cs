@@ -9,6 +9,7 @@ using VisualSmart.Domain.ProBase;
 using VisualSmart.Util;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace PS.Controllers.ProBase
 {
@@ -18,11 +19,8 @@ namespace PS.Controllers.ProBase
         /// 主表
         /// </summary>
         IBase_ProductionLineBizService _productionLineBizService = Smart.Instance.Base_ProductionLineBizService;
-        /// <summary>
-        /// 子表
-        /// </summary>
-        IBase_ProductionLinesBizService _productionLinesBizService = Smart.Instance.Base_ProductionLinesBizService;
 
+        IBase_ProductionLinesBizService _productionLinesBizService = Smart.Instance.Base_ProductionLinesBizService;
         [ViewPageAttribute]
         public ActionResult Index(string GoodNo, string GoodName, int page = 1)
         {
@@ -86,23 +84,75 @@ namespace PS.Controllers.ProBase
                 ViewBag.Error = string.Format("已经存在相同的生产线:{1},产品编号:{0},请重新填写", model.ProLineNo, model.GoodNo);
                 return View(model);
             }
+            string newProCapacityDesc;
+            var proCapacityDescList = GetCapacityList(model.ProCapacityDesc,out newProCapacityDesc);
+            if (proCapacityDescList.Count == 0)
+            {
+                ViewBag.Error = string.Format("人员配置及每小时产出,解析出错，规则：*人*件/H", model.ProLineNo, model.GoodNo);
+                return View(model);
+            }
+            
+          
             if (model.Id == 0)
             {
-                _productionLineBizService.Add(model);
+                int mainId=_productionLineBizService.AddGetId(model);
                 //解析人员配置及每小时产出 列：7人75件/H，6人64件/H，5人53件/H
-                 //model.ProCapacityDesc;
+                foreach (var item in proCapacityDescList)
+                {
+                    item.ProLineId = mainId;
+                    _productionLinesBizService.Add(item);
+                }
+
                 ViewBag.Error = "1";
-                return RedirectToAction("Add", "Goods", new { Error = 1 });
+                return RedirectToAction("Add", "ProductionLine", new { Error = 1 });
             }
-            ViewBag.Error = "1";
+            ViewBag.Error = "1";          
             _productionLineBizService.Update(model);
-            return RedirectToAction("Index", "Goods");
+            _productionLinesBizService.DeleteByMainId(model.Id);
+            foreach (var item in proCapacityDescList)
+            {
+                item.ProLineId = model.Id;
+                _productionLinesBizService.Add(item);
+            }
+            return RedirectToAction("Index", "ProductionLine");
         }
 
-        private Dictionary<int, int> GetCapacityList()
+        /// <summary>
+        ///解析人员配置及每小时产出 列：7人75件/H，6人64件/H，5人53件/H
+        /// </summary>
+        /// <param name="ProCapacityDesc"></param>
+        /// <returns></returns>
+        private List<Base_ProductionLines> GetCapacityList(string ProCapacityDesc,out string NewProCapacityDesc)
         {
+            NewProCapacityDesc = "";
+            List<Base_ProductionLines> modelList = new List<Base_ProductionLines>();
+          
+            ProCapacityDesc = ProCapacityDesc.Replace('，', ',').ToUpper();
+            var capactiyDescList=ProCapacityDesc.Split(',').ToList();
+            Hashtable hs = new Hashtable();
             Dictionary<int, int> list = new Dictionary<int, int>();
-            return list;
+            try
+            {
+                foreach (var item in capactiyDescList)
+                {
+                    var model = item.Replace('人', ',').Replace("件/H", ",").Split(',').ToList();
+                    var key = Convert.ToInt32(model[0]);
+                    var value = Convert.ToInt32(model[1]);
+                    if (model.Count == 3 && !hs.ContainsKey(key))
+                    {                      
+                        hs.Add(key,null);
+                        modelList.Add(new Base_ProductionLines { People=key,Number=value });
+                        NewProCapacityDesc += string.Format("{0}人{1}件/H,",key,value);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                modelList = new List<Base_ProductionLines>();
+                NewProCapacityDesc = "";
+            }   
+
+            return modelList;
         }
         /// <summary>
         /// Excel 导入数据
@@ -131,10 +181,10 @@ namespace PS.Controllers.ProBase
         public ActionResult UploadFile()
         {
             //清除所有之前生成的Response内容
-            Response.Clear(); 
-            Response.Write(Upload("Goods"));
+            Response.Clear();
+            Response.Write(Upload("ProductionLine"));
             //停止Response后续写入动作，保证Response内只有我们写入内容
-            Response.End(); 
+            Response.End();
             return View();
         }
         /// <summary>
@@ -146,7 +196,7 @@ namespace PS.Controllers.ProBase
         {
             string error = "";
             try
-            {            
+            {
                 string strConn;
                 strConn = "Provider=Microsoft.ACE.OLEDB.12.0; Data Source=" + fileAddress + "; Extended Properties='Excel 12.0 Xml;HDR=YES;IMEX=1'";
                 OleDbConnection conn = new OleDbConnection(strConn);
@@ -181,10 +231,10 @@ namespace PS.Controllers.ProBase
                                     model.BoxNum = Convert.ToInt32(dataReader[4]);
                                     model.LineMins = Convert.ToInt32(dataReader[5]);
 
-                                    model.ProShift = 0; 
-                                    model.PCS =0;
+                                    model.ProShift = 0;
+                                    model.PCS = 0;
                                     model.StandPers = 0;
-                                    model.MinProNum = 0;                                
+                                    model.MinProNum = 0;
 
                                     model.Updater = model.Creater = CurrentUser.Name;
                                     model.RowState = 1;
@@ -192,15 +242,33 @@ namespace PS.Controllers.ProBase
                                     query.AddEqual("GoodNo", model.GoodNo);
                                     query.AddEqual("ProLineNo", model.ProLineNo);
                                     query.AddEqual("RowState", "1");
+
+                                    string newProCapacityDesc;
+                                    var proCapacityDescList = GetCapacityList(model.ProCapacityDesc, out newProCapacityDesc);
+                                    model.ProCapacityDesc = newProCapacityDesc;
                                     var id = _productionLineBizService.GetId(query);
                                     if (id > 0)
                                     {
                                         model.Id = id;
                                         _productionLineBizService.Update(model);
+                                        _productionLinesBizService.DeleteByMainId(model.Id);
+
                                     }
                                     else
                                     {
-                                        _productionLineBizService.Add(model);
+                                        model.Id = _productionLineBizService.AddGetId(model);
+                                        //解析人员配置及每小时产出 列：7人75件/H，6人64件/H，5人53件/H
+                                        foreach (var item in proCapacityDescList)
+                                        {
+                                            item.ProLineId = model.Id;
+                                            _productionLinesBizService.Add(item);
+                                        }
+                                    }
+                                    //解析人员配置及每小时产出 列：7人75件/H，6人64件/H，5人53件/H
+                                    foreach (var item in proCapacityDescList)
+                                    {
+                                        item.ProLineId = model.Id;
+                                        _productionLinesBizService.Add(item);
                                     }
                                 }
                                 rowIndex++;

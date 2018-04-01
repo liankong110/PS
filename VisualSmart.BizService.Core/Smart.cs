@@ -120,6 +120,12 @@ namespace VisualSmart.BizService.Core
         /// </summary>
         public IBase_StockBizService Base_StockBizService { get; set; }
         /// <summary>
+        /// 库存信息-主表
+        /// </summary>
+        public IBase_StockMainBizService Base_StockMainBizService { get; set; }
+
+        public IBase_BomBizService Base_BomBizService { get; set; }
+        /// <summary>
         /// 生产计划-1 主表纪录单号信息
         /// </summary>
         public IPro_SchedulingBizService Pro_SchedulingBizService { get; set; }

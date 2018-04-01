@@ -1,16 +1,16 @@
 ﻿@{
-    ViewBag.Title = "库存列表设置";
+    ViewBag.Title = "BOM信息设置";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @using VisualSmart.Domain.ProBase;
 @using VisualSmart.Util;
-@model IList<Base_Stock>
+@model IList<Base_Bom>
 
 <div class="page-content">
 
     <div class="page-header">
         <h1>
-            库存列表设置
+            BOM信息设置
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 查询条件
@@ -19,7 +19,7 @@
     </div><!-- /.page-header -->
     <div class="row">
         <div class="col-xs-12">
-            <form class="form-horizontal " role="form" action="/Stock/Index" id="index" method="get">
+            <form class="form-horizontal " role="form" action="/Bom/Index" id="index" method="get">
                 <input type="hidden" id="page" name="page" />
                 @Html.AntiForgeryToken()
                 <!-- 查询条件-->
@@ -45,11 +45,14 @@
                                         <i class="ace-icon fa fa-search bigger-110 "></i>
                                         查询
                                     </button>
-                                    <a class="btn btn-sm btn-primary " href="/Stock/Add">
+                                    <a class="btn btn-sm btn-primary " href="/Goods/Add">
                                         <i class="ace-icon fa fa-plus bigger-110"></i>
                                         手工添加
                                     </a>
-                                    <input type="hidden" id="MainId" name="MainId" value="@ViewBag.MainId" />
+                                    <a class="btn btn-sm btn-primary " href="/Bom/ImportData">
+                                        <i class="ace-icon fa fa-plus bigger-110"></i>
+                                        Excel导入添加
+                                    </a>
                                 </p>
                                 <!-- /section:elements.button.white -->
                             </div><!-- /.col -->
@@ -64,12 +67,10 @@
                                     <thead>
                                         <tr>
                                             <th>操作</th>
-                                            <th>域</th>
-                                            <th>库位</th>                                            
-                                            <th>产品编码</th>
-                                            <th>产品名称</th>
-                                            <th>数量</th>
-                                            <th>批次</th>                                            
+                                            <th>父产品编码</th>
+                                            <th>父产品名称</th>
+                                            <th>子产品编号</th>
+                                            <th>子产品名称</th>                                           
                                             <th>修改时间/修改人</th>
 
                                         </tr>
@@ -81,7 +82,7 @@
                                                 <td>
 
                                                     <div class="btn-group">
-                                                        <a href="/Stock/Add?Id=@m.Id" class="btn btn-xs btn-info" title="编辑">
+                                                        <a href="/Bom/Add?Id=@m.Id" class="btn btn-xs btn-info" title="编辑">
                                                             <i class="ace-icon fa fa-pencil bigger-120"></i>
                                                         </a>
 
@@ -90,13 +91,10 @@
                                                         </a>
                                                     </div>
                                                 </td>
-                                                <td>@m.Location</td>
-                                                <td>@m.WH</td>
-                                                <td>@m.GoodNo</td>
-                                                <td>Model K CAB（新）右侧</td>
-                                                <td>@m.Qty</td>
-                                                <td>@m.Batch</td>
-                                               
+                                                <td>@m.ParentGoodNo</td>
+                                                <td>@m.ParentGoodName</td>
+                                                <td>@m.SonGoodNo</td>
+                                                <td>@m.SonGoodName</td>                                               
                                                 <td class="am-hide-sm-only">@m.CreateTime/@m.Creater</td>
 
 
@@ -104,7 +102,7 @@
                                         }
                                         @if (Model.Count == 0)
                                         {
-                                            <tr><td colspan="8" style="height:200px;" class="center">暂无数据</td></tr>
+                                            <tr><td colspan="6" style="height:200px;" class="center">暂无数据</td></tr>
                                         }
                                     </tbody>
 
@@ -146,7 +144,7 @@
     //删除
     function Delete(id) {
         if (confirm("确定要删除此数据吗?") == true) {
-            var url = "/Stock/Delete/?id=" + id;
+            var url = "/Bom/Delete/?id=" + id;
             $.ajax({
                 data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
                 url: url,

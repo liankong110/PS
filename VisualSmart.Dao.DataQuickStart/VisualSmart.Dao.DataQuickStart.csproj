@@ -56,7 +56,9 @@
     <Compile Include="ProBase\Base_ProductionLineDao.cs" />
     <Compile Include="ProBase\Base_ProductionLinesDao.cs" />
     <Compile Include="ProBase\Base_ShipDao.cs" />
+    <Compile Include="ProBase\Base_BomDao.cs" />
     <Compile Include="ProBase\Base_StockDao.cs" />
+    <Compile Include="ProBase\Base_StockMainDao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Pro\Pro_PSDao.cs" />
     <Compile Include="Pro\Pro_PSDetailDao.cs" />

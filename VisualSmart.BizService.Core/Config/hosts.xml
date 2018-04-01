@@ -34,6 +34,9 @@
     <property name="Base_ProductionLinesBizService" ref="Base_ProductionLinesBizService"></property>
     <property name="Base_ShipBizService" ref="Base_ShipBizService"></property>
     <property name="Base_StockBizService" ref="Base_StockBizService"></property>
+    <property name="Base_StockMainBizService" ref="Base_StockMainBizService"></property>
+    <property name="Base_BomBizService" ref="Base_BomBizService"></property>
+    
     <!--生产计划管理-->
     <property name="Pro_ShipPlanBizService" ref="Pro_ShipPlanBizService"></property>
     <property name="Pro_ShipPlanMainBizService" ref="Pro_ShipPlanMainBizService"></property>
@@ -78,7 +81,8 @@
   <object id="Base_ProductionLinesBizService" type="VisualSmart.BizService.Implements.ProBase.Base_ProductionLinesBizService,VisualSmart.BizService.Implements"></object>
   <object id="Base_ShipBizService" type="VisualSmart.BizService.Implements.ProBase.Base_ShipBizService,VisualSmart.BizService.Implements"></object>
   <object id="Base_StockBizService" type="VisualSmart.BizService.Implements.ProBase.Base_StockBizService,VisualSmart.BizService.Implements"></object>
-
+  <object id="Base_StockMainBizService" type="VisualSmart.BizService.Implements.ProBase.Base_StockMainBizService,VisualSmart.BizService.Implements"></object>
+  <object id="Base_BomBizService" type="VisualSmart.BizService.Implements.ProBase.Base_BomBizService,VisualSmart.BizService.Implements"></object>
   <!--生产计划管理-->
   <object id="Pro_ShipPlanBizService" type="VisualSmart.BizService.Implements.Pro.Pro_ShipPlanBizService,VisualSmart.BizService.Implements"></object>
   <object id="Pro_ShipPlanMainBizService" type="VisualSmart.BizService.Implements.Pro.Pro_ShipPlanMainBizService,VisualSmart.BizService.Implements"></object>

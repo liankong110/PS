@@ -69,6 +69,20 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
         }
 
         /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public bool DeleteByMainId(int MainId)
+        {
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("delete from Base_ProductionLines ");
+            strSql.Append(" where ProLineId=@ProLineId ");
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            parameters.Add("ProLineId", DbType.Int32, 0).Value = MainId;
+            return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
+        }
+        /// <summary>
         /// 获取信息列表
         /// </summary>
         /// <param name="query"></param>

@@ -19,5 +19,12 @@ namespace VisualSmart.BizService.ProBase
         /// <param name="query"></param>
         /// <returns></returns>
         int GetId(QueryCondition query);
+
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        int AddGetId(Base_ProductionLine entity);
     }
 }

@@ -9,22 +9,22 @@ using VisualSmart.Util;
 
 namespace VisualSmart.Dao.DataQuickStart.ProBase
 {
-    public class Base_StockDao : EntityDao<Base_Stock>
+    public class Base_BomDao : EntityDao<Base_Bom>
     {
         /// <summary>
         /// 新增
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public override bool Add(Base_Stock entity)
+        public override bool Add(Base_Bom entity)
         {
             try
             {
                 StringBuilder strSql = new StringBuilder();
-                strSql.Append("insert into Base_Stock(");
-                strSql.Append("MainId,Location,WH,GoodNo,GoodName,Qty,Batch,CreateTime,Creater,UpdateTime,Updater,RowState)");
+                strSql.Append("insert into Base_Bom(");
+                strSql.Append("ParentGoodNo,ParentGoodName,SonGoodNo,SonGoodName,CreateTime,Creater,UpdateTime,Updater,RowState)");
                 strSql.Append(" values (");
-                strSql.Append("@MainId,@Location,@WH,@GoodNo,@GoodName,@Qty,@Batch,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
+                strSql.Append("@ParentGoodNo,@ParentGoodName,@SonGoodNo,@SonGoodName,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
                 strSql.Append(";select @@IDENTITY");
                 var parameters = GetBaseParams(entity);
                 return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
@@ -41,22 +41,15 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public override bool Update(Base_Stock entity)
+        public override bool Update(Base_Bom entity)
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("update Base_Stock set ");
-            strSql.Append("MainId=@MainId,");
-            strSql.Append("Location=@Location,");
-            strSql.Append("WH=@WH,");
-            strSql.Append("GoodNo=@GoodNo,");
-            strSql.Append("GoodName=@GoodName,");
-            strSql.Append("Qty=@Qty,");
-            strSql.Append("Batch=@Batch,");
-            strSql.Append("CreateTime=@CreateTime,");
-            strSql.Append("Creater=@Creater,");
+            strSql.Append("ParentGoodNo=@ParentGoodNo,");
+            strSql.Append("ParentGoodName=@ParentGoodName,");
+            strSql.Append("SonGoodNo=@SonGoodNo,");
+            strSql.Append("SonGoodName=@SonGoodName,");            
             strSql.Append("UpdateTime=@UpdateTime,");
-            strSql.Append("Updater=@Updater,");
-            strSql.Append("RowState=@RowState");
+            strSql.Append("Updater=@Updater");          
             strSql.Append(" where ID=@ID");
             var parameters = GetBaseParams(entity);
             parameters.Add("ID", DbType.Int32, 0).Value = entity.Id;
@@ -71,7 +64,7 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
         public override bool Delete(int Id)
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("delete from Base_Stock ");
+            strSql.Append("delete from Base_Bom ");
             strSql.Append(" where ID=@ID ");
             var parameters = WriteAdoTemplate.CreateDbParameters();
             parameters.Add("ID", DbType.Int32, 0).Value = Id;
@@ -79,16 +72,29 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
         }
 
         /// <summary>
+        /// 删除-所有信息
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public bool DeleteAll(int Id)
+        {
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("truncate table [dbo].[Base_Bom] ");          
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            parameters.Add("ID", DbType.Int32, 0).Value = Id;
+            return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
+        }
+        /// <summary>
         /// 获取信息列表
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public override IList<Base_Stock> GetAllDomain(QueryCondition query)
+        public override IList<Base_Bom> GetAllDomain(QueryCondition query)
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("select ID,MainId,Location,WH,GoodNo,GoodName,Qty,Batch,CreateTime,Creater,UpdateTime,Updater,RowState ");
-            strSql.Append(" FROM Base_Stock ");
+            strSql.Append("select Id,ParentGoodNo,ParentGoodName,SonGoodNo,SonGoodName,CreateTime,Creater,UpdateTime,Updater,RowState ");
+            strSql.Append(" FROM Base_Bom ");
             if (query.GetPager() != null)
             {
                 strSql = new StringBuilder(GetPagerSql(strSql.ToString(), query, parameters));
@@ -99,7 +105,7 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
                 strSql.Append(query.GetSQL_Order());
             }
 
-            return ReadAdoTemplate.QueryWithRowMapperDelegate<Base_Stock>(CommandType.Text, strSql.ToString(), MapRow, parameters);
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Base_Bom>(CommandType.Text, strSql.ToString(), MapRow, parameters);
         }
 
         /// <summary>
@@ -108,26 +114,19 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
         /// <param name="dataReader"></param>
         /// <param name="rowNum"></param>
         /// <returns></returns>
-        public Base_Stock MapRow(IDataReader dataReader, int rowNum)
+        public Base_Bom MapRow(IDataReader dataReader, int rowNum)
         {
-            Base_Stock model = new Base_Stock();
+            Base_Bom model = new Base_Bom();
             object ojb;
-            ojb = dataReader["ID"];
+            ojb = dataReader["Id"];
             if (ojb != null && ojb != DBNull.Value)
             {
                 model.Id = (int)ojb;
             }
-            model.MainId =Convert.ToInt32(dataReader["MainId"]);
-            model.Location = dataReader["Location"].ToString();
-            model.WH = dataReader["WH"].ToString();
-            model.GoodNo = dataReader["GoodNo"].ToString();
-            model.GoodName = dataReader["GoodName"].ToString();
-            ojb = dataReader["Qty"];
-            if (ojb != null && ojb != DBNull.Value)
-            {
-                model.Qty =Convert.ToDecimal(ojb);
-            }
-            model.Batch = dataReader["Batch"].ToString();
+            model.ParentGoodNo = dataReader["ParentGoodNo"].ToString();
+            model.ParentGoodName = dataReader["ParentGoodName"].ToString();
+            model.SonGoodNo = dataReader["SonGoodNo"].ToString();
+            model.SonGoodName = dataReader["SonGoodName"].ToString();
             ojb = dataReader["CreateTime"];
             if (ojb != null && ojb != DBNull.Value)
             {
@@ -153,16 +152,13 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        private IDbParameters GetBaseParams(Base_Stock entity)
+        private IDbParameters GetBaseParams(Base_Bom entity)
         {
             var parameters = ReadAdoTemplate.CreateDbParameters();
-            parameters.Add("MainId", DbType.Int32).Value = entity.MainId;
-            parameters.Add("GoodName", DbType.String).Value = entity.GoodName ?? "";
-            parameters.Add("Location", DbType.String).Value = entity.Location ?? "";
-            parameters.Add("WH", DbType.String).Value = entity.WH ?? "";
-            parameters.Add("GoodNo", SqlDbType.NVarChar).Value = entity.GoodNo ?? "";
-            parameters.Add("Qty", SqlDbType.NVarChar).Value = entity.Qty;
-            parameters.Add("Batch", SqlDbType.NVarChar).Value = entity.Batch ?? "";
+            parameters.Add("ParentGoodNo", DbType.String).Value = entity.ParentGoodNo??"";
+            parameters.Add("ParentGoodName", DbType.String).Value = entity.ParentGoodName ?? "";
+            parameters.Add("SonGoodNo", DbType.String).Value = entity.SonGoodNo ?? "";
+            parameters.Add("SonGoodName", DbType.String).Value = entity.SonGoodName ?? "";          
             parameters.Add("CreateTime", SqlDbType.NVarChar).Value = DateTime.Now;
             parameters.Add("Creater", SqlDbType.NVarChar).Value = entity.Creater ?? "";
             parameters.Add("UpdateTime", SqlDbType.DateTime).Value = DateTime.Now;

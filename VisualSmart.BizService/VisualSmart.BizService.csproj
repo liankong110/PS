@@ -51,7 +51,9 @@
     <Compile Include="ProBase\IBase_ProductionLineBizService.cs" />
     <Compile Include="ProBase\IBase_ProductionLinesBizService.cs" />
     <Compile Include="ProBase\IBase_ShipBizService.cs" />
+    <Compile Include="ProBase\IBase_BomBizService.cs" />
     <Compile Include="ProBase\IBase_StockBizService.cs" />
+    <Compile Include="ProBase\IBase_StockMainBizService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Pro\IPro_PSBizService.cs" />
     <Compile Include="Pro\IPro_PSDetailBizService.cs" />

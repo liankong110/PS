@@ -1,16 +1,16 @@
 ﻿@{
-    ViewBag.Title = "库存列表设置";
+    ViewBag.Title = "库存管理";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @using VisualSmart.Domain.ProBase;
 @using VisualSmart.Util;
-@model IList<Base_Stock>
+@model IList<Base_StockMain>
 
 <div class="page-content">
 
     <div class="page-header">
         <h1>
-            库存列表设置
+            库存管理
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 查询条件
@@ -19,19 +19,16 @@
     </div><!-- /.page-header -->
     <div class="row">
         <div class="col-xs-12">
-            <form class="form-horizontal " role="form" action="/Stock/Index" id="index" method="get">
+            <form class="form-horizontal " role="form" action="/Stock/MainList" id="index" method="get">
                 <input type="hidden" id="page" name="page" />
                 @Html.AntiForgeryToken()
                 <!-- 查询条件-->
                 <div class="form-group" style="margin-bottom:6px;">
-                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产品编号：</label>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">单号：</label>
                     <div class="col-sm-3 ">
-                        <input type="text" name="GoodNo" id="GoodNo" placeholder="产品编号" value="@ViewBag.GoodNo" />
+                        <input type="text" name="ProNo" id="ProNo" placeholder="名称" value="@ViewBag.ProNo" />
                     </div>
-                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产品名称：</label>
-                    <div class="col-sm-3 ">
-                        <input type="text" name="GoodName" id="GoodName" placeholder="产品名称" value="@ViewBag.GoodName" />
-                    </div>
+
                 </div>
                 <hr class="no-padding no-margin" />
                 <div class="row">
@@ -45,11 +42,10 @@
                                         <i class="ace-icon fa fa-search bigger-110 "></i>
                                         查询
                                     </button>
-                                    <a class="btn btn-sm btn-primary " href="/Stock/Add">
+                                    <a class="btn btn-sm btn-primary " href="/Stock/ImportData">
                                         <i class="ace-icon fa fa-plus bigger-110"></i>
-                                        手工添加
+                                        Excel导入添加
                                     </a>
-                                    <input type="hidden" id="MainId" name="MainId" value="@ViewBag.MainId" />
                                 </p>
                                 <!-- /section:elements.button.white -->
                             </div><!-- /.col -->
@@ -64,14 +60,9 @@
                                     <thead>
                                         <tr>
                                             <th>操作</th>
-                                            <th>域</th>
-                                            <th>库位</th>                                            
-                                            <th>产品编码</th>
-                                            <th>产品名称</th>
-                                            <th>数量</th>
-                                            <th>批次</th>                                            
-                                            <th>修改时间/修改人</th>
-
+                                            <th>单号</th>                                          
+                                            <th>创建时间/创建人</th>
+                                           
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -81,30 +72,22 @@
                                                 <td>
 
                                                     <div class="btn-group">
-                                                        <a href="/Stock/Add?Id=@m.Id" class="btn btn-xs btn-info" title="编辑">
-                                                            <i class="ace-icon fa fa-pencil bigger-120"></i>
-                                                        </a>
 
                                                         <a class="btn btn-xs btn-danger" title="删除" onclick="Delete('@m.Id');">
                                                             <i class="ace-icon fa fa-trash-o bigger-120"></i>
                                                         </a>
+                                                        <a href="/Stock/Index?MainId=@m.Id" target="_blank" class="btn btn-xs btn-success" title="查看">
+                                                            <i class="ace-icon fa fa-search bigger-120"></i>查看明细
+                                                        </a>                                                       
                                                     </div>
                                                 </td>
-                                                <td>@m.Location</td>
-                                                <td>@m.WH</td>
-                                                <td>@m.GoodNo</td>
-                                                <td>Model K CAB（新）右侧</td>
-                                                <td>@m.Qty</td>
-                                                <td>@m.Batch</td>
-                                               
+                                                <td>@m.ProNo</td>                                              
                                                 <td class="am-hide-sm-only">@m.CreateTime/@m.Creater</td>
-
-
                                             </tr>
                                         }
                                         @if (Model.Count == 0)
                                         {
-                                            <tr><td colspan="8" style="height:200px;" class="center">暂无数据</td></tr>
+                                            <tr><td colspan="3" style="height:200px;" class="center">暂无数据</td></tr>
                                         }
                                     </tbody>
 
@@ -146,7 +129,7 @@
     //删除
     function Delete(id) {
         if (confirm("确定要删除此数据吗?") == true) {
-            var url = "/Stock/Delete/?id=" + id;
+            var url = "/Stock/DeleteAll/?id=" + id;
             $.ajax({
                 data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
                 url: url,

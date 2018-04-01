@@ -27,5 +27,15 @@ namespace VisualSmart.BizService.Implements.ProBase
         {
             return EntityDao.GetId(query);
         }
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int AddGetId(Base_ProductionLine entity)
+        {
+            return EntityDao.AddGetId(entity);
+        }
+        
     }
 }

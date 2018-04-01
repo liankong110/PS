@@ -22,5 +22,14 @@ namespace VisualSmart.BizService.Implements.ProBase
         {
             return EntityDao.GetAllDomainByLineNoAndGoodNos(query);
         }
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public bool DeleteByMainId(int MainId)
+        {
+            return EntityDao.DeleteByMainId(MainId);
+        }
     }
 }

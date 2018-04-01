@@ -13,5 +13,11 @@ namespace VisualSmart.BizService.ProBase
         /// <param name="query"></param>
         /// <returns></returns>
         IList<Base_ProductionLines> GetAllDomainByLineNoAndGoodNos(QueryCondition query);
+        /// <summary>
+        /// 批量删除
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        bool DeleteByMainId(int MainId);
     }
 }

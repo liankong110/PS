@@ -38,6 +38,31 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
         }
 
         /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int AddGetId(Base_ProductionLine entity)
+        {
+            try
+            {
+                StringBuilder strSql = new StringBuilder();
+                strSql.Append("insert into Base_ProductionLine(");
+                strSql.Append("ProLineNo,GoodNo,GoodName,PCS,StandPers,MinProNum,BoxNum,LineMins,ProShift,ProCapacityDesc,CreateTime,Creater,UpdateTime,Updater,RowState)");
+                strSql.Append(" values (");
+                strSql.Append("@ProLineNo,@GoodNo,@GoodName,@PCS,@StandPers,@MinProNum,@BoxNum,@LineMins,@ProShift,@ProCapacityDesc,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
+                strSql.Append(";select @@IDENTITY");
+                var parameters = GetBaseParams(entity);
+                return Convert.ToInt32(ReadAdoTemplate.ExecuteScalar(CommandType.Text, strSql.ToString(), parameters));
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// 修改
         /// </summary>
         /// <param name="entity"></param>
@@ -81,7 +106,7 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
             parameters.Add("ID", DbType.Int32, 0).Value = Id;
             return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
         }
-
+       
         /// <summary>
         /// 获取信息列表
         /// </summary>

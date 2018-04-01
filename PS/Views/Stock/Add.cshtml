@@ -1,12 +1,14 @@
-﻿@{
-    ViewBag.Title = "产品编辑";
+﻿
+@{
+    ViewBag.Title = "库存编辑";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@model VisualSmart.Domain.ProBase.Base_Goods
+
+@model VisualSmart.Domain.ProBase.Base_Stock
 <div class="page-content">
     <div class="page-header">
         <h1>
-            @ViewBag.ViewTitle 产品
+            @ViewBag.ViewTitle 库存
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 请填写下面内容
@@ -18,80 +20,68 @@
 
     <div class="row">
         <div class="col-xs-12">
-            <form class="form-horizontal" role="form" action="/Goods/Add" method="post">
+            <form class="form-horizontal" role="form" action="/Stock/Add" method="post">
 
                 <div class="col-xs-12">
                     <!-- PAGE CONTENT BEGINS -->
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>发运地编号</label>
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>生产线</label>
 
                         <div class="col-sm-9">
                             @Html.HiddenFor(t => t.Id)
                             @Html.HiddenFor(T => T.CreateTime)
                             @Html.AntiForgeryToken()
-                            @Html.TextBoxFor(t => t.ShipTo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入发运地编号", @placeholder = "请输入发运地编号", @data_trigger = "focus" })
+                            @Html.TextBoxFor(t => t.Location, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right",
+                           @title = "请输入库位", @placeholder = "请输入库位", @data_trigger = "focus" })
                         </div>
                     </div>
 
+
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>发运地名称</label>
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>库位</label>
 
                         <div class="col-sm-9">
 
-                            @Html.TextBoxFor(t => t.ShipToName, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入发运地名称", @placeholder = "请输入发运地名称", @data_trigger = "focus" })
+                            @Html.TextBoxFor(t => t.WH, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入库位",
+                           @placeholder = "请输入库位", @data_trigger = "focus" })
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>产品编号</label>
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>产品编码</label>
 
                         <div class="col-sm-9">
 
-                            @Html.TextBoxFor(t => t.GoodNo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入产品编号", @placeholder = "请输入产品编号", @data_trigger = "focus" })
+                            @Html.TextBoxFor(t => t.GoodNo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入产品编码", @placeholder = "请输入产品编码", @data_trigger = "focus" })
                         </div>
                     </div>
+
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>产品名称</label>
 
                         <div class="col-sm-9">
 
-                            @Html.TextBoxFor(t => t.GoodName, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入产品名称", @placeholder = "请输入产品名称", @data_trigger = "focus" })
+                            @Html.TextBoxFor(t => t.GoodNo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入产品名称", @placeholder = "请输入产品名称", @data_trigger = "focus" })
                         </div>
                     </div>
-
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="RoleDec">P/M/L</label>
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleDec">数量</label>
 
                         <div class="col-sm-9">
-                            @Html.TextBoxFor(t => t.PML, new { @class = "col-xs-10 col-sm-5" })
-
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="RoleDec">整托包装数</label>
-
-                        <div class="col-sm-9">
-                            @Html.TextBoxFor(t => t.ShipPkgQty, new { @class = "col-xs-10 col-sm-5" })
+                            @Html.TextBoxFor(t => t.Qty, new { @class = "col-xs-10 col-sm-5" })
 
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="RoleDec">UM</label>
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleDec">批次</label>
 
                         <div class="col-sm-9">
-                            @Html.TextBoxFor(t => t.UM, new { @class = "col-xs-10 col-sm-5" })
+                            @Html.TextBoxFor(t => t.Batch, new { @class = "col-xs-10 col-sm-5" })
 
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="RoleDec">库存标准天数</label>
+                
 
-                        <div class="col-sm-9">
-                            @Html.TextBoxFor(t => t.StandardDays, new { @class = "col-xs-10 col-sm-5" })
-
-                        </div>
-                    </div>
                 </div>
 
                 <div class="row">
@@ -105,8 +95,7 @@
                                 </button>
 
                                 &nbsp; &nbsp; &nbsp;
-                                <a class="btn" href="/Goods/Index">
-
+                                <a class="btn" href="/Stock/Index">
                                     <i class="ace-icon fa fa-undo bigger-110 "></i>
                                     返回
                                 </a>
@@ -125,9 +114,7 @@
 
         $('[data-rel=tooltip]').tooltip({ container: 'body' });
         $('[data-rel=popover]').popover({ container: 'body' });
-
         var error = $("#error").val();
-
         if (error != "") {
             var className = "gritter-error gritter-light";
             if (error == 1) {
@@ -144,11 +131,9 @@
     });
 
 
-
-
     $("#btnSave").click(function () {
 
-        var result =CheckValue("ShipTo")&&CheckValue("ShipToName")&& CheckValue("GoodNo") && CheckValue("GoodName");
+        var result = CheckValue("Location") && CheckValue("WH") && CheckValue("GoodNo") && CheckValue("GoodName");
         return result;
     });
 
