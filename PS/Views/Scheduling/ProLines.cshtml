@@ -7,26 +7,36 @@
 <link rel="stylesheet" href="~/Content/components/bootstrap-duallistbox/dist/bootstrap-duallistbox.css" />
 <div class="page-content">
 
-    
+
     <div class="page-header">
         <h1>
-            发运计划单：2018001           
+            发运计划单：2018001
         </h1>
+
     </div><!-- /.page-header -->
 
-    
+
     <div class="row">
         <div class="col-xs-12">
             <form class="form-horizontal " role="form" action="/Scheduling/Index" id="index" method="get">
                 <input type="hidden" id="page" name="page" />
-                @Html.AntiForgeryToken()
+                @Html.AntiForgeryToken() 
+                <input type="hidden" name="ShipMainProNo" id="ShipMainProNo" value="@ViewBag.ShipMainProNo" />
+                <div class="form-group">
+                    <label class="col-sm-2 control-label no-padding-top" for="duallist">选择库存版本：</label>
+                    <div class="col-sm-9">
+
+                        @Html.DropDownList("StockId", (IEnumerable<SelectListItem>)ViewBag.StockList,
+                           new { @class = "chosen-select form-control", dataplaceholder = "选择" })
+                    </div>
+                </div>
                 <!-- 查询条件-->
                 <div class="form-group">
-                    <label class="col-sm-2 control-label no-padding-top" for="duallist">选择生产线</label>
-                    <input type="hidden" name="proLineNosList" id="proLineNosList"/>
+                    <label class="col-sm-2 control-label no-padding-top" for="duallist">选择生产线： </label>
+                    <input type="hidden" name="proLineNosList" id="proLineNosList" />
                     <div class="col-sm-9">
                         <!-- #section:plugins/input.duallist -->
-                        <select multiple="multiple" size="10" name="proLineNos" id="duallist" >                           
+                        <select multiple="multiple" size="10" name="proLineNos" id="duallist">
                             @foreach (var m in Model)
                             {
                                 <option value="'@m'">@m</option>
@@ -95,12 +105,12 @@
             $('.multiselect').multiselect('destroy');
         });
 
-        
+
     });
 
     function check() {
-      
-       
+
+
         if ($("#duallist").val() == null) {
             var className = "gritter-error gritter-light";
             error = "请选择生产线信息！";
@@ -108,7 +118,7 @@
                 title: error,
                 text: "",
                 class_name: className
-            });             
+            });
             return false;
         }
         $("#proLineNosList").val($("#duallist").val());

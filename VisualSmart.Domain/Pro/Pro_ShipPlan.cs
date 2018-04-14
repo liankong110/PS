@@ -16,7 +16,7 @@ namespace VisualSmart.Domain.Pro
         public Pro_ShipPlan()
         { }
         #region Model
-        private int _id;
+        
         private int _mainid = 0;
         private string _scheduleno = "";
         private int _term = 0;
@@ -27,14 +27,7 @@ namespace VisualSmart.Domain.Pro
         private string _goodno = "";
         private string _goodname = "";
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public int ID
-        {
-            set { _id = value; }
-            get { return _id; }
-        }
+       
         /// <summary>
         /// 
         /// </summary>
@@ -119,6 +112,8 @@ namespace VisualSmart.Domain.Pro
         /// 库存信息
         /// </summary>
         public int Qty { get; set; }
+
+        public string ShipDetailNo { get; set; }
 
     }
 }

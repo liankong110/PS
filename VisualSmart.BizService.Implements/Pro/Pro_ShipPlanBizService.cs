@@ -14,5 +14,14 @@ namespace VisualSmart.BizService.Implements.Pro
         {
             return EntityDao.GetAllDomainByLineNos(query);
         }
+        /// <summary>
+        /// 新增获取ID
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int AddGetId(Pro_ShipPlan entity)
+        {
+            return EntityDao.AddGetId(entity);
+        }
     }
 }

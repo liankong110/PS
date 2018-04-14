@@ -22,9 +22,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             {
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Pro_SchedulingLine(");
-                strSql.Append("MainId,ProLineNo,MorningShift,MorningNum,MiddleShift,MiddleNum,EveningShift,EveningNum)");
+                strSql.Append("MainId,ProLineNo,MorningShift,MiddleShift,EveningShift)");
                 strSql.Append(" values (");
-                strSql.Append("@MainId,@ProLineNo,@MorningShift,@MorningNum,@MiddleShift,@MiddleNum,@EveningShift,@EveningNum)");
+                strSql.Append("@MainId,@ProLineNo,@MorningShift,@MiddleShift,@EveningShift)");
                 strSql.Append(";select @@IDENTITY");
                 var parameters = GetBaseParams(entity);
                 return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
@@ -35,7 +35,30 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
                 throw;
             }
         }
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int AddGetId(Pro_SchedulingLine entity)
+        {
+            try
+            {
+                StringBuilder strSql = new StringBuilder();
+                strSql.Append("insert into Pro_SchedulingLine(");
+                strSql.Append("MainId,ProLineNo,MorningShift,MiddleShift,EveningShift)");
+                strSql.Append(" values (");
+                strSql.Append("@MainId,@ProLineNo,@MorningShift,@MiddleShift,@EveningShift)");
+                strSql.Append(";select @@IDENTITY");
+                var parameters = GetBaseParams(entity);
+                return Convert.ToInt32(ReadAdoTemplate.ExecuteScalar(CommandType.Text, strSql.ToString(), parameters));
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+        }
         /// <summary>
         /// 修改
         /// </summary>
@@ -47,12 +70,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             strSql.Append("update Pro_SchedulingLine set ");
             strSql.Append("MainId=@MainId,");
             strSql.Append("ProLineNo=@ProLineNo,");
-            strSql.Append("MorningShift=@MorningShift,");
-            strSql.Append("MorningNum=@MorningNum,");
-            strSql.Append("MiddleShift=@MiddleShift,");
-            strSql.Append("MiddleNum=@MiddleNum,");
-            strSql.Append("EveningShift=@EveningShift,");
-            strSql.Append("EveningNum=@EveningNum");
+            strSql.Append("MorningShift=@MorningShift,");          
+            strSql.Append("MiddleShift=@MiddleShift,");           
+            strSql.Append("EveningShift=@EveningShift");          
             strSql.Append(" where Id=@Id");
             var parameters = GetBaseParams(entity);
             parameters.Add("ID", DbType.Int32, 0).Value = entity.Id;
@@ -83,7 +103,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("select Id,MainId,ProLineNo,MorningShift,MorningNum,MiddleShift,MiddleNum,EveningShift,EveningNum ");
+            strSql.Append("select Id,MainId,ProLineNo,MorningShift,MiddleShift,EveningShift ");
             strSql.Append(" FROM Pro_SchedulingLine ");
             if (query.GetPager() != null)
             {
@@ -124,31 +144,19 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             {
                 model.MorningShift = (int)ojb;
             }
-            ojb = dataReader["MorningNum"];
-            if (ojb != null && ojb != DBNull.Value)
-            {
-                model.MorningNum = (int)ojb;
-            }
+             
             ojb = dataReader["MiddleShift"];
             if (ojb != null && ojb != DBNull.Value)
             {
                 model.MiddleShift = (int)ojb;
             }
-            ojb = dataReader["MiddleNum"];
-            if (ojb != null && ojb != DBNull.Value)
-            {
-                model.MiddleNum = (int)ojb;
-            }
+            
             ojb = dataReader["EveningShift"];
             if (ojb != null && ojb != DBNull.Value)
             {
                 model.EveningShift = (int)ojb;
             }
-            ojb = dataReader["EveningNum"];
-            if (ojb != null && ojb != DBNull.Value)
-            {
-                model.EveningNum = (int)ojb;
-            }
+            
             return model;
         }
 
@@ -162,12 +170,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             var parameters = ReadAdoTemplate.CreateDbParameters();
             parameters.Add("MainId", DbType.Int32).Value = entity.MainId;
             parameters.Add("ProLineNo", DbType.String).Value = entity.ProLineNo;
-            parameters.Add("MorningShift", DbType.Int32).Value = entity.MorningShift;
-            parameters.Add("MorningNum", DbType.Int32).Value = entity.MorningNum;
-            parameters.Add("MiddleShift", DbType.Int32).Value = entity.MiddleShift;
-            parameters.Add("MiddleNum", DbType.Int32).Value = entity.MiddleNum;
-            parameters.Add("EveningShift", DbType.Int32).Value = entity.EveningShift;
-            parameters.Add("EveningNum", DbType.Int32).Value = entity.EveningNum;
+            parameters.Add("MorningShift", DbType.Int32).Value = entity.MorningShift??0;           
+            parameters.Add("MiddleShift", DbType.Int32).Value = entity.MiddleShift??0;        
+            parameters.Add("EveningShift", DbType.Int32).Value = entity.EveningShift??0;           
             return parameters;
         }
 

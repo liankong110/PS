@@ -13,5 +13,14 @@ namespace VisualSmart.BizService.Implements.Pro
         {
             return EntityDao.GetDetailList(query);
         }
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int AddGetId(Pro_SchedulingGoods entity)
+        {
+            return EntityDao.AddGetId(entity);
+        }
     }
 }

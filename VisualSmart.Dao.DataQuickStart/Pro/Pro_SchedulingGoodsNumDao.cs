@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Text;
 using VisualSmart.Dao.DataQuickStart.Base;
 using VisualSmart.Domain.Pro;
@@ -36,6 +37,47 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             }
         }
 
+        public bool BatchAdd(DataTable dt)
+        {
+            try
+            {
+                SqlConnection sqlConn = new SqlConnection(
+    ReadAdoTemplate.DbProvider.ConnectionString);
+
+                StringBuilder strSql = new StringBuilder();
+                strSql.Append("insert into Pro_SchedulingGoodsNum(");
+                strSql.Append("SGoodId,SType,SDate,SNum)");               
+                strSql.Append(" SELECT nc.SGoodId,nc.SType,nc.SDate,nc.SNum");
+                strSql.Append(" FROM @NewBulkTestTvp AS nc");
+                SqlCommand cmd = new SqlCommand(strSql.ToString(), sqlConn);
+                SqlParameter catParam = cmd.Parameters.AddWithValue("@NewBulkTestTvp", dt);
+                catParam.SqlDbType = SqlDbType.Structured;
+                //表值参数的名字叫BulkUdt，在上面的建立测试环境的SQL中有。  
+                catParam.TypeName = "dbo.BulkUdt";
+                try
+                {
+                    sqlConn.Open();
+                    if (dt != null && dt.Rows.Count != 0)
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+                finally
+                {
+                    sqlConn.Close();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            return true;
+        }
         /// <summary>
         /// 修改
         /// </summary>

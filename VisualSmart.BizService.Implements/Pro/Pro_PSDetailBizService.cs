@@ -55,9 +55,9 @@ namespace VisualSmart.BizService.Implements.Pro
                 };
                 //产能 根据早中晚判断产能基本参数
                 decimal channeng = 0;
-                if (model.SType == 2)
+                if (model.SType == 2 && good.MorningNum!=null)
                 {
-                    channeng = good.MorningNum > 0 ? (Convert.ToDecimal(good.PackNum) / good.MorningNum) : 0;
+                    channeng = good.MorningNum > 0 ? (Convert.ToDecimal(good.PackNum) / good.MorningNum.Value) : 0;
                 }
                 else if (model.SType == 3 && good.MiddleNum != null)
                 {

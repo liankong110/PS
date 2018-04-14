@@ -91,6 +91,21 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
 
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlans>(CommandType.Text, strSql.ToString(), MapRow, parameters);
         }
+        /// <summary>
+        /// 获取主表中所有的子表明细
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public IList<Pro_ShipPlans> GetAllDomainByMainId(int Id)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.AppendFormat(@"select Pro_ShipPlans.ID,PlanId,PlanDate,PlanNum
+FROM Pro_ShipPlans LEFT JOIN Pro_ShipPlan ON Pro_ShipPlans.PlanId = Pro_ShipPlan.ID WHERE Pro_ShipPlan.ID = {0}",Id);         
+           
+
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlans>(CommandType.Text, strSql.ToString(), MapRow, parameters);
+        }
 
         /// <summary>
         /// 列表基本参数
@@ -105,7 +120,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             ojb = dataReader["ID"];
             if (ojb != null && ojb != DBNull.Value)
             {
-                model.ID = (int)ojb;
+                model.Id = (int)ojb;
             }
             ojb = dataReader["PlanId"];
             if (ojb != null && ojb != DBNull.Value)

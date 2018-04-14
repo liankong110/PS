@@ -23,7 +23,7 @@ namespace VisualSmart.Domain.Pro
         private string _shiptoname = "";
         private decimal _stocknum = 0M;
         private int _packnum = 0;
-        private int _morningnum = 0;
+        private int? _morningnum = 0;
         private int? _middlenum;
         private int? _eveningnum;
        
@@ -86,7 +86,7 @@ namespace VisualSmart.Domain.Pro
         /// <summary>
         /// 早班产能
         /// </summary>
-        public int MorningNum
+        public int? MorningNum
         {
             set { _morningnum = value; }
             get { return _morningnum; }
@@ -121,5 +121,10 @@ namespace VisualSmart.Domain.Pro
         /// 生产数量
         /// </summary>
         public int SNum { get; set; }
+
+        public DateTime Date { get; set; }
+
+
+        public List<Pro_SchedulingGoodsNum> Items { get; set; }
     }
 }

@@ -35,7 +35,30 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
                 throw;
             }
         }
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int AddGetId(Pro_SchedulingGoods entity)
+        {
+            try
+            {
+                StringBuilder strSql = new StringBuilder();
+                strSql.Append("insert into Pro_SchedulingGoods(");
+                strSql.Append("SLineId,GoodNo,GoodName,ShipTo,ShipToName,StockNum,PackNum,MorningNum,MiddleNum,EveningNum)");
+                strSql.Append(" values (");
+                strSql.Append("@SLineId,@GoodNo,@GoodName,@ShipTo,@ShipToName,@StockNum,@PackNum,@MorningNum,@MiddleNum,@EveningNum)");
+                strSql.Append(";select @@IDENTITY");
+                var parameters = GetBaseParams(entity);
+                return Convert.ToInt32(ReadAdoTemplate.ExecuteScalar(CommandType.Text, strSql.ToString(), parameters));
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+        }
         /// <summary>
         /// 修改
         /// </summary>
@@ -167,9 +190,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             parameters.Add("ShipToName", DbType.String).Value = entity.ShipToName;
             parameters.Add("StockNum", DbType.Decimal).Value = entity.StockNum;
             parameters.Add("PackNum", DbType.Int32).Value = entity.PackNum;
-            parameters.Add("MorningNum", DbType.Int32).Value = entity.MorningNum;
-            parameters.Add("MiddleNum", DbType.Int32).Value = entity.MiddleNum;
-            parameters.Add("EveningNum", DbType.Int32).Value = entity.EveningNum;
+            parameters.Add("MorningNum", DbType.Int32).Value = entity.MorningNum??0;
+            parameters.Add("MiddleNum", DbType.Int32).Value = entity.MiddleNum??0;
+            parameters.Add("EveningNum", DbType.Int32).Value = entity.EveningNum??0;
             return parameters;
         }
 

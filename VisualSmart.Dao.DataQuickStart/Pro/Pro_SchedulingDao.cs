@@ -36,6 +36,31 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         }
 
         /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public  int AddGetId(Pro_Scheduling entity)
+        {
+            try
+            {
+                StringBuilder strSql = new StringBuilder();
+                strSql.Append("insert into Pro_Scheduling(");
+                strSql.Append("ProNo,PlanFromDate,PlanToDate,CreateTime,Creater,UpdateTime,Updater,RowState)");
+                strSql.Append(" values (");
+                strSql.Append("@ProNo,@PlanFromDate,@PlanToDate,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
+                strSql.Append(";select @@IDENTITY");
+                var parameters = GetBaseParams(entity);
+                return Convert.ToInt32(ReadAdoTemplate.ExecuteScalar(CommandType.Text, strSql.ToString(), parameters));
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// 修改
         /// </summary>
         /// <param name="entity"></param>
@@ -43,15 +68,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         public override bool Update(Pro_Scheduling entity)
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("update Pro_Scheduling set ");
-            strSql.Append("ProNo=@ProNo,");
-            strSql.Append("PlanFromDate=@PlanFromDate,");
-            strSql.Append("PlanToDate=@PlanToDate,");
-            strSql.Append("CreateTime=@CreateTime,");
-            strSql.Append("Creater=@Creater,");
+            strSql.Append("update Pro_Scheduling set "); 
             strSql.Append("UpdateTime=@UpdateTime,");
-            strSql.Append("Updater=@Updater,");
-            strSql.Append("RowState=@RowState");
+            strSql.Append("Updater=@Updater,");        
             strSql.Append(" where Id=@Id");
             var parameters = GetBaseParams(entity);
             parameters.Add("ID", DbType.Int32, 0).Value = entity.Id;

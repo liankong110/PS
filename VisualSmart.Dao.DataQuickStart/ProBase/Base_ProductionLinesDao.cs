@@ -168,11 +168,12 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("select GoodNo,People,Number from[Base_ProductionLines]");
+            strSql.Append("select distinct Base_ProductionLine.GoodNo,People,Number from[Base_ProductionLines]");
             strSql.Append("left join [Base_ProductionLine] on Base_ProductionLine.ID=[Base_ProductionLines].ProLineId");
-           
+            strSql.Append(@" left join Pro_ShipPlan on Pro_ShipPlan.GoodNo=Base_ProductionLine.GoodNo
+left join Pro_ShipPlanMain on Pro_ShipPlanMain.ID = Pro_ShipPlan.MainId");
             strSql.AppendFormat(" where ProLineNo='{0}'", query.GetCondition("LineNo").Value);
-            strSql.AppendFormat(" and GoodNo in ({0})", query.GetCondition("GoodNos").Value);
+            strSql.AppendFormat(" and Pro_ShipPlanMain.ProNo={0}", query.GetCondition("ShipMainProNo").Value);
             strSql.AppendFormat(" and People in({0})", query.GetCondition("People").Value);
 
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Base_ProductionLines>(CommandType.Text, strSql.ToString(), MapRowByLineNoAndGoodNos, parameters);

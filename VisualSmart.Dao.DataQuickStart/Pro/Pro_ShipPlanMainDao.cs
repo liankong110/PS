@@ -36,7 +36,30 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
                 throw;
             }
         }
+        /// <summary>
+        /// 新增 返回ID
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int AddGetId(Pro_ShipPlanMain entity)
+        {
+            try
+            {
+                StringBuilder strSql = new StringBuilder();
+                strSql.Append("insert into Pro_ShipPlanMain(");
+                strSql.Append("ProNo,PlanFromDate,PlanFromTo,CreateTime,Creater,UpdateTime,Updater,RowState)");
+                strSql.Append(" values (");
+                strSql.Append("@ProNo,@PlanFromDate,@PlanFromTo,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
+                strSql.Append(";select @@IDENTITY");
+                var parameters = GetBaseParams(entity);
+                return Convert.ToInt32(ReadAdoTemplate.ExecuteScalar(CommandType.Text, strSql.ToString(), parameters));
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+        }
         /// <summary>
         /// 修改
         /// </summary>
@@ -60,15 +83,17 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         }
 
         /// <summary>
-        /// 删除
+        /// 删除- 三个表一起删除
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
         public override bool Delete(int Id)
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("delete from Pro_ShipPlanMain ");
-            strSql.Append(" where ID=@ID ");
+            strSql.Append("delete from Pro_ShipPlans  where PlanId in( select ID from Pro_ShipPlan where MainId=@ID);");
+            strSql.Append("delete from Pro_ShipPlan  where MainId=@ID;");
+            strSql.Append("delete from Pro_ShipPlanMain  where ID=@ID;");        
+           
             var parameters = WriteAdoTemplate.CreateDbParameters();
             parameters.Add("ID", DbType.Int32, 0).Value = Id;
             return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
@@ -111,7 +136,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             ojb = dataReader["ID"];
             if (ojb != null && ojb != DBNull.Value)
             {
-                model.ID = (int)ojb;
+                model.Id = (int)ojb;
             }
             ojb = dataReader["PlanFromDate"];
             if (ojb != null && ojb != DBNull.Value)

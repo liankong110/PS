@@ -21,12 +21,37 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             {
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Pro_ShipPlan(");
-                strSql.Append("MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,GoodNo,GoodName,CreateTime,Creater,UpdateTime,Updater,RowState)");
+                strSql.Append("MainId,ScheduleNo,Term,EditionNo,CityNo,ShipDetailNo,ShipTo,ShipToName,GoodNo,GoodName)");
                 strSql.Append(" values (");
-                strSql.Append("@MainId,@ScheduleNo,@Term,@EditionNo,@CityNo,@ShipTo,@ShipToName,@GoodNo,@GoodName,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
+                strSql.Append("@MainId,@ScheduleNo,@Term,@EditionNo,@CityNo,@ShipDetailNo,@ShipTo,@ShipToName,@GoodNo,@GoodName)");
                 strSql.Append(";select @@IDENTITY");
                 var parameters = GetBaseParams(entity);
                 return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 新增获取ID
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int AddGetId(Pro_ShipPlan entity)
+        {
+            try
+            {
+                StringBuilder strSql = new StringBuilder();
+                strSql.Append("insert into Pro_ShipPlan(");
+                strSql.Append("MainId,ScheduleNo,Term,EditionNo,CityNo,ShipDetailNo,ShipTo,ShipToName,GoodNo,GoodName)");
+                strSql.Append(" values (");
+                strSql.Append("@MainId,@ScheduleNo,@Term,@EditionNo,@CityNo,@ShipDetailNo,@ShipTo,@ShipToName,@GoodNo,@GoodName)");
+                strSql.Append(";select @@IDENTITY");
+                var parameters = GetBaseParams(entity);
+                return Convert.ToInt32(ReadAdoTemplate.ExecuteScalar(CommandType.Text, strSql.ToString(), parameters));
             }
             catch (Exception)
             {
@@ -52,12 +77,8 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             strSql.Append("ShipTo=@ShipTo,");
             strSql.Append("ShipToName=@ShipToName,");
             strSql.Append("GoodNo=@GoodNo,");
-            strSql.Append("GoodName=@GoodName,");
-            strSql.Append("CreateTime=@CreateTime,");
-            strSql.Append("Creater=@Creater,");
-            strSql.Append("UpdateTime=@UpdateTime,");
-            strSql.Append("Updater=@Updater,");
-            strSql.Append("RowState=@RowState");
+            strSql.Append("GoodName=@GoodName");
+
             strSql.Append(" where ID=@ID");
             var parameters = GetBaseParams(entity);
             parameters.Add("ID", DbType.Int32, 0).Value = entity.Id;
@@ -88,7 +109,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("select ID,MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,GoodNo,GoodName,CreateTime,Creater,UpdateTime,Updater,RowState ");
+            strSql.Append("select ID,MainId,ScheduleNo,Term,EditionNo,CityNo,ShipDetailNo,ShipTo,ShipToName,GoodNo,GoodName");
             strSql.Append(" FROM Pro_ShipPlan ");
             if (query.GetPager() != null)
             {
@@ -116,7 +137,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             ojb = dataReader["ID"];
             if (ojb != null && ojb != DBNull.Value)
             {
-                model.ID = (int)ojb;
+                model.Id = (int)ojb;
             }
             ojb = dataReader["MainId"];
             if (ojb != null && ojb != DBNull.Value)
@@ -135,23 +156,8 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             model.ShipToName = dataReader["ShipToName"].ToString();
             model.GoodNo = dataReader["GoodNo"].ToString();
             model.GoodName = dataReader["GoodName"].ToString();
-            ojb = dataReader["CreateTime"];
-            if (ojb != null && ojb != DBNull.Value)
-            {
-                model.CreateTime = (DateTime)ojb;
-            }
-            model.Creater = dataReader["Creater"].ToString();
-            ojb = dataReader["UpdateTime"];
-            if (ojb != null && ojb != DBNull.Value)
-            {
-                model.UpdateTime = (DateTime)ojb;
-            }
-            model.Updater = dataReader["Updater"].ToString();
-            ojb = dataReader["RowState"];
-            if (ojb != null && ojb != DBNull.Value)
-            {
-                model.RowState = (byte)ojb;
-            }
+            model.ShipDetailNo = dataReader["ShipDetailNo"].ToString();
+
             return model;
         }
 
@@ -172,12 +178,8 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             parameters.Add("ShipToName", DbType.String).Value = entity.ShipToName;
             parameters.Add("GoodNo", DbType.String).Value = entity.GoodNo;
             parameters.Add("GoodName", DbType.String).Value = entity.GoodName;
+            parameters.Add("ShipDetailNo", DbType.String).Value = entity.ShipDetailNo;
 
-            parameters.Add("CreateTime", SqlDbType.NVarChar).Value = DateTime.Now;
-            parameters.Add("Creater", SqlDbType.NVarChar).Value = entity.Creater ?? "";
-            parameters.Add("UpdateTime", SqlDbType.DateTime).Value = DateTime.Now;
-            parameters.Add("Updater", SqlDbType.NVarChar).Value = entity.Updater ?? "";
-            parameters.Add("RowState", SqlDbType.TinyInt).Value = entity.RowState;
             return parameters;
         }
 
@@ -191,15 +193,17 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
-            strSql.Append(@"select Distinct ProLineNo,Qty, Pro_ShipPlan.ID,MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
+            strSql.Append(@"select Distinct ProLineNo,Qty, Pro_ShipPlan.ID,Pro_ShipPlan.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
 Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName
 FROM Pro_ShipPlan
 left join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=Pro_ShipPlan.GoodNo
-left join [dbo].[Base_Stock] on [dbo].[Base_Stock].GoodNo=Pro_ShipPlan.GoodNo");
-            
+left join [dbo].[Base_Stock] on [dbo].[Base_Stock].GoodNo=Pro_ShipPlan.GoodNo
+left join Base_StockMain on Base_StockMain.Id=Base_Stock.MainId");
 
-            var lineNos=query.GetCondition("LineNos").Value;
-            strSql.AppendFormat(" where ProLineNo IN ({0}) ", lineNos);          
+
+            var lineNos = query.GetCondition("LineNos").Value;
+            var stockMainId = query.GetCondition("StockMainId").Value;
+            strSql.AppendFormat(" where ProLineNo IN ({0}) and Base_StockMain.Id={1} ", lineNos, stockMainId);
 
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlan>(CommandType.Text, strSql.ToString(), MapRowByLineNos, parameters);
         }
@@ -217,7 +221,7 @@ left join [dbo].[Base_Stock] on [dbo].[Base_Stock].GoodNo=Pro_ShipPlan.GoodNo");
             ojb = dataReader["ID"];
             if (ojb != null && ojb != DBNull.Value)
             {
-                model.ID = (int)ojb;
+                model.Id = (int)ojb;
             }
             ojb = dataReader["MainId"];
             if (ojb != null && ojb != DBNull.Value)

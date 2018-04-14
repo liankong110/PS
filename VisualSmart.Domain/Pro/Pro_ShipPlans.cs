@@ -16,18 +16,11 @@ namespace VisualSmart.Domain.Pro
         public Pro_ShipPlans()
         { }
         #region Model
-        private int _id;
+      
         private int _planid = 0;
         private DateTime _plandate;
         private int _plannum = 0;
-        /// <summary>
-        /// 
-        /// </summary>
-        public int ID
-        {
-            set { _id = value; }
-            get { return _id; }
-        }
+       
         /// <summary>
         /// 
         /// </summary>

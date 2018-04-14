@@ -15,7 +15,7 @@ namespace VisualSmart.Domain.Pro
        
         private string _prono = "";
         private DateTime _prodate;
-        private int _finalmorningnum = 0;
+        private int? _finalmorningnum = 0;
         private int? _finalmiddlenum;
         private int? _finaleveningnum;
      
@@ -39,7 +39,7 @@ namespace VisualSmart.Domain.Pro
         /// <summary>
         /// 早班产能
         /// </summary>
-        public int FinalMorningNum
+        public int? FinalMorningNum
         {
             set { _finalmorningnum = value; }
             get { return _finalmorningnum; }

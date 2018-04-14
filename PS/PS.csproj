@@ -216,9 +216,12 @@
     </Compile>
     <Compile Include="Models\AdditionalParameters.cs" />
     <Compile Include="Models\HomeModel.cs" />
+    <Compile Include="Models\HotData.cs" />
+    <Compile Include="Models\HotHelp.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Item.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\SaveScheduingGoods.cs" />
     <Compile Include="Models\SchedulingDateNumModel.cs" />
     <Compile Include="Models\TreeRespVO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -352,6 +355,7 @@
     <Content Include="Views\Bom\Index.cshtml" />
     <Content Include="Views\Bom\Add.cshtml" />
     <Content Include="Views\Bom\ImportData.cshtml" />
+    <Content Include="Views\ShipPlan\ImportData.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

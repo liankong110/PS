@@ -10,7 +10,7 @@
 
     <div class="page-header">
         <h1>
-            生产计划管理
+            发运计划管理
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 查询条件
@@ -26,7 +26,7 @@
                 <div class="form-group" style="margin-bottom:6px;">
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">单号：</label>
                     <div class="col-sm-3 ">
-                        <input type="text" name="roleName" id="roleName" placeholder="名称" value="@ViewBag.RoleName" />
+                        <input type="text" name="ProNo" id="ProNo" placeholder="名称" value="@ViewBag.ProNo" />
                     </div>
 
                 </div>
@@ -42,7 +42,7 @@
                                         <i class="ace-icon fa fa-search bigger-110 "></i>
                                         查询
                                     </button>
-                                    <a class="btn btn-sm btn-primary " href="/Stock/Add">
+                                    <a class="btn btn-sm btn-primary " href="/ShipPlan/ImportData">
                                         <i class="ace-icon fa fa-plus bigger-110"></i>
                                         Excel导入添加
                                     </a>
@@ -73,10 +73,6 @@
                                                 <td>
 
                                                     <div class="btn-group">
-                                                        @*<a href="/ShipPlan/Add?Id=@m.Id" class="btn btn-xs btn-info" title="编辑">
-                                                            <i class="ace-icon fa fa-pencil bigger-120"></i>
-                                                        </a>*@
-
                                                         <a class="btn btn-xs btn-danger" title="删除" onclick="Delete('@m.Id');">
                                                             <i class="ace-icon fa fa-trash-o bigger-120"></i>
                                                         </a>
@@ -84,7 +80,7 @@
                                                             <i class="ace-icon fa fa-search bigger-120"></i>查看明细
                                                         </a>
 
-                                                        <a href="/Scheduling/ProLines?Id=@m.Id" class="btn btn-xs btn-info" target="_blank" title="编辑">
+                                                        <a href="/Scheduling/ProLines?Id=@m.Id&ShipMainProNo=@m.ProNo" class="btn btn-xs btn-info" target="_blank" title="编辑">
                                                             <i class="ace-icon fa fa-pencil bigger-120"></i>新增生产计划单
                                                         </a>
                                                     </div>
@@ -97,6 +93,10 @@
 
 
                                             </tr>
+                                        }
+                                        @if (Model.Count == 0)
+                                        {
+                                            <tr><td colspan="5" style="height:200px;" class="center">暂无数据</td></tr>
                                         }
                                     </tbody>
 
@@ -138,7 +138,7 @@
     //删除
     function Delete(id) {
         if (confirm("确定要删除此数据吗?") == true) {
-            var url = "/Stock/Delete/?id=" + id;
+            var url = "/ShipPlan/Delete/?id=" + id;
             $.ajax({
                 data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
                 url: url,

@@ -55,5 +55,6 @@ namespace VisualSmart.Domain.Pro
         }
         #endregion Model
 
+        public int Index { get; set; }
     }
 }
