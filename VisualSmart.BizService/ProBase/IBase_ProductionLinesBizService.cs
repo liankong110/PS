@@ -19,5 +19,11 @@ namespace VisualSmart.BizService.ProBase
         /// <param name="Id"></param>
         /// <returns></returns>
         bool DeleteByMainId(int MainId);
+        /// <summary>
+        /// 根据生产计划 产线 和 商品获取对应的产能信息
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        IList<Base_ProductionLines> GetAllDomainByScheduing(QueryCondition query);
     }
 }

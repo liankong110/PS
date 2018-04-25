@@ -8,6 +8,7 @@
 @{
 
     Pro_PS PSModel = ViewBag.PSModel as Pro_PS;
+    var AllLine = ViewBag.AllLine as IList<Pro_SchedulingLine>;
 }
 
 <div class="page-content">
@@ -26,20 +27,19 @@
             <form class="form-horizontal " role="form" action="/PS/Edit" id="index" method="get">
                 <input type="hidden" id="page" name="page" />
                 @Html.AntiForgeryToken()
+                <input type="hidden" id="allGoodCount" value="@Model.Count" />
+                <input type="hidden" id="SchedulingProNo" value="@PSModel.SchedulingProNo" />
+                <input type="hidden" id="PSId" value="@PSModel.Id" />
+                <input type="hidden" id="ProNo" value="@PSModel.ProNo" />
                 <!-- 查询条件-->
                 <div class="form-group" style="margin-bottom:6px;">
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">生产日期：</label>
                     <div class="col-sm-3 ">
-                        <input type="text" name="ProDate" id="ProDate" placeholder="生产日期" value="@PSModel.ProDate.ToString("yyyy-MM-dd")" />
+                        <input type="text" name="ProDate" id="ProDate" placeholder="生产日期" onclick="WdatePicker({ onpicked: function (dq) { GetDetailList(); }, dateFmt: 'yyyy-MM-dd' })" value="@PSModel.ProDate.ToString("yyyy-MM-dd")" />
                     </div>
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">生产线：</label>
                     <div class="col-sm-3">
-                        @*<label>@PSModel.ProLineNo</label>*@
-                        <select class="chosen-select form-control" style="width:60%" id="form-field-select-3" data-placeholder="选择">
-                            <option>APAB03</option>
-                            <option>APAB06</option>
-                            <option>APAB08</option>
-                        </select>
+                        @Html.DropDownList("LineNo", (SelectList)ViewBag.AllLine, new { @class = "chosen-select form-control", @style = "width:60%", onchange = "GetDetailList();" })
 
                     </div>
 
@@ -47,15 +47,15 @@
                 <div class="form-group" style="margin-bottom:6px;">
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">早班人数：</label>
                     <div class="col-sm-3 ">
-                        <input type="text" name="FinalMorningNum" id="FinalMorningNum" placeholder="早班人数" value="@PSModel.FinalMorningNum" />
+                        <input type="text" name="FinalMorningNum" id="FinalMorningNum" placeholder="早班人数" onchange="sumGongShiAndChanNeng();" value="@PSModel.FinalMorningNum" />
                     </div>
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">中班人数：</label>
                     <div class="col-sm-3 ">
-                        <input type="text" name="FinalMiddleNum" id="FinalMiddleNum" placeholder="中班人数" value="@PSModel.FinalMiddleNum" />
+                        <input type="text" name="FinalMiddleNum" id="FinalMiddleNum" placeholder="中班人数" onchange="sumGongShiAndChanNeng();" value="@PSModel.FinalMiddleNum" />
                     </div>
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">晚班人数：</label>
                     <div class="col-sm-3 ">
-                        <input type="text" name="FinalEveningNum" id="FinalEveningNum" placeholder="晚班人数" value="@PSModel.FinalEveningNum" />
+                        <input type="text" name="FinalEveningNum" id="FinalEveningNum" placeholder="晚班人数" onchange="sumGongShiAndChanNeng();" value="@PSModel.FinalEveningNum" />
                     </div>
                 </div>
                 <hr class="no-padding no-margin" />
@@ -65,19 +65,12 @@
                         <div class="row">
                             <div class="col-sm-12 " id="default-buttons">
                                 <p>
-                                    <button class="btn btn-sm btn-success" type="submit">
-                                        <i class="ace-icon fa fa-search bigger-110 "></i>
-                                        查询
-                                    </button>
-                                    <button class="btn btn-sm btn-primary " type="submit" id="excel" onclick="GetExcel(1)">
-                                        <i class="ace-icon fa fa-file-excel-o bigger-110"></i>
-                                        导出Excel
-                                    </button>
-                                    <button class="btn btn-sm btn-primary " type="submit" id="excel" onclick="GetExcel(1)">
+                                 
+                                    <button class="btn btn-sm btn-primary " type="button" id="save" onclick="GetExcel(1)">
                                         <i class="ace-icon fa fa-file-excel-o bigger-110"></i>
                                         保存
                                     </button>
-                                    <button class="btn btn-sm btn-primary " type="submit" id="excel" onclick="GetExcel(1)">
+                                    <button class="btn btn-sm btn-primary " type="button" id="excel" onclick="ReSetAll();">
                                         <i class="ace-icon fa fa-file-excel-o bigger-110"></i>
                                         重新计算
                                     </button>
@@ -100,45 +93,60 @@
                                             <th>班次</th>
                                             <th>客户（ship-to）</th>
                                             <th>整箱包装数</th>
+                                            <th>产能</th>
                                             <th>数量</th>
                                             <th>开始时间</th>
                                             <th>结束时间</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @{ int i = 1;
+                                        }
                                         @foreach (var m in Model)
                                         {
+                                            var GoodNo = "GoodNo"+i;
+                                            var GoodName = "GoodName" + i;
+                                            var SType = "SType" + i;
+                                            var ShipTo = "ShipTo" + i;
+                                            var PackNum = "PackNum" + i;
+                                            var Channeng = "Channeng" + i;
+                                            var Qty = "Qty" + i;
+                                            var StartTime = "StartTime" + i;
+                                            var EndTime = "EndTime" + i;
+
                                             <tr>
-                                                <td><input type="text" style=" width:40px;" value="@m.ProOrderIndex" id="@m.Id" /></td>
-                                                <td>@m.GoodNo</td>
-                                                <td>@m.GoodName</td>
-                                                <td>@(EnumOperate.GetEnumDesc((VisualSmart.Util.Menus.ClassType)m.SType))</td>
-                                                <td>@m.ShipTo</td>
-                                                <td>@m.PackNum</td>
-                                                <td>@m.Qty</td>
-                                                <td><input type="text" name="ProDate" value="@m.StartTime.ToString("yyyy-MM-dd HH:mm:ss")" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" /></td>
-                                                <td><input type="text" name="ProDate" value="@m.EndTime.ToString("yyyy-MM-dd HH:mm:ss")" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" /></td>
+                                                <td><input type="text" style=" width:40px;" value="@m.ProOrderIndex" id="@("Index"+i)" /></td>
+                                                <td id="@GoodNo">@m.GoodNo</td>                                               
+                                                <td id="@GoodName">@m.GoodName</td>
+                                                <td id="@SType">@(EnumOperate.GetEnumDesc((VisualSmart.Util.Menus.ClassType)m.SType))</td>                                              
+                                                <td id="@ShipTo">@m.ShipTo</td>
+                                                <td id="@PackNum">@m.PackNum</td>                                             
+                                                <td id="@Channeng">@m.ChanNeng</td>
+                                                <td id="@Qty">@m.Qty</td>                                              
+                                                <td><input type="text" id="@StartTime" value="@m.StartTime.ToString("yyyy-MM-dd HH:mm:ss")" onclick="WdatePicker({ onpicked: function (dq) { changeTime(1,'@i',this.value); }, dateFmt: 'yyyy-MM-dd HH:mm:ss' })" /></td>
+                                                <td><input type="text" id="@EndTime" value="@m.EndTime.ToString("yyyy-MM-dd HH:mm:ss")" onclick="WdatePicker({ onpicked: function (dq) { changeTime(2, '@i', this.value); }, dateFmt: 'yyyy-MM-dd HH:mm:ss' })" /> </td>
                                             </tr>
-                                        }
-                                    </tbody>
+                                            i++;
+                                            }
+                                        </tbody>
 
 
-                                </table>
-                            </div>
-                            <!-- /.span -->
+                                    </table>
+                                </div>
+                                <!-- /.span -->
 
 
-                        </div><!-- /.row -->
+                            </div><!-- /.row -->
 
-                        <div class="hr hr-18 dotted hr-double"></div>
+                            <div class="hr hr-18 dotted hr-double"></div>
                         <!-- PAGE CONTENT ENDS -->
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
 
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
-</div><!-- /.page-content -->
+    </div><!-- /.page-content -->
 
 <script src="~/Content/components/datatables/media/js/jquery.dataTables.js"></script>
 <script src="~/Content/components/_mod/datatables/jquery.dataTables.bootstrap.js"></script>
@@ -156,28 +164,330 @@
         $("#index").submit();
     }
 
-    //删除
-    function Delete(id) {
-        if (confirm("确定要删除此数据吗?") == true) {
-            var url = "/Stock/Delete/?id=" + id;
-            $.ajax({
-                data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
-                url: url,
-                type: 'post',
-                async: false,
-                cache: false,
-                success: function (data) {
-                    if (data.Mess == "success") {
-                        $.gritter.add({
-                            title: '删除成功！',
-                            text: '',
-                            class_name: 'gritter-info gritter-light'
+    function GetDetailList() {
+
+        var LineNo = $("#LineNo").val();
+        var ProDate = $("#ProDate").val();
+
+        var url = "/PS/GetGoodList?LineId=" + LineNo + "&SDate=" + ProDate;
+        console.log(url);
+        $.ajax({
+            data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+            url: url,
+            type: 'post',
+            async: false,
+            cache: false,
+            success: function (data) {
+
+                $("#FinalMorningNum").val(data.PSModel.FinalMorningNum);
+                $("#FinalMiddleNum").val(data.PSModel.FinalMiddleNum);
+                $("#FinalEveningNum").val(data.PSModel.FinalEveningNum);
+
+                $("#allGoodCount").val(data.PSDetail.length);
+                $("#simple-table tbody").html("");
+                var style = "";
+                $.each(data.PSDetail, function (i, item) {
+
+                    var GoodNo = "GoodNo" + (i+1);
+                    var GoodName = "GoodName" + (i + 1);
+                    var SType = "SType" + (i + 1);
+                    var ShipTo = "ShipTo" + (i + 1);
+                    var PackNum = "PackNum" + (i + 1);
+                    var Channeng = "Channeng" + (i + 1);
+                    var Qty = "Qty" + i;
+                    var StartTime = "StartTime" + (i + 1);
+                    var EndTime = "EndTime" + (i + 1);
+
+                    var html = "<tr>";
+
+                    html += "<td><input type='text' style='width:40px;' value=" + item.ProOrderIndex + " id=" + GoodNo + " /></td>";
+                    html += "<td id=" + GoodNo + ">" + item.GoodNo + "</td>";
+                    html += "<td id=" + GoodName + ">" + item.GoodName + "</td>";
+                    html += "<td id=" + SType + ">" + item.STypeString + "</td>";
+                    html += "<td id=" + ShipTo + ">" + item.ShipTo + "</td>";
+                    html += "<td id=" + PackNum + ">" + item.PackNum + "</td>";
+                    html += "<td id=" + Channeng + ">" + item.ChanNeng + "</td>";
+                    html += "<td id=" + Qty + ">" + item.Qty + "</td>";
+                    html += "<td><input type='text' name='ProDate' id=" + StartTime + " value='" + item.StartTimeString + "' onclick='" + 'WdatePicker({dateFmt:"yyyy-MM-dd HH:mm:ss"})' + "' /></td>";
+                    html += "<td><input type='text' name='ProDate' id=" + EndTime + " value='" + item.EndTimeString + "' onclick='" + 'WdatePicker({dateFmt:"yyyy-MM-dd HH:mm:ss"})' + "' /></td>";
+
+                    html += " </tr>";
+                    $("#simple-table tbody").append(html)
+                });
+            }
+        });
+    }
+
+
+    //根据产线，人数获取对应的产能信息，如果没有获取到 则为0
+    function sumGongShiAndChanNeng() {
+
+        var zbPeople = $("#FinalMorningNum").val();
+        var mbPeople = $("#FinalMiddleNum").val();
+        var wbPeople = $("#FinalEveningNum").val();
+
+        var LineId = $("#LineNo").val();
+        var proDate = $("#ProDate").val();
+
+        var people = zbPeople + "," + mbPeople + "," + wbPeople;
+
+        var url = "/PS/GetProductions/?LineId=" + LineId + "&proDate=" + proDate + "&people=" + people;
+        console.log(url);
+        var allGoodCount = $("#allGoodCount").val();
+        //如果全部都是0 则统计为0
+        if (zbPeople == 0 && mbPeople == 0 && wbPeople == 0) {
+            for (var i = 1; i <= allGoodCount; i++) {
+                $("#Channeng" + i).html("");
+            }
+            return;
+        }
+
+        $.ajax({
+            data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+            url: url,
+            type: 'post',
+            async: false,
+            cache: false,
+            success: function (data) {
+                if (data.Mess == "success") {
+                    //如果没有找到对应的人数产能的信息则情况
+                    if (data.Data.length == 0) {
+                        for (var i = 1; i <= allGoodCount; i++) {
+                            $("#Channeng" + i).html("");
+                        }
+                        return;
+                    }
+                    console.log("count:" + allGoodCount);
+                    for (var i = 1; i <= allGoodCount; i++) {
+                        var goodNo = $("#GoodNo" + i).html();
+                        var SType = $("#SType" + i).html();
+                        console.log(goodNo + "--" + SType);
+                        $.each(data.Data, function (index, item) {
+
+                            if (SType == "早班" && item.GoodNo == goodNo && item.People == zbPeople) {
+                                $("#Channeng" + i).html(item.Number);
+                            }
+                            else if (SType == "中班" && item.GoodNo == goodNo && item.People == mbPeople) {
+                                $("#Channeng" + i).html(item.Number);
+                            }
+                            else if (SType == "晚班" && item.GoodNo == goodNo && item.People == wbPeople) {
+                                $("#Channeng" + i).html(item.Number);
+                            }
                         });
-                        setTimeout(function () { window.location.reload(); }, 500);
+
+
+
                     }
 
                 }
-            });
+
+            }
+        });
+    }
+
+    $("#save").one("click", function () {
+        $.ajax({
+            beforeSend: function () {
+                // Handle the beforeSend event
+                $("#save").text("正在保存，请等候.....");
+                $("#save").attr({ disabled: "disabled" });
+            },
+            async: true,
+            complete: function () {
+                SaveData();
+            }
+        });
+    });
+
+    function SaveData() {
+
+        var SchedulingProNo = $("#SchedulingProNo").val();
+        var zbPeople = $("#FinalMorningNum").val();
+        var mbPeople = $("#FinalMiddleNum").val();
+        var wbPeople = $("#FinalEveningNum").val();
+
+        var LineId = $("#LineNo").val();
+        var proDate = $("#ProDate").val();
+        var lineNo = $("#LineNo").find("option:selected").text()
+        var Pro_PS =
+            {
+                ProNo:$("#ProNo").val(),
+                Id:$("#PSId").val(),
+                SchedulingProNo:SchedulingProNo,
+                LineId: LineId,
+                ProLineNo: lineNo,
+                ProDate: proDate,
+                FinalMorningNum: zbPeople,
+                FinalMiddleNum: mbPeople,
+                FinalEveningNum: wbPeople
+            };
+
+        var goodsList = [];
+        var good = {};
+        var allGoodCount = $("#allGoodCount").val();
+        for (var i = 1; i <= allGoodCount; i++) {
+            var Index = $("#Index" + i).val();
+            var GoodNo = $("#GoodNo" + i).html();
+            var GoodName = $("#GoodName" + i).html();
+            var SType = $("#SType" + i).html();
+            var ShipTo = $("#ShipTo" + i).html();
+            var PackNum = $("#PackNum" + i).html();
+            var Channeng = $("#Channeng" + i).html();
+            var Qty = $("#Qty" + i).html();
+            var StartTime = $("#StartTime" + i).val();
+            var EndTime = $("#EndTime" + i).val();
+            goodsList.push(
+                {
+                    ProOrderIndex: Index,
+                    GoodNo: GoodNo,
+                    GoodName: GoodName,
+                    STypeString: SType,
+                    ShipTo: ShipTo,
+                    PackNum: PackNum,
+                    Channeng: Channeng,
+                    StartTime: StartTime,
+                    EndTime: EndTime
+                }
+               );
+        }
+        var url = "/PS/Save";
+        $.ajax({
+            data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), Pro_PS: JSON.stringify(Pro_PS), Pro_PSDetail: JSON.stringify(goodsList) },
+            url: url,
+            type: 'post',
+            async: false,
+            cache: false,
+            success: function (data) {
+                if (data.Mess == "success") {
+                    //如果没有找到对应的人数产能的信息则情况
+                    alert("保存成功！");
+                    window.location.href = "/PS/Index";
+                }
+
+            }
+        });
+       
+    }
+
+    //排序
+    (function ($) {
+        //插件
+        $.extend($, {
+            //命名空间
+            sortTable: {
+                sort: function (tableId, Idx) {
+                    var table = document.getElementById(tableId);
+                    var tbody = table.tBodies[0];
+                    var tr = tbody.rows;
+                    console.log(tr);
+                    var trValue = new Array();
+                    for (var i = 0; i < tr.length; i++) {
+                        trValue[i] = tr[i];  //将表格中各行的信息存储在新建的数组中
+                    }
+
+                    //if (tbody.sortCol == Idx) {
+                    //    trValue.reverse(); //如果该列已经进行排序过了，则直接对其反序排列
+                    //} else {
+                        //trValue.sort(compareTrs(Idx));  //进行排序
+                        trValue.sort(function (tr1, tr2) {
+                            var value1 = $(tr1.cells[Idx]).find("input").val();
+                            var value2 = $(tr2.cells[Idx]).find("input").val();
+                            console.log(value1 + "---" + value2);
+                            return value1.localeCompare(value2);
+                        });
+                    //}
+
+                    var fragment = document.createDocumentFragment();  //新建一个代码片段，用于保存排序后的结果
+                    for (var i = 0; i < trValue.length; i++) {
+                        fragment.appendChild(trValue[i]);
+                    }
+
+                    tbody.appendChild(fragment); //将排序的结果替换掉之前的值
+                    tbody.sortCol = Idx;
+                }
+            }
+        });
+    })(jQuery);
+
+
+    Date.prototype.format = function (format) {
+        var o = {
+            "M+": this.getMonth() + 1, //month
+            "d+": this.getDate(),    //day
+            "h+": this.getHours(),   //hour
+            "m+": this.getMinutes(), //minute
+            "s+": this.getSeconds(), //second
+            "q+": Math.floor((this.getMonth() + 3) / 3),  //quarter
+            "S": this.getMilliseconds() //millisecond
+        }
+        if (/(y+)/.test(format)) format = format.replace(RegExp.$1,
+        (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o) if (new RegExp("(" + k + ")").test(format))
+            format = format.replace(RegExp.$1,
+            RegExp.$1.length == 1 ? o[k] :
+            ("00" + o[k]).substr(("" + o[k]).length));
+        return format;
+    }
+
+    var d1 = new Date();
+  
+    console.log(d1.format('yyyy-MM-dd hh:mm:ss'));
+    function changeTime(type, i, value) {
+
+        var date;
+        var channeng = $("#Channeng" + i).html();
+        var qty = $("#Qty" + i).html();        
+        var sum = 0;
+        if (channeng == 0) {
+            sum = 0;
+        }
+        else {
+            sum= qty/channeng * 60 * 60
+        }
+        
+        //1 开始时间  2 结束时间
+        if (type == 1) {
+            date = new Date($("#StartTime" + i).val())
+            var newData = new Date(date.getTime() + 1000 * sum);   
+            var EndTime = $("#EndTime" + i).val(newData.format('yyyy-MM-dd hh:mm:ss'));
+           
+        } else {
+            date = new Date($("#EndTime" + i).val())
+            var newData = new Date(date.getTime()- 1000 * sum);         
+            var EndTime = $("#StartTime" + i).val(newData.format('yyyy-MM-dd hh:mm:ss'));
+        }
+
+    }
+
+
+    function ReSetAll() {
+        $.sortTable.sort("simple-table", 0);
+        var startDate = new Date($("#ProDate").val() + " 08:00:00");
+
+        var table = document.getElementById("simple-table");
+        var tbody = table.tBodies[0];
+        var tr = tbody.rows;
+        
+        var trValue = new Array();
+        for (var i = 0; i < tr.length; i++) {
+
+            var channeng = tr[i].cells[6].innerText;
+            var qty = tr[i].cells[7].innerText;
+            var sum = 0;
+            if (channeng == 0) {
+                sum = 0;
+            }
+            else {
+                sum = qty / channeng * 60 * 60
+            }
+
+            var start = $(tr[i].cells[8]).find("input").val(startDate.format('yyyy-MM-dd hh:mm:ss'));
+
+            startDate = new Date(startDate.getTime() + 1000 * sum);
+            var end = $(tr[i].cells[9]).find("input").val(startDate.format('yyyy-MM-dd hh:mm:ss'));
+           console.log(start + "---" + end);
+            
         }
     }
+   
 </script>

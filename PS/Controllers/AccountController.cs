@@ -10,7 +10,7 @@ using VisualSmart.Util;
 namespace PS.Controllers
 {
     public class AccountController : Controller
-    {
+    {      
         public ActionResult Login()
         {
             Session.Clear();

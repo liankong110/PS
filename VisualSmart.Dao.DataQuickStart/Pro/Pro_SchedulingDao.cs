@@ -19,6 +19,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         {
             try
             {
+                entity.ProNo = GetProNo("Pro_Scheduling", "ProNo");
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Pro_Scheduling(");
                 strSql.Append("ProNo,PlanFromDate,PlanToDate,CreateTime,Creater,UpdateTime,Updater,RowState)");
@@ -44,6 +45,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         {
             try
             {
+                entity.ProNo = GetProNo("Pro_Scheduling", "ProNo");
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Pro_Scheduling(");
                 strSql.Append("ProNo,PlanFromDate,PlanToDate,CreateTime,Creater,UpdateTime,Updater,RowState)");

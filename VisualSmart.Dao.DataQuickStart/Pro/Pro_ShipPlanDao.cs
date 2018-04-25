@@ -43,7 +43,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         public int AddGetId(Pro_ShipPlan entity)
         {
             try
-            {
+            {              
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Pro_ShipPlan(");
                 strSql.Append("MainId,ScheduleNo,Term,EditionNo,CityNo,ShipDetailNo,ShipTo,ShipToName,GoodNo,GoodName)");
@@ -246,6 +246,39 @@ left join Base_StockMain on Base_StockMain.Id=Base_Stock.MainId");
             {
                 model.Qty = Convert.ToInt32(ojb);
             }
+            return model;
+        }
+        /// <summary>
+        /// 修改时 使用 
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public IList<Pro_ShipPlan> GetPro_SchedulingByEdit(int Id)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            string sql = string.Format(@"select Pro_SchedulingGoods.Id,ProLineNo,GoodNo,GoodName,ShipTo,ShipToName,StockNum,PackNum,MorningNum,MiddleNum,EveningNum from Pro_SchedulingLine
+left join Pro_SchedulingGoods on Pro_SchedulingLine.Id=Pro_SchedulingGoods.SLineId where [MainId]={0}", Id);
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlan>(CommandType.Text, sql, MapPro_SchedulingByEdit, parameters);
+        }
+        /// <summary>
+        /// 列表基本参数
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="rowNum"></param>
+        /// <returns></returns>
+        public Pro_ShipPlan MapPro_SchedulingByEdit(IDataReader dataReader, int rowNum)
+        {
+            Pro_ShipPlan model = new Pro_ShipPlan();
+            model.Id = (int)dataReader["Id"];
+            model.ProLineNo = dataReader["ProLineNo"].ToString();
+            model.GoodNo = dataReader["GoodNo"].ToString();
+            model.GoodName = dataReader["GoodName"].ToString();
+            model.ShipTo = dataReader["ShipTo"].ToString();
+            model.ShipToName = dataReader["ShipToName"].ToString();
+            model.Qty = Convert.ToInt32(dataReader["StockNum"]);
+            model.MorningNum = Convert.ToInt32(dataReader["MorningNum"]);
+            model.MiddleNum = Convert.ToInt32(dataReader["MiddleNum"]);
+            model.EveningNum = Convert.ToInt32(dataReader["EveningNum"]);
             return model;
         }
     }

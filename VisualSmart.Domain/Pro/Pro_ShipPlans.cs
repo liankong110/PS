@@ -14,7 +14,10 @@ namespace VisualSmart.Domain.Pro
     public partial class Pro_ShipPlans : Entity
     {
         public Pro_ShipPlans()
-        { }
+        {
+            ///默认值=1 需求
+            SType = 1;
+        }
         #region Model
       
         private int _planid = 0;
@@ -47,6 +50,13 @@ namespace VisualSmart.Domain.Pro
         }
 
         #endregion Model
+
+        
+        private int _stype = 1;
+        /// <summary>
+        /// 1 需求，2 早班 ，3 中班， 4 晚班
+        /// </summary>
+        public int SType { get; set; }
 
     }
 }

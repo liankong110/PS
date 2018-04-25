@@ -23,5 +23,15 @@ namespace VisualSmart.BizService.Implements.Pro
         {
             return EntityDao.AddGetId(entity);
         }
+
+        /// <summary>
+        /// 修改时 使用 
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public IList<Pro_ShipPlan> GetPro_SchedulingByEdit(int Id)
+        {
+            return EntityDao.GetPro_SchedulingByEdit(Id);
+        }
     }
 }

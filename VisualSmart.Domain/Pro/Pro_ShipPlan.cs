@@ -115,5 +115,23 @@ namespace VisualSmart.Domain.Pro
 
         public string ShipDetailNo { get; set; }
 
+
+        /// <summary>
+        /// 产线ID
+        /// </summary>
+        public int SLineId { get; set; }
+        /// <summary>
+        /// 早班 产能
+        /// </summary>
+        public int MorningNum { get; set; }
+        /// <summary>
+        /// 中班 产能
+        /// </summary>
+        public int MiddleNum { get; set; }
+        /// <summary>
+        /// 晚班 产能
+        /// </summary>
+        public int EveningNum { get; set; }
+
     }
 }

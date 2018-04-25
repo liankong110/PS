@@ -65,5 +65,11 @@ namespace VisualSmart.Domain.Pro
         /// 产线信息
         /// </summary>
         public string ProLineNo { get; set; }
+        /// <summary>
+        /// 生产排产 产线ID
+        /// </summary>
+        public int LineId { get; set; }
+
+        public string SchedulingProNo { get; set; }
     }
 }

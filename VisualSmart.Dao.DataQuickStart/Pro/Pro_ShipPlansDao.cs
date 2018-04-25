@@ -170,5 +170,37 @@ FROM Pro_ShipPlans LEFT JOIN Pro_ShipPlan ON Pro_ShipPlans.PlanId = Pro_ShipPlan
             strSql.AppendFormat(" WHERE [PlanId] IN (SELECT ID FROM [dbo].[Pro_ShipPlan] WHERE GoodNo IN (select GoodNo from [dbo].[Base_ProductionLine] where ProLineNo IN ({0}))) ", lineNos);
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlans>(CommandType.Text, strSql.ToString(), MapRow, parameters);
         }
+
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Pro_ShipPlans> GetPro_SchedulingGoodsNumByEdit(int Id)
+        {            
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append(@"select Pro_SchedulingGoodsNum.SGoodId,SType,SDate,SNum FROM Pro_SchedulingLine
+left join Pro_SchedulingGoods  on Pro_SchedulingLine.Id=Pro_SchedulingGoods.SLineId
+left join Pro_SchedulingGoodsNum on Pro_SchedulingGoodsNum.SGoodId=Pro_SchedulingGoods.Id");
+            strSql.AppendFormat(" where [MainId]={0} and SType>-1", Id);
+            
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlans>(CommandType.Text, strSql.ToString(), MapRow_Pro_SchedulingGoodsNum, parameters);
+        }
+        /// <summary>
+        /// 列表基本参数
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="rowNum"></param>
+        /// <returns></returns>
+        public Pro_ShipPlans MapRow_Pro_SchedulingGoodsNum(IDataReader dataReader, int rowNum)
+        {
+            var model = new Pro_ShipPlans();
+            model.PlanId = (int)dataReader["SGoodId"];
+            model.SType=(int)dataReader["SType"];
+            model.PlanDate = (DateTime)dataReader["SDate"];
+            model.PlanNum = (int)dataReader["SNum"];           
+            return model;
+        }
     }
 }

@@ -12,7 +12,8 @@ namespace VisualSmart.Domain.Pro
         public Pro_PSDetail()
         { }
         #region Model
-       
+        public int MainId { get; set; }
+      
         private string _goodno = "";
         private string _goodname = "";
         private string _shipto = "";
@@ -23,7 +24,7 @@ namespace VisualSmart.Domain.Pro
         private int _stype = 0;
         private DateTime _starttime = DateTime.Now;
         private DateTime _endtime = DateTime.Now;
-         
+
         /// <summary>
         /// 产品编码
         /// </summary>
@@ -105,6 +106,15 @@ namespace VisualSmart.Domain.Pro
             get { return _endtime; }
         }
         #endregion Model
+        /// <summary>
+        /// 产能
+        /// </summary>
+        public int ChanNeng { get; set; }
+
+        public string STypeString { get; set; }
+
+        public string StartTimeString { get { return StartTime.ToString("yyyy-MM-dd HH:mm:ss"); } }
+        public string EndTimeString { get { return EndTime.ToString("yyyy-MM-dd HH:mm:ss"); } }
 
     }
 }

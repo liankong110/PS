@@ -22,6 +22,7 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
         {
             try
             {
+                entity.ProNo = GetProNo("Base_StockMain", "ProNo");
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Base_StockMain(");
                 strSql.Append("ProNo,CreateTime,Creater,UpdateTime,Updater,RowState)");
@@ -46,6 +47,7 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
         {
             try
             {
+                entity.ProNo = GetProNo("Base_StockMain", "ProNo");
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Base_StockMain(");
                 strSql.Append("ProNo,CreateTime,Creater,UpdateTime,Updater,RowState)");

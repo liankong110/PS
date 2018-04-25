@@ -14,5 +14,12 @@ namespace VisualSmart.BizService.Pro
         /// <param name="entity"></param>
         /// <returns></returns>
         int AddGetId(Pro_ShipPlan entity);
+
+        /// <summary>
+        /// 修改时 使用 
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        IList<Pro_ShipPlan> GetPro_SchedulingByEdit(int Id);
     }
 }

@@ -22,9 +22,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             {
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Pro_PSDetail(");
-                strSql.Append("GoodNo,GoodName,ShipTo,ShipToName,PackNum,Qty,ProOrderIndex,SType,StartTime,EndTime)");
+                strSql.Append("MainId,GoodNo,GoodName,ShipTo,ShipToName,PackNum,Qty,ChanNeng,ProOrderIndex,SType,StartTime,EndTime)");
                 strSql.Append(" values (");
-                strSql.Append("@GoodNo,@GoodName,@ShipTo,@ShipToName,@PackNum,@Qty,@ProOrderIndex,@SType,@StartTime,@EndTime)");
+                strSql.Append("@MainId,@GoodNo,@GoodName,@ShipTo,@ShipToName,@PackNum,@Qty,@ChanNeng,@ProOrderIndex,@SType,@StartTime,@EndTime)");
                 strSql.Append(";select @@IDENTITY");
                 var parameters = GetBaseParams(entity);
                 return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
@@ -45,12 +45,14 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         {
             StringBuilder strSql = new StringBuilder();
             strSql.Append("update Pro_PSDetail set ");
+            strSql.Append("MainId=@MainId,");            
             strSql.Append("GoodNo=@GoodNo,");
             strSql.Append("GoodName=@GoodName,");
             strSql.Append("ShipTo=@ShipTo,");
             strSql.Append("ShipToName=@ShipToName,");
             strSql.Append("PackNum=@PackNum,");
             strSql.Append("Qty=@Qty,");
+            strSql.Append("ChanNeng=@ChanNeng,");            
             strSql.Append("ProOrderIndex=@ProOrderIndex,");
             strSql.Append("SType=@SType,");
             strSql.Append("StartTime=@StartTime,");
@@ -85,7 +87,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("select Id,GoodNo,GoodName,ShipTo,ShipToName,PackNum,Qty,ProOrderIndex,SType,StartTime,EndTime ");
+            strSql.Append("select Id,MainId,GoodNo,GoodName,ShipTo,ShipToName,PackNum,Qty,ChanNeng,ProOrderIndex,SType,StartTime,EndTime ");
             strSql.Append(" FROM Pro_PSDetail ");
             if (query.GetPager() != null)
             {
@@ -115,6 +117,8 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             {
                 model.Id = (int)ojb;
             }
+            model.MainId = Convert.ToInt32(dataReader["MainId"]);
+            model.ChanNeng = Convert.ToInt32(dataReader["ChanNeng"]);            
             model.GoodNo = dataReader["GoodNo"].ToString();
             model.GoodName = dataReader["GoodName"].ToString();
             model.ShipTo = dataReader["ShipTo"].ToString();
@@ -160,6 +164,8 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         private IDbParameters GetBaseParams(Pro_PSDetail entity)
         {
             var parameters = ReadAdoTemplate.CreateDbParameters();
+            parameters.Add("MainId", DbType.Int32).Value = entity.MainId;
+            parameters.Add("ChanNeng", DbType.Int32).Value = entity.ChanNeng;            
             parameters.Add("GoodNo", DbType.String).Value = entity.GoodNo;
             parameters.Add("GoodName", DbType.String).Value = entity.GoodName;
             parameters.Add("ShipTo", DbType.String).Value = entity.ShipTo;

@@ -8,8 +8,10 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using VisualSmart.BizService.Core;
 using VisualSmart.Domain;
 using VisualSmart.Domain.SetUp;
+using VisualSmart.Util;
 
 namespace PS.Controllers
 {
@@ -23,6 +25,31 @@ namespace PS.Controllers
         {
             get
             {
+                if (Session["User"] == null)
+                {
+                    string domainName = Environment.UserDomainName;
+                    string username = Environment.UserName;
+                    var LoginId = domainName + "\\" + username;
+                    var userList = Smart.Instance.UserBizService.GetAllDomain(QueryCondition.Instance.AddEqual("LoginId", LoginId));
+                    if (userList.Count == 0)
+                    {
+                        //新增
+                        var user = new UserDomain();
+                        user.loginPwd = MD5Util.Encrypt("123456");
+                        user.RowState = 1;
+                        user.Creater = "system";
+                        user.Updater = "system";
+                        user.loginId = LoginId;
+                        user.Name = username;
+                        Smart.Instance.UserBizService.Add_Update_User_Role(user, System.Configuration.ConfigurationManager.AppSettings["DefaultRoleId"], "system");
+                        user.Id = Smart.Instance.UserBizService.GetAllDomain(QueryCondition.Instance.AddEqual("LoginId", LoginId))[0].Id;
+                        Session["User"] = user;
+                    }
+                    else
+                    {
+                        Session["User"] = userList[0];
+                    }
+                }
                 return Session["User"] as UserDomain;
             }
 
@@ -221,6 +248,13 @@ namespace PS.Controllers
         public virtual string LoadExcel(string file)
         {
             throw new Exception("请实现方法");
+        }
+
+        public void LoadSystem()
+        {
+            string domainName = Environment.UserDomainName;
+            string username = Environment.UserName;
+
         }
     }
 }

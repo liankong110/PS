@@ -31,26 +31,62 @@ namespace PS.Controllers.Pro
         /// <param name="page"></param>
         /// <returns></returns>
         [ViewPageAttribute]
-        public ActionResult Index(string proLineNosList, string StockId, string ShipMainProNo, int Id = 0, int page = 1)
+        public ActionResult Index(string proLineNosList, string StockId, string ShipMainProNo, int Id = 0,int MainId=0, int page = 1)
         {
-            ViewBag.Id = Id;
-            var query = QueryCondition.Instance.AddEqual("LineNos", proLineNosList).AddEqual("StockMainId", StockId);
-            //发运计划产品信息
-            var shipPlanList = Smart.Instance.Pro_ShipPlanBizService.GetAllDomainByLineNos(query).ToList();
+            List<Pro_ShipPlan> shipPlanList = new List<Pro_ShipPlan>();
+            List<Pro_ShipPlans> _shipPlansList = new List<Pro_ShipPlans>();
+            List<Pro_SchedulingLine> pro_SchedulingLineList = new List<Pro_SchedulingLine>();
+            if (MainId == 0)
+            {
+                ViewBag.Id = Id;
+                var query = QueryCondition.Instance.AddEqual("LineNos", proLineNosList).AddEqual("StockMainId", StockId);
+                //发运计划产品信息
+                shipPlanList = Smart.Instance.Pro_ShipPlanBizService.GetAllDomainByLineNos(query).ToList();
 
-            //发运计划时间段
-            var mainDate = Smart.Instance.Pro_ShipPlanMainBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", false))[0];
-            ViewBag.MainDate = mainDate;
+                //发运计划时间段
+                var mainDate = Smart.Instance.Pro_ShipPlanMainBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", false))[0];
+                ViewBag.MainDate = mainDate;
+
+                //发运时间明细
+                _shipPlansList = Smart.Instance.Pro_ShipPlansBizService.GetAllDomainByLineNos(query).ToList();
+                ViewBag.ShipPlansList = _shipPlansList;
+
+                //生产线
+                var ProLineNos = proLineNosList.Replace("'", "").Split(',').ToList();
+
+                foreach (var line in ProLineNos)
+                {
+                    var lineModel = new Pro_SchedulingLine();
+                    lineModel.ProLineNo = line;
+                    pro_SchedulingLineList.Add(lineModel);
+                }
+
+                ViewBag.ShipMainProNo = ShipMainProNo;
+                ViewBag.SchedulingList = pro_SchedulingLineList;
+                return View(shipPlanList);
+            }
+            ViewBag.Id = Id;
+            //发运计划产品信息
+            var schedulingModel = Smart.Instance.Pro_SchedulingBizService.GetAllDomain(QueryCondition.Instance.AddEqual("Id", MainId.ToString())).ToList()[0];
+            Pro_ShipPlanMain model = new Pro_ShipPlanMain
+            {
+                PlanFromDate = schedulingModel.PlanFromDate,
+                PlanFromTo = schedulingModel.PlanToDate
+            };
+            ViewBag.MainDate = model;
+            //获取所有产线信息
+            pro_SchedulingLineList = Smart.Instance.Pro_SchedulingLineBizService.GetAllDomain(QueryCondition.Instance.AddEqual("MainId", MainId.ToString())).ToList();
+            ViewBag.SchedulingList = pro_SchedulingLineList;
+
+            //发运计划产品信息
+            shipPlanList = Smart.Instance.Pro_ShipPlanBizService.GetPro_SchedulingByEdit(MainId).ToList();
 
             //发运时间明细
-            var shipPlansList = Smart.Instance.Pro_ShipPlansBizService.GetAllDomainByLineNos(query);
-            ViewBag.ShipPlansList = shipPlansList;
+            _shipPlansList = Smart.Instance.Pro_ShipPlansBizService.GetPro_SchedulingGoodsNumByEdit(MainId).ToList();
+            ViewBag.ShipPlansList = _shipPlansList;
 
-            //生产线
-            ViewBag.ProLineNos = proLineNosList.Replace("'", "").Split(',').ToList();
-            ViewBag.ShipMainProNo = ShipMainProNo;
             return View(shipPlanList);
-        }
+        } 
 
         /// <summary>
         /// 获取产能，根据产线 商品 人数
@@ -86,6 +122,7 @@ namespace PS.Controllers.Pro
             {
                 model.ProNo = "20180410001";
                 model.Creater = model.Updater = CurrentUser.Name;
+                model.RowState = 1;
                 return Json(new { Mess = "success", Id = Smart.Instance.Pro_SchedulingBizService.AddGetId(model) });
             }
             Smart.Instance.Pro_SchedulingBizService.Update(model);
@@ -101,6 +138,7 @@ namespace PS.Controllers.Pro
         [HttpPost]
         public JsonResult AddPro_SchedulingLine(Pro_SchedulingLine model)
         {
+            model.RowState = 1;
             return Json(new { Mess = "success", Id = Smart.Instance.Pro_SchedulingLineBizService.AddGetId(model) });
         }
 

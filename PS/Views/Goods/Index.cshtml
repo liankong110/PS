@@ -1,16 +1,16 @@
 ﻿@{
-    ViewBag.Title = "PS查询";
+    ViewBag.Title = "产品信息设置";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@using VisualSmart.Domain.Pro;
+@using VisualSmart.Domain.ProBase;
 @using VisualSmart.Util;
-@model IList<Pro_PS>
+@model IList<Base_Goods>
 
 <div class="page-content">
 
     <div class="page-header">
         <h1>
-            PS查询
+            产品信息设置
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 查询条件
@@ -19,26 +19,18 @@
     </div><!-- /.page-header -->
     <div class="row">
         <div class="col-xs-12">
-            <form class="form-horizontal " role="form" action="/PS/Index" id="index" method="get">
+            <form class="form-horizontal " role="form" action="/Goods/Index" id="index" method="get">
                 <input type="hidden" id="page" name="page" />
                 @Html.AntiForgeryToken()
                 <!-- 查询条件-->
                 <div class="form-group" style="margin-bottom:6px;">
-                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">单号：</label>
-                    <div class="col-sm-2">
-                        <input type="text" name="ProNo" id="ProNo" placeholder="名称" value="@ViewBag.ProNo" />
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产品编号：</label>
+                    <div class="col-sm-3 ">
+                        <input type="text" name="GoodNo" id="GoodNo" placeholder="产品编号" value="@ViewBag.GoodNo" />
                     </div>
-                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产线：</label>
-                    <div class="col-sm-2 ">
-                        <input type="text" name="LineNo" id="LineNo" placeholder="产线" value="@ViewBag.LineNo" />
-                    </div>
-                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">生产日期：</label>
-                    <div class="col-sm-2 ">
-                        <input type="text" name="DateFrom" id="DateFrom" placeholder="开始日期"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" readonly="readonly" value="@ViewBag.DateFrom" />
-                    </div>
-                    
-                    <div class="col-sm-2 ">
-                        <input type="text" name="DateTo" id="DateTo" placeholder="结束日期"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" readonly="readonly" value="@ViewBag.DateTo" />
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产品名称：</label>
+                    <div class="col-sm-3 ">
+                        <input type="text" name="GoodName" id="GoodName" placeholder="产品名称" value="@ViewBag.GoodName" />
                     </div>
                 </div>
                 <hr class="no-padding no-margin" />
@@ -52,7 +44,15 @@
                                     <button class="btn btn-sm btn-success" type="submit">
                                         <i class="ace-icon fa fa-search bigger-110 "></i>
                                         查询
-                                    </button>                                    
+                                    </button>
+                                    <a class="btn btn-sm btn-primary " href="/Goods/Add">
+                                        <i class="ace-icon fa fa-plus bigger-110"></i>
+                                        手工添加
+                                    </a>
+                                    <a class="btn btn-sm btn-primary " href="/Goods/ImportData">
+                                        <i class="ace-icon fa fa-plus bigger-110"></i>
+                                        Excel导入添加
+                                    </a>
                                 </p>
                                 <!-- /section:elements.button.white -->
                             </div><!-- /.col -->
@@ -67,15 +67,16 @@
                                     <thead>
                                         <tr>
                                             <th>操作</th>
-                                            <th>单号</th>
-                                            <th>生产计划单号</th>
-                                            <th>产线</th>
-                                            <th>生产日期</th>
-                                            <th>早班人数</th>
-                                            <th>中班人数</th>
-                                            <th>晚班人数</th>
-                                            <th>创建时间/创建人</th>
+                                            <th>发运地编号</th>
+                                            <th>发运地名称</th>
+                                            <th>产品编号</th>
+                                            <th>产品名称</th>
+                                            <th>P/M/L</th>
+                                            <th>整托包装数</th>
+                                            <th>UM</th>
+                                            <th>库存标准天数</th>
                                             <th>修改时间/修改人</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -85,7 +86,7 @@
                                                 <td>
 
                                                     <div class="btn-group">
-                                                        <a href="/PS/edit?PSId=@m.Id" class="btn btn-xs btn-info" title="编辑">
+                                                        <a href="/Goods/Add?Id=@m.Id" class="btn btn-xs btn-info" title="编辑">
                                                             <i class="ace-icon fa fa-pencil bigger-120"></i>
                                                         </a>
 
@@ -94,15 +95,15 @@
                                                         </a>
                                                     </div>
                                                 </td>
-                                                <td>@m.ProNo</td>
-                                                <td>@m.SchedulingProNo</td>
-                                                <td>@m.ProLineNo</td>
-                                                <td>@m.ProDate.ToString("yyyy-MM-dd")</td>
-                                                <td>@m.FinalMorningNum</td>
-                                                <td>@m.FinalMiddleNum</td>
-                                                <td>@m.FinalEveningNum</td>
+                                                <td>@m.ShipTo</td>
+                                                <td>@m.ShipToName</td>
+                                                <td>@m.GoodNo</td>
+                                                <td>@m.GoodName</td>
+                                                <td>@m.PML</td>
+                                                <td>@m.ShipPkgQty</td>
+                                                <td>@m.UM</td>
+                                                <td>@m.StandardDays</td>
                                                 <td class="am-hide-sm-only">@m.CreateTime/@m.Creater</td>
-                                                <td class="am-hide-sm-only">@m.UpdateTime/@m.Updater</td>
 
 
                                             </tr>
@@ -141,7 +142,6 @@
 <script src="~/Content/components/datatables.net-buttons/js/buttons.print.js"></script>
 <script src="~/Content/components/datatables.net-buttons/js/buttons.colVis.js"></script>
 <script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
-<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
 <script type="text/javascript">
 
     function PostForm(page) {
@@ -152,7 +152,7 @@
     //删除
     function Delete(id) {
         if (confirm("确定要删除此数据吗?") == true) {
-            var url = "/Stock/Delete/?id=" + id;
+            var url = "/Goods/Delete/?id=" + id;
             $.ajax({
                 data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
                 url: url,

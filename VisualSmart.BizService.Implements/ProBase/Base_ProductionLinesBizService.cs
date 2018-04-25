@@ -31,5 +31,15 @@ namespace VisualSmart.BizService.Implements.ProBase
         {
             return EntityDao.DeleteByMainId(MainId);
         }
+
+        /// <summary>
+        /// 根据生产计划 产线 和 商品获取对应的产能信息
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Base_ProductionLines> GetAllDomainByScheduing(QueryCondition query)
+        {
+            return EntityDao.GetAllDomainByScheduing(query);
+        }
     }
 }

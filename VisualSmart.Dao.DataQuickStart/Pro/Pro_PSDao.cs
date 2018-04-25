@@ -20,11 +20,12 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         {
             try
             {
+                entity.ProNo= GetProNo("Pro_PS", "ProNo");
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Pro_PS(");
-                strSql.Append("ProNo,ProLineNo,ProDate,FinalMorningNum,FinalMiddleNum,FinalEveningNum,CreateTime,Creater,UpdateTime,Updater,RowState)");
+                strSql.Append("ProNo,SchedulingProNo,LineId,ProLineNo,ProDate,FinalMorningNum,FinalMiddleNum,FinalEveningNum,CreateTime,Creater,UpdateTime,Updater,RowState)");
                 strSql.Append(" values (");
-                strSql.Append("@ProNo,@ProLineNo,@ProDate,@FinalMorningNum,@FinalMiddleNum,@FinalEveningNum,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
+                strSql.Append("@ProNo,@SchedulingProNo,@LineId,@ProLineNo,@ProDate,@FinalMorningNum,@FinalMiddleNum,@FinalEveningNum,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
                 strSql.Append(";select @@IDENTITY");
                 var parameters = GetBaseParams(entity);
                 return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
@@ -35,7 +36,31 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
                 throw;
             }
         }
+        /// <summary>
+        /// 新增
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public int AddGetId(Pro_PS entity)
+        {
+            try
+            {
+                entity.ProNo = GetProNo("Pro_PS", "ProNo");
+                StringBuilder strSql = new StringBuilder();
+                strSql.Append("insert into Pro_PS(");
+                strSql.Append("ProNo,SchedulingProNo,LineId,ProLineNo,ProDate,FinalMorningNum,FinalMiddleNum,FinalEveningNum,CreateTime,Creater,UpdateTime,Updater,RowState)");
+                strSql.Append(" values (");
+                strSql.Append("@ProNo,@SchedulingProNo,@LineId,@ProLineNo,@ProDate,@FinalMorningNum,@FinalMiddleNum,@FinalEveningNum,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
+                strSql.Append(";select @@IDENTITY");
+                var parameters = GetBaseParams(entity);
+                return Convert.ToInt32(ReadAdoTemplate.ExecuteScalar(CommandType.Text, strSql.ToString(), parameters));
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+        }
         /// <summary>
         /// 修改
         /// </summary>
@@ -43,11 +68,17 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         /// <returns></returns>
         public override bool Update(Pro_PS entity)
         {
+            //修改数据时 同时删除子数据明细
+            string deleteSQL = string.Format("delete from Pro_PSDetail where MainId={0}",entity.Id);
+            ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, deleteSQL);
+
+            //修改数据
             StringBuilder strSql = new StringBuilder();
             strSql.Append("update Pro_PS set ");
+            strSql.Append("SchedulingProNo=@SchedulingProNo,");
             strSql.Append("ProNo=@ProNo,");
             strSql.Append("ProLineNo=@ProLineNo,");
-            
+            strSql.Append("LineId=@LineId,");
             strSql.Append("ProDate=@ProDate,");
             strSql.Append("FinalMorningNum=@FinalMorningNum,");
             strSql.Append("FinalMiddleNum=@FinalMiddleNum,");
@@ -87,7 +118,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("select Id,ProNo,ProLineNo,ProDate,FinalMorningNum,FinalMiddleNum,FinalEveningNum,CreateTime,Creater,UpdateTime,Updater,RowState ");
+            strSql.Append("select Id,SchedulingProNo,ProNo,LineId,ProLineNo,ProDate,FinalMorningNum,FinalMiddleNum,FinalEveningNum,CreateTime,Creater,UpdateTime,Updater,RowState ");
             strSql.Append(" FROM Pro_PS ");
             if (query.GetPager() != null)
             {
@@ -119,7 +150,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             }
             model.ProNo = dataReader["ProNo"].ToString();
             model.ProLineNo = dataReader["ProLineNo"].ToString();
-            
+            model.LineId = Convert.ToInt32(dataReader["LineId"]);
+            model.SchedulingProNo = dataReader["SchedulingProNo"].ToString();
+
             ojb = dataReader["ProDate"];
             if (ojb != null && ojb != DBNull.Value)
             {
@@ -168,12 +201,14 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         private IDbParameters GetBaseParams(Pro_PS entity)
         {
             var parameters = ReadAdoTemplate.CreateDbParameters();
+            parameters.Add("SchedulingProNo", DbType.String).Value = entity.SchedulingProNo;
             parameters.Add("ProNo", DbType.String).Value = entity.ProNo;
+            parameters.Add("LineId", DbType.Int32).Value = entity.LineId;
             parameters.Add("ProLineNo", DbType.String).Value = entity.ProLineNo;
             parameters.Add("ProDate", DbType.Date).Value = entity.ProDate;
-            parameters.Add("FinalMiddleNum", DbType.Int32).Value = entity.FinalMiddleNum;
-            parameters.Add("FinalEveningNum", DbType.Int32).Value = entity.FinalEveningNum;
-            parameters.Add("FinalMorningNum", DbType.Int32).Value = entity.FinalMorningNum;
+            parameters.Add("FinalMiddleNum", DbType.Int32).Value = entity.FinalMiddleNum ?? 0;
+            parameters.Add("FinalEveningNum", DbType.Int32).Value = entity.FinalEveningNum ?? 0;
+            parameters.Add("FinalMorningNum", DbType.Int32).Value = entity.FinalMorningNum ?? 0;
 
             parameters.Add("CreateTime", SqlDbType.NVarChar).Value = DateTime.Now;
             parameters.Add("Creater", SqlDbType.NVarChar).Value = entity.Creater ?? "";

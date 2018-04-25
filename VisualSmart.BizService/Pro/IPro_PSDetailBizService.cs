@@ -7,6 +7,6 @@ namespace VisualSmart.BizService.Pro
 {
     public interface IPro_PSDetailBizService : IEntityBizService<Pro_PSDetail>
     {
-        IList<Pro_PSDetail> GetPSDetailBySchedulingLineId(Pro_PS model,int SchedulingLineId, DateTime SDate);
+        IList<Pro_PSDetail> GetPSDetailBySchedulingLineId(Pro_PS model, Pro_SchedulingLine fristLine, DateTime SDate);
     }
 }

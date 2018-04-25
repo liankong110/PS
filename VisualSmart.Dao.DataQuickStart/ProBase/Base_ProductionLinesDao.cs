@@ -179,6 +179,27 @@ left join Pro_ShipPlanMain on Pro_ShipPlanMain.ID = Pro_ShipPlan.MainId");
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Base_ProductionLines>(CommandType.Text, strSql.ToString(), MapRowByLineNoAndGoodNos, parameters);
         }
 
+
+        /// <summary>
+        /// 根据生产计划 产线 和 商品获取对应的产能信息
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Base_ProductionLines> GetAllDomainByScheduing(QueryCondition query)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("select distinct Base_ProductionLine.GoodNo,People,Number from[Base_ProductionLines]");
+            strSql.Append("left join [Base_ProductionLine] on Base_ProductionLine.ID=[Base_ProductionLines].ProLineId");
+            strSql.Append(@" left join Pro_SchedulingGoods on Pro_SchedulingGoods.GoodNo=Base_ProductionLine.GoodNo
+left join Pro_SchedulingGoodsNum on Pro_SchedulingGoodsNum.SGoodId=Pro_SchedulingGoods.Id");
+            strSql.AppendFormat(" where SlineId={0}", query.GetCondition("LineId").Value);
+            strSql.AppendFormat(" and SDate='{0}'", query.GetCondition("ProDate").Value);
+            strSql.AppendFormat(" and People in({0})", query.GetCondition("People").Value);
+
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Base_ProductionLines>(CommandType.Text, strSql.ToString(), MapRowByLineNoAndGoodNos, parameters);
+        }
+
         /// <summary>
         /// 列表基本参数
         /// </summary>

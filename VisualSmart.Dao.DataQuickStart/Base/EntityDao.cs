@@ -146,5 +146,30 @@ namespace VisualSmart.Dao.DataQuickStart.Base
 
             return strSql.ToString();
         }
+
+        /// <summary>
+        /// 获取最大的单号信息 年+月+日+3位流水号
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="column"></param>
+        /// <returns></returns>
+        public string GetProNo(string tableName,string column)
+        {
+            string date = string.Format("{0:yyyyMMdd}", DateTime.Now);
+            string maxProNo = "";
+            string sql = string.Format("select  right('0000000000'+(convert(varchar,(convert(int,right(max({2}),3))+1))),3) FROM  {0} where {2} like '{1}%';",
+                tableName, date, column);    
+            object objMax = ReadAdoTemplate.ExecuteScalar(CommandType.Text, sql);
+            if (objMax != null && objMax.ToString() != "")
+            {
+                maxProNo = date + objMax.ToString();
+            }
+            else
+            {
+                maxProNo = date + "001";
+            }
+            return maxProNo;
+            
+        }
     }
 }

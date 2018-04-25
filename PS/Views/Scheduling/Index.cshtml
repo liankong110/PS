@@ -5,10 +5,12 @@
 @using VisualSmart.Domain.Pro;
 @using VisualSmart.Util;
 @using PS.Models;
+@using VisualSmart.Util.Menus;
 @model IList<Pro_ShipPlan>
 @{
     var mainPlan = ViewBag.MainDate as Pro_ShipPlanMain;
-    var shipPlansList = ViewBag.ShipPlansList as List<Pro_ShipPlans>;
+
+    List<Pro_ShipPlans> _shipPlansList = (List<Pro_ShipPlans>)ViewBag.ShipPlansList;
 }
 <link href="~/Scripts/handsontable/handsontable.full.min.css" rel="stylesheet" />
 <script src="~/Scripts/handsontable/handsontable.full.min.js"></script>
@@ -21,7 +23,7 @@
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 填写信息后，进行保存
-                <button class="btn btn-sm btn-primary " id="save"  type="button">
+                <button class="btn btn-sm btn-primary " id="save" type="button">
                     <i class="ace-icon fa fa-save bigger-110"></i>
                     保存
                 </button>
@@ -47,7 +49,7 @@
                         <!-- 查询列表 -->
                         <div class="row">
                             @{
-                                List<string> proLineNos = ViewBag.ProLineNos as List<string>;
+                                List<Pro_SchedulingLine> proLineNos = ViewBag.SchedulingList as List<Pro_SchedulingLine>;
                                 int lineIndex = 0;
                             }
                             <div class="col-xs-12 table-responsive">
@@ -72,7 +74,7 @@
                                         @foreach (var line in proLineNos)
                                         {
                                             <tr>
-                                                <td>@line</td>
+                                                <td>@line.ProLineNo</td>
                                                 @if (mainPlan != null)
                                                 {
                                                     for (int i = 0; i < 21; i++)
@@ -113,7 +115,7 @@
                     }
                     @for (int ii = 0; ii < proLineNos.Count; ii++)
                     {
-                        string line = proLineNos[ii];
+                        string line = proLineNos[ii].ProLineNo;
                         allLines += string.Format("{0},", line);
                         if (ii == 0)
                         {
@@ -168,7 +170,7 @@
                     }
                     @foreach (var line in proLineNos)
                     {
-                        var currentLineList = Model.ToList().FindAll(t => t.ProLineNo == line);
+                        var currentLineList = Model.ToList().FindAll(t => t.ProLineNo == line.ProLineNo);
                         List<object> dataNumList = new List<object>();
                         string goodNos = "";
                         string temoGoodNos = "";
@@ -190,11 +192,11 @@
                         string hot = "hot" + startIndex;
                         var id = "line" + startIndex;
 
-                        var ZBPeople = line + "ZB";
-                        var MBPeople = line + "MB";
-                        var WBPeople = line + "WB";
-                        var goodsLine = line + "Goods";
-                        var tempGoodsLine = "temp" + line + "Goods";
+                        var ZBPeople = line.ProLineNo + "ZB";
+                        var MBPeople = line.ProLineNo + "MB";
+                        var WBPeople = line.ProLineNo + "WB";
+                        var goodsLine = line.ProLineNo + "Goods";
+                        var tempGoodsLine = "temp" + line.ProLineNo + "Goods";
 
                         <div id="@id" class="@startClass" style="@startDivClass">
                             <div class="row">
@@ -205,26 +207,20 @@
                                         <input type="hidden" value="@temoGoodNos" id="@tempGoodsLine" />
                                         <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">早班人数：</label>
                                         <div class="col-sm-2 ">
-                                            <input type="text" name="@ZBPeople" id="@ZBPeople" placeholder="早班人数" onchange="sumGongShiAndChanNeng(@startIndex,'@line',@currentLineList.Count);" value="@ViewBag.RoleName" />
+                                            <input type="text" name="@ZBPeople" id="@ZBPeople" placeholder="早班人数" onchange="sumGongShiAndChanNeng(@startIndex,'@line.ProLineNo',@currentLineList.Count);" value="@line.MorningShift" />
 
                                         </div>
                                         <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">中班人数：</label>
                                         <div class="col-sm-2 ">
-                                            <input type="text" name="@MBPeople" id="@MBPeople" placeholder="中班人数" onchange="sumGongShiAndChanNeng(@startIndex,'@line',@currentLineList.Count);" value="@ViewBag.RoleName" />
+                                            <input type="text" name="@MBPeople" id="@MBPeople" placeholder="中班人数" onchange="sumGongShiAndChanNeng(@startIndex,'@line.ProLineNo',@currentLineList.Count);" value="@line.MiddleShift" />
 
                                         </div>
                                         <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">晚班人数：</label>
                                         <div class="col-sm-3 ">
-                                            <input type="text" name="@WBPeople" id="@WBPeople" placeholder="晚班人数" onchange="sumGongShiAndChanNeng(@startIndex,'@line',@currentLineList.Count);" value="@ViewBag.RoleName" />
+                                            <input type="text" name="@WBPeople" id="@WBPeople" placeholder="晚班人数" onchange="sumGongShiAndChanNeng(@startIndex,'@line.ProLineNo',@currentLineList.Count);" value="@line.EveningShift" />
 
                                         </div>
 
-                                        @*<div class="col-sm-2 ">
-                                                <a class="btn btn-sm btn-success" href="/PS/edit?SchedulingLineId=1&SDate=2017-11-26" target="_blank">
-                                                    <i class="ace-icon fa fa-undo bigger-110 "></i>
-                                                    PS 确认
-                                                </a>
-                                            </div>*@
                                     </div>
                                     <hr class="no-padding" />
 
@@ -238,7 +234,6 @@
                         foreach (var m in currentLineList)
                         {
                             //需求
-
                             var xu_obj = new HotData();
                             xu_obj.Type = "需求";
                             xu_obj.StockNum = m.Qty;
@@ -246,6 +241,7 @@
                             var zao_obj = new HotData();
                             zao_obj.Type = "早班";
                             zao_obj.StockNum = m.Qty;
+                            zao_obj.ChanNeng = m.MorningNum > 0 ? m.MorningNum.ToString() : null;
                             //中
                             var zhong_obj = new HotData();
                             zhong_obj.GoodNo = m.GoodNo;
@@ -255,11 +251,12 @@
                             zhong_obj.Type = "中班";
                             zhong_obj.ChanNeng = null;
                             zhong_obj.StockNum = m.Qty;
+                            zhong_obj.ChanNeng =m.MiddleNum > 0 ? m.MiddleNum.ToString() : null;
                             //晚
                             var wan_obj = new HotData();
                             wan_obj.Type = "晚班";
                             wan_obj.StockNum = m.Qty;
-
+                            wan_obj.ChanNeng = m.EveningNum > 0 ? m.EveningNum.ToString() : null;
                             //需求差异
                             var xuqiu_obj = new HotData();
                             xuqiu_obj.Type = "需求差异";
@@ -268,12 +265,16 @@
 
                             //供需求差异
                             var gongxuqiu_obj = new HotData();
-                            gongxuqiu_obj.GoodNo = "整箱包装数";
-                            gongxuqiu_obj.GoodName = "10";
+                            //gongxuqiu_obj.GoodNo = "整箱包装数";
+                            //gongxuqiu_obj.GoodName = "10";
                             gongxuqiu_obj.Type = "供需求差异";
 
                             List<SchedulingDateNumModel> dateNumList = new List<SchedulingDateNumModel>();
-                            var currentLineShipPlansList = shipPlansList.FindAll(t => t.PlanId == m.Id);
+                            var currentLineShipPlansList = _shipPlansList.FindAll(t => t.PlanId == m.Id);
+                            var requestInt = (int)ClassType.Requet;
+                            var morningInt = (int)ClassType.Morning;
+                            var middleInt = (int)ClassType.Middle;
+                            var eveningInt = (int)ClassType.Evening;
                             if (mainPlan != null)
                             {
                                 for (int i = 0; i < 21; i++)
@@ -289,13 +290,37 @@
                                     }
 
                                     var date = mainPlan.PlanFromDate.AddDays(i);
-                                    var item = currentLineShipPlansList.Find(t => t.PlanDate == date);
+                                    var itemList = currentLineShipPlansList.FindAll(t => t.PlanDate == date);
                                     dateNumModel.date = date;
-
-                                    if (item != null)
+                                    if (itemList.Count > 0)
                                     {
-                                        HotHelp.SetValue(xu_obj, item.PlanNum, i);
-                                        dateNumModel.RequestNum = item.PlanNum;
+                                        int sumPlanNum = 0;
+                                        var item = itemList.Find(t => t.SType == requestInt);
+                                        if (item != null)
+                                        {
+                                            HotHelp.SetValue(xu_obj, item.PlanNum, i);
+                                            dateNumModel.RequestNum = item.PlanNum;
+                                        }
+
+                                        item = itemList.Find(t => t.SType == morningInt);
+                                        if (item != null)
+                                        {
+                                            HotHelp.SetValue(zao_obj, item.PlanNum, i);
+                                            dateNumModel.MorningNum = item.PlanNum;
+                                        }
+                                        item = itemList.Find(t => t.SType == middleInt);
+                                        if (item != null)
+                                        {
+                                            HotHelp.SetValue(zhong_obj, item.PlanNum, i);
+                                            dateNumModel.MiddleNum = item.PlanNum;
+                                        }
+                                        item = itemList.Find(t => t.SType == eveningInt);
+                                        if (item != null)
+                                        {
+                                            HotHelp.SetValue(wan_obj, item.PlanNum, i);
+                                            dateNumModel.EveningNum = item.PlanNum;
+                                        }
+
                                     }
 
                                     dateNumList.Add(dateNumModel);
@@ -834,28 +859,59 @@
         }
         return val;
     }
-    $("#save").one("click",function(){        
+
+    function LoadSum(){
+        var allLines=$("#allLines").val().split(',');
+        console.log(allLines.length);
+        for(var i=0;i<allLines.length;i++){
+            var hot=allHotList[i];
+            for (var day = 7; day <= 28; day++) {
+              
+                var colDataList=hot.getDataAtCol(day);
+                var sum=0;
+                for(var i=1;i<colDataList.length;i++){
+
+                    if ((i - 1) % 6 == 0||(i - 2) % 6 == 0||(i - 3) % 6 == 0) {
+                        //早
+                        var channeng=hot.getDataAtCell(i,5);
+                        if(channeng!=null&&colDataList[i]!=null){
+                            //转换成秒
+                            sum+=colDataList[i]/channeng*60*60;
+                        }
+                    }
+
+                }
+                //实际工时数=SUM（零件的早班生产量/早班人数的产能量+零件的中班生产量/中班人数的产能量+零件的晚班生产量/晚班人数的产能量）
+                //注意：1）早中晚班的工时要换算成秒，才可以相加，最终的总工时才可以换算成小时。
+                //2）SUM是将所有零件的所有工时，加总到一起。
+                //3）建议，每更新一个生产计划，相关的需求差异和实际工时数会自动更新。
+                if (sum == 0) {
+                    $("#sum"+currentLineIndex+(day-7)).html("");
+                }else{
+                    $("#sum"+currentLineIndex+(day-7)).html((sum/3600).toFixed(2));
+                }
+            }
+        }
+    }
+
+    window.onload=LoadSum();
+    $("#save").one("click",function(){
         $.ajax({
             beforeSend: function(){
                 // Handle the beforeSend event
                 $("#save").text("正在保存，请等候.....");
                 $("#save").attr({ disabled: "disabled" });
             },
-            async: true, 
+            async: true,
             complete:function(){
                 SaveData();
-            }
-
-
-            // ......
-        });
-      
-      
+            } 
+        }); 
     });
     //保存信息
     function SaveData(){
-       
-        
+
+
         //1.先保存表头 [Pro_Scheduling] 纪录开始时间 ，结束时间，发运单信息 获取一个ID
         var scheduling_Id=0;
         var pro_Scheduling=
@@ -870,7 +926,7 @@
             url: url,
             type: 'post',
             async: false,
-            cache: false,           
+            cache: false,
             success: function (data) {
                 if (data.Mess == "success") {
                     //如果没有找到对应的人数产能的信息则情况
@@ -918,73 +974,20 @@
                     //21 列
                     for(var rowIndex=0;rowIndex<= hot.countRows();rowIndex=rowIndex+6){
 
-                        var xuDetail=hot.getDataAtRow(rowIndex);                       
-                        var zaoDetail=hot.getDataAtRow(rowIndex+1);                       
-                        var zhongDetail=hot.getDataAtRow(rowIndex+2);                      
+                        var xuDetail=hot.getDataAtRow(rowIndex);
+                        var zaoDetail=hot.getDataAtRow(rowIndex+1);
+                        var zhongDetail=hot.getDataAtRow(rowIndex+2);
                         var wanDetail=hot.getDataAtRow(rowIndex+3);
                         if(zhongDetail[0]==null){
                             continue;
                         }
 
-                        //3.保存 产线+库存+产能信息
-                        @*var Pro_SchedulingGoods=
-                            {
-                                Date:'@mainPlan.PlanFromDate',
-                                SLineId:SLineId,                               
-                                RowsItems:[]
-                            };*@
+                        //3.保存 产线+库存+产能信息                       
                         goodsList.push(xuDetail);
                         goodsList.push(zaoDetail);
                         goodsList.push(zhongDetail);
-                        goodsList.push(wanDetail);
-
-                        //for(var colIndex=7;colIndex<=28;colIndex++){
-                        //    var newIndex=colIndex-7;
-                        //    var xu_val=xuDetail[colIndex];
-                        //    //4.保存 产线对应日期的数量
-                        //    if(xu_val!=null){
-                        //        Pro_SchedulingGoods.Items.push(
-                        //            {
-                        //                SType:1,//1 需求，2 早班 ，3 中班， 4 晚班
-                        //                Index:newIndex,
-                        //                SNum:xu_val
-                        //            });
-                        //    }
-                        //    var zao_val=zaoDetail[colIndex];
-                        //    if(zao_val!=null){
-                        //        Pro_SchedulingGoods.Items.push(
-                        //            {
-                        //                SType:2,//1 需求，2 早班 ，3 中班， 4 晚班
-                        //                Index:newIndex,
-                        //                SNum:zao_val
-                        //            });
-                        //    }
-                        //    var zhong_val=zhongDetail[colIndex];
-                        //    if(zhong_val!=null){
-                        //        Pro_SchedulingGoods.Items.push(
-                        //            {
-                        //                SType:3,//1 需求，2 早班 ，3 中班， 4 晚班
-                        //                Index:newIndex,
-                        //                SNum:zhong_val
-                        //            });
-                        //    }
-                        //    var wan_val=wanDetail[colIndex];
-                        //    if(wan_val!=null){
-                        //        Pro_SchedulingGoods.Items.push(
-                        //            {
-                        //                SType:4,//1 需求，2 早班 ，3 中班， 4 晚班
-                        //                Index:newIndex,
-                        //                SNum:wan_val
-                        //            });
-                        //    }
-                        //}
-
-
-                        //goodsList.push(Pro_SchedulingGoods);
-                   
-                    }
-                    console.log(goodsList);
-                  
+                        goodsList.push(wanDetail); 
+                    } 
                     url="/Scheduling/AddPro_SchedulingGoods";
                     console.log(JSON.stringify(goodsList));
                     $.ajax({
@@ -995,7 +998,7 @@
                         cache: false,
                         success: function (data) {
                             if (data.Mess == "success") {
-                                    
+
                             }
 
                         }

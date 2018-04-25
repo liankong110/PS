@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using VisualSmart.BizService.Core;
 using VisualSmart.Domain.SetUp;
+using VisualSmart.Util;
 
 namespace PS
 {
@@ -59,8 +60,31 @@ namespace PS
             if (user == null)
             {
                 //防止重定向
-                filterContext.HttpContext.Response.Redirect("/Account/Login");
-                return false;
+                //filterContext.HttpContext.Response.Redirect("/Account/Login");
+                //return false;
+
+                string domainName = Environment.UserDomainName;
+                string username = Environment.UserName;
+                var LoginId = domainName + "\\" + username;
+                var userList = Smart.Instance.UserBizService.GetAllDomain(QueryCondition.Instance.AddEqual("LoginId", LoginId));
+                if (userList.Count == 0)
+                {
+                    //新增
+                    user = new UserDomain();
+                    user.loginPwd = MD5Util.Encrypt("123456");
+                    user.RowState = 1;
+                    user.Creater = "system";
+                    user.Updater = "system";
+                    user.loginId = LoginId;
+                    user.Name = username;
+                    Smart.Instance.UserBizService.Add_Update_User_Role(user, System.Configuration.ConfigurationManager.AppSettings["DefaultRoleId"], "system");
+                    user.Id = Smart.Instance.UserBizService.GetAllDomain(QueryCondition.Instance.AddEqual("LoginId", LoginId))[0].Id;
+                    filterContext.HttpContext.Session["User"] = user;
+                }
+                else
+                {
+                    user = userList[0];
+                }
             }
             var controllerName = filterContext.RouteData.Values["controller"].ToString();
             var actionName = filterContext.RouteData.Values["action"].ToString();

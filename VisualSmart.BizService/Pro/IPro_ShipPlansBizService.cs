@@ -14,5 +14,11 @@ namespace VisualSmart.BizService.Pro
         /// <param name="Id"></param>
         /// <returns></returns>
         IList<Pro_ShipPlans> GetAllDomainByMainId(int Id);
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        IList<Pro_ShipPlans> GetPro_SchedulingGoodsNumByEdit(int Id);
     }
 }
