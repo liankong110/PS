@@ -102,8 +102,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         public override bool Delete(int Id)
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("delete from Pro_PS ");
-            strSql.Append(" where ID=@ID ");
+            strSql.Append("delete from Pro_PSDetail  where MainId=@ID;");
+            strSql.Append("delete from Pro_PS  where ID=@ID;");
+          
             var parameters = WriteAdoTemplate.CreateDbParameters();
             parameters.Add("ID", DbType.Int32, 0).Value = Id;
             return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;

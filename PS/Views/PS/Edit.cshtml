@@ -65,8 +65,8 @@
                         <div class="row">
                             <div class="col-sm-12 " id="default-buttons">
                                 <p>
-                                 
-                                    <button class="btn btn-sm btn-primary " type="button" id="save" onclick="GetExcel(1)">
+
+                                    <button class="btn btn-sm btn-primary " type="button" id="save">
                                         <i class="ace-icon fa fa-file-excel-o bigger-110"></i>
                                         保存
                                     </button>
@@ -104,7 +104,7 @@
                                         }
                                         @foreach (var m in Model)
                                         {
-                                            var GoodNo = "GoodNo"+i;
+                                            var GoodNo = "GoodNo" + i;
                                             var GoodName = "GoodName" + i;
                                             var SType = "SType" + i;
                                             var ShipTo = "ShipTo" + i;
@@ -116,37 +116,37 @@
 
                                             <tr>
                                                 <td><input type="text" style=" width:40px;" value="@m.ProOrderIndex" id="@("Index"+i)" /></td>
-                                                <td id="@GoodNo">@m.GoodNo</td>                                               
+                                                <td id="@GoodNo">@m.GoodNo</td>
                                                 <td id="@GoodName">@m.GoodName</td>
-                                                <td id="@SType">@(EnumOperate.GetEnumDesc((VisualSmart.Util.Menus.ClassType)m.SType))</td>                                              
+                                                <td id="@SType">@(EnumOperate.GetEnumDesc((VisualSmart.Util.Menus.ClassType)m.SType))</td>
                                                 <td id="@ShipTo">@m.ShipTo</td>
-                                                <td id="@PackNum">@m.PackNum</td>                                             
+                                                <td id="@PackNum">@m.PackNum</td>
                                                 <td id="@Channeng">@m.ChanNeng</td>
-                                                <td id="@Qty">@m.Qty</td>                                              
+                                                <td id="@Qty">@m.Qty</td>
                                                 <td><input type="text" id="@StartTime" value="@m.StartTime.ToString("yyyy-MM-dd HH:mm:ss")" onclick="WdatePicker({ onpicked: function (dq) { changeTime(1,'@i',this.value); }, dateFmt: 'yyyy-MM-dd HH:mm:ss' })" /></td>
                                                 <td><input type="text" id="@EndTime" value="@m.EndTime.ToString("yyyy-MM-dd HH:mm:ss")" onclick="WdatePicker({ onpicked: function (dq) { changeTime(2, '@i', this.value); }, dateFmt: 'yyyy-MM-dd HH:mm:ss' })" /> </td>
                                             </tr>
                                             i++;
-                                            }
-                                        </tbody>
+                                        }
+                                    </tbody>
 
 
-                                    </table>
-                                </div>
-                                <!-- /.span -->
+                                </table>
+                            </div>
+                            <!-- /.span -->
 
 
-                            </div><!-- /.row -->
+                        </div><!-- /.row -->
 
-                            <div class="hr hr-18 dotted hr-double"></div>
+                        <div class="hr hr-18 dotted hr-double"></div>
                         <!-- PAGE CONTENT ENDS -->
-                        </div><!-- /.col -->
-                    </div><!-- /.row -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
 
-                </form>
-            </div>
+            </form>
         </div>
-    </div><!-- /.page-content -->
+    </div>
+</div><!-- /.page-content -->
 
 <script src="~/Content/components/datatables/media/js/jquery.dataTables.js"></script>
 <script src="~/Content/components/_mod/datatables/jquery.dataTables.bootstrap.js"></script>
@@ -187,20 +187,20 @@
                 $("#simple-table tbody").html("");
                 var style = "";
                 $.each(data.PSDetail, function (i, item) {
-
-                    var GoodNo = "GoodNo" + (i+1);
+                    var Index = "Index" + (i + 1);
+                    var GoodNo = "GoodNo" + (i + 1);
                     var GoodName = "GoodName" + (i + 1);
                     var SType = "SType" + (i + 1);
                     var ShipTo = "ShipTo" + (i + 1);
                     var PackNum = "PackNum" + (i + 1);
                     var Channeng = "Channeng" + (i + 1);
-                    var Qty = "Qty" + i;
+                    var Qty = "Qty" + (i + 1);
                     var StartTime = "StartTime" + (i + 1);
                     var EndTime = "EndTime" + (i + 1);
 
                     var html = "<tr>";
 
-                    html += "<td><input type='text' style='width:40px;' value=" + item.ProOrderIndex + " id=" + GoodNo + " /></td>";
+                    html += "<td><input type='text' style='width:40px;' value=" + item.ProOrderIndex + " id=" + Index + " /></td>";
                     html += "<td id=" + GoodNo + ">" + item.GoodNo + "</td>";
                     html += "<td id=" + GoodName + ">" + item.GoodName + "</td>";
                     html += "<td id=" + SType + ">" + item.STypeString + "</td>";
@@ -311,9 +311,9 @@
         var lineNo = $("#LineNo").find("option:selected").text()
         var Pro_PS =
             {
-                ProNo:$("#ProNo").val(),
-                Id:$("#PSId").val(),
-                SchedulingProNo:SchedulingProNo,
+                ProNo: $("#ProNo").val(),
+                Id: $("#PSId").val(),
+                SchedulingProNo: SchedulingProNo,
                 LineId: LineId,
                 ProLineNo: lineNo,
                 ProDate: proDate,
@@ -336,8 +336,10 @@
             var Qty = $("#Qty" + i).html();
             var StartTime = $("#StartTime" + i).val();
             var EndTime = $("#EndTime" + i).val();
+            console.log(Qty);
             goodsList.push(
                 {
+                    Qty: Qty,
                     ProOrderIndex: Index,
                     GoodNo: GoodNo,
                     GoodName: GoodName,
@@ -350,6 +352,7 @@
                 }
                );
         }
+        console.log(JSON.stringify(goodsList));
         var url = "/PS/Save";
         $.ajax({
             data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), Pro_PS: JSON.stringify(Pro_PS), Pro_PSDetail: JSON.stringify(goodsList) },
@@ -366,7 +369,7 @@
 
             }
         });
-       
+
     }
 
     //排序
@@ -388,13 +391,13 @@
                     //if (tbody.sortCol == Idx) {
                     //    trValue.reverse(); //如果该列已经进行排序过了，则直接对其反序排列
                     //} else {
-                        //trValue.sort(compareTrs(Idx));  //进行排序
-                        trValue.sort(function (tr1, tr2) {
-                            var value1 = $(tr1.cells[Idx]).find("input").val();
-                            var value2 = $(tr2.cells[Idx]).find("input").val();
-                            console.log(value1 + "---" + value2);
-                            return value1.localeCompare(value2);
-                        });
+                    //trValue.sort(compareTrs(Idx));  //进行排序
+                    trValue.sort(function (tr1, tr2) {
+                        var value1 = $(tr1.cells[Idx]).find("input").val();
+                        var value2 = $(tr2.cells[Idx]).find("input").val();
+                        console.log(value1 + "---" + value2);
+                        return value1.localeCompare(value2);
+                    });
                     //}
 
                     var fragment = document.createDocumentFragment();  //新建一个代码片段，用于保存排序后的结果
@@ -430,30 +433,30 @@
     }
 
     var d1 = new Date();
-  
+
     console.log(d1.format('yyyy-MM-dd hh:mm:ss'));
     function changeTime(type, i, value) {
 
         var date;
         var channeng = $("#Channeng" + i).html();
-        var qty = $("#Qty" + i).html();        
+        var qty = $("#Qty" + i).html();
         var sum = 0;
         if (channeng == 0) {
             sum = 0;
         }
         else {
-            sum= qty/channeng * 60 * 60
+            sum = qty / channeng * 60 * 60
         }
-        
+
         //1 开始时间  2 结束时间
         if (type == 1) {
             date = new Date($("#StartTime" + i).val())
-            var newData = new Date(date.getTime() + 1000 * sum);   
+            var newData = new Date(date.getTime() + 1000 * sum);
             var EndTime = $("#EndTime" + i).val(newData.format('yyyy-MM-dd hh:mm:ss'));
-           
+
         } else {
             date = new Date($("#EndTime" + i).val())
-            var newData = new Date(date.getTime()- 1000 * sum);         
+            var newData = new Date(date.getTime() - 1000 * sum);
             var EndTime = $("#StartTime" + i).val(newData.format('yyyy-MM-dd hh:mm:ss'));
         }
 
@@ -467,7 +470,7 @@
         var table = document.getElementById("simple-table");
         var tbody = table.tBodies[0];
         var tr = tbody.rows;
-        
+
         var trValue = new Array();
         for (var i = 0; i < tr.length; i++) {
 
@@ -485,9 +488,9 @@
 
             startDate = new Date(startDate.getTime() + 1000 * sum);
             var end = $(tr[i].cells[9]).find("input").val(startDate.format('yyyy-MM-dd hh:mm:ss'));
-           console.log(start + "---" + end);
-            
+            console.log(start + "---" + end);
+
         }
     }
-   
+
 </script>

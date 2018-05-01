@@ -143,7 +143,7 @@ namespace PS.Controllers.ProBase
                     {
                         conn.Open();
                         OleDbCommand objCommand = new OleDbCommand(string.Format("select * from [" + sheetName + "]"), conn);
-                        int rowIndex = 1;
+                        //int rowIndex = 1;
                         using (OleDbDataReader dataReader = objCommand.ExecuteReader())
                         {
                             while (dataReader.Read())
@@ -153,8 +153,8 @@ namespace PS.Controllers.ProBase
                                     error = "Excel解析错误";
                                     break;
                                 }
-                                if (rowIndex > 1)
-                                {
+                                //if (rowIndex > 1)
+                                //{
                                     var model = new Base_Goods();
                                     model.ShipTo = dataReader[0].ToString();
                                     model.ShipToName = dataReader[1].ToString();
@@ -180,8 +180,8 @@ namespace PS.Controllers.ProBase
                                     {
                                         goodsBizSer.Add(model);
                                     }
-                                }
-                                rowIndex++;
+                                //}
+                                //rowIndex++;
                             }
                         }
                         conn.Close();

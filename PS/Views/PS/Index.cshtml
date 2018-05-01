@@ -28,18 +28,19 @@
                     <div class="col-sm-2">
                         <input type="text" name="ProNo" id="ProNo" placeholder="名称" value="@ViewBag.ProNo" />
                     </div>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">生产单号：</label>
+                    <div class="col-sm-2">
+                        <input type="text" name="SchedulingProNo" id="SchedulingProNo" placeholder="生产计划单号" value="@ViewBag.SchedulingProNo" />
+                    </div>
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产线：</label>
                     <div class="col-sm-2 ">
                         <input type="text" name="LineNo" id="LineNo" placeholder="产线" value="@ViewBag.LineNo" />
                     </div>
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">生产日期：</label>
                     <div class="col-sm-2 ">
-                        <input type="text" name="DateFrom" id="DateFrom" placeholder="开始日期"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" readonly="readonly" value="@ViewBag.DateFrom" />
+                        <input type="text" name="DateFrom" id="DateFrom" placeholder="生产日期"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" readonly="readonly" value="@ViewBag.DateFrom" />
                     </div>
-                    
-                    <div class="col-sm-2 ">
-                        <input type="text" name="DateTo" id="DateTo" placeholder="结束日期"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" readonly="readonly" value="@ViewBag.DateTo" />
-                    </div>
+                  
                 </div>
                 <hr class="no-padding no-margin" />
                 <div class="row">
@@ -91,6 +92,9 @@
 
                                                         <a class="btn btn-xs btn-danger" title="删除" onclick="Delete('@m.Id');">
                                                             <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                                        </a>
+                                                        <a class="btn btn-xs btn-default" title="导出EXCEL" href="/PS/ExportExcel?id=@m.Id">
+                                                            导出Excel
                                                         </a>
                                                     </div>
                                                 </td>
@@ -152,7 +156,7 @@
     //删除
     function Delete(id) {
         if (confirm("确定要删除此数据吗?") == true) {
-            var url = "/Stock/Delete/?id=" + id;
+            var url = "/PS/Delete/?id=" + id;
             $.ajax({
                 data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
                 url: url,
@@ -172,5 +176,20 @@
                 }
             });
         }
+    }
+
+    //删除
+    function Excel(id) {       
+            var url = "/PS/ExportExcel/?id=" + id;
+            $.ajax({
+                data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+                url: url,
+                type: 'get',
+                async: false,
+                cache: false,
+                success: function (data) {
+                  
+                }
+            });       
     }
 </script>

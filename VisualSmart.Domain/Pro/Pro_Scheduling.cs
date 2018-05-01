@@ -45,7 +45,10 @@ namespace VisualSmart.Domain.Pro
             set { _plantodate = value; }
             get { return _plantodate; }
         }
-        
+        /// <summary>
+        /// 发运计划单号
+        /// </summary>
+        public string ShipMainProNo { get; set; }
         #endregion Model
 
     }

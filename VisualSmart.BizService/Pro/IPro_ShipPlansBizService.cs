@@ -13,7 +13,7 @@ namespace VisualSmart.BizService.Pro
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        IList<Pro_ShipPlans> GetAllDomainByMainId(int Id);
+        IList<Pro_ShipPlans> GetAllDomainByMainId(int Id, QueryCondition query);
         /// <summary>
         /// 获取信息列表
         /// </summary>

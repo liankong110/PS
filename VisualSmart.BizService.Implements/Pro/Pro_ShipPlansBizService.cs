@@ -19,9 +19,9 @@ namespace VisualSmart.BizService.Implements.Pro
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public IList<Pro_ShipPlans> GetAllDomainByMainId(int Id)
+        public IList<Pro_ShipPlans> GetAllDomainByMainId(int Id, QueryCondition query)
         {
-            return EntityDao.GetAllDomainByMainId(Id);
+            return EntityDao.GetAllDomainByMainId(Id, query);
         }
 
         /// <summary>

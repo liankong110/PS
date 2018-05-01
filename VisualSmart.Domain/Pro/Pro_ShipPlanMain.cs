@@ -40,6 +40,7 @@ namespace VisualSmart.Domain.Pro
 
         public string ProNo { get; set; }
 
+       
         #endregion Model
 
     }

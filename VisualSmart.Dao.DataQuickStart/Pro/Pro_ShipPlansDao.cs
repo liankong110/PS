@@ -96,14 +96,20 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         /// </summary>
         /// <param name="Id"></param>
         /// <returns></returns>
-        public IList<Pro_ShipPlans> GetAllDomainByMainId(int Id)
+        public IList<Pro_ShipPlans> GetAllDomainByMainId(int Id, QueryCondition query)
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
             strSql.AppendFormat(@"select Pro_ShipPlans.ID,PlanId,PlanDate,PlanNum
-FROM Pro_ShipPlans LEFT JOIN Pro_ShipPlan ON Pro_ShipPlans.PlanId = Pro_ShipPlan.ID WHERE Pro_ShipPlan.ID = {0}",Id);         
-           
-
+FROM Pro_ShipPlans LEFT JOIN Pro_ShipPlan ON Pro_ShipPlans.PlanId = Pro_ShipPlan.ID WHERE Pro_ShipPlan.MainId = {0}", Id);
+            if (query.GetCondition("GoodNo") != null)
+            {
+                strSql.AppendFormat(" and GoodNo like '%{0}%'", query.GetCondition("GoodNo").Value);
+            }
+            if (query.GetCondition("GoodName") != null)
+            {
+                strSql.AppendFormat(" and GoodName like '%{0}%'", query.GetCondition("GoodName").Value);
+            }
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlans>(CommandType.Text, strSql.ToString(), MapRow, parameters);
         }
 
@@ -162,12 +168,13 @@ FROM Pro_ShipPlans LEFT JOIN Pro_ShipPlan ON Pro_ShipPlans.PlanId = Pro_ShipPlan
         /// <returns></returns>
         public IList<Pro_ShipPlans> GetAllDomainByLineNos(QueryCondition query)
         {
+            var mainId = query.GetCondition("MainId").Value;
             var lineNos = query.GetCondition("LineNos").Value;
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
             strSql.Append("select ID,PlanId,PlanDate,PlanNum ");
             strSql.Append(" FROM Pro_ShipPlans ");
-            strSql.AppendFormat(" WHERE [PlanId] IN (SELECT ID FROM [dbo].[Pro_ShipPlan] WHERE GoodNo IN (select GoodNo from [dbo].[Base_ProductionLine] where ProLineNo IN ({0}))) ", lineNos);
+            strSql.AppendFormat(@" WHERE [PlanId] IN (SELECT ID FROM [dbo].[Pro_ShipPlan] WHERE  MainId={1} and GoodNo IN (select GoodNo from [dbo].[Base_ProductionLine] where ProLineNo IN ({0})))", lineNos, mainId);
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlans>(CommandType.Text, strSql.ToString(), MapRow, parameters);
         }
 

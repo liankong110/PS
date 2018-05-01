@@ -46,7 +46,7 @@ namespace PS.Controllers.Pro
         public ActionResult Index(string GoodNo, string GoodName,int Id, int page = 1)
         {
             ViewBag.Id = Id;
-            var query = QueryCondition.Instance.AddOrderBy("Id", true).SetPager(page, 50);
+            var query = QueryCondition.Instance.AddOrderBy("Id", true).SetPager(page, 100).AddEqual("MainId", Id.ToString());
            
             if (!string.IsNullOrEmpty(GoodNo))
             {
@@ -65,7 +65,7 @@ namespace PS.Controllers.Pro
             var mainDate = Smart.Instance.Pro_ShipPlanMainBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", true).AddEqual("Id", Id.ToString()))[0];
             ViewBag.MainDate = mainDate;
 
-            var shipPlansList = Smart.Instance.Pro_ShipPlansBizService.GetAllDomainByMainId(Id);
+            var shipPlansList = Smart.Instance.Pro_ShipPlansBizService.GetAllDomainByMainId(Id, query);
             ViewBag.ShipPlansList = shipPlansList;
 
             return View(list);
@@ -138,8 +138,7 @@ namespace PS.Controllers.Pro
                                     break;
                                 }
                                 if (rowIndex == 1)
-                                {
-                                   
+                                {                                   
                                     mainModel.ProNo = "20180401001";
                                     mainModel.Updater = mainModel.Creater = CurrentUser.Name;
                                     mainModel.RowState = 1;

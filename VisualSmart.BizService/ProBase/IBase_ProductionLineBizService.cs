@@ -11,7 +11,7 @@ namespace VisualSmart.BizService.ProBase
         /// 获取所有产线信息
         /// </summary>
         /// <returns></returns>
-        IList<string> GetAllProLineNos();
+        IList<string> GetAllProLineNos(int ShipPlanMainId);
 
         /// <summary>
         /// 获取总数量

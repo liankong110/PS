@@ -157,22 +157,21 @@ namespace PS.Controllers.ProBase
                                     error = "Excel解析错误";
                                     break;
                                 }
-                                if (rowIndex == 2)
+                                if (rowIndex == 1)
                                 {
                                     _bomBizService.DeleteAll(0);
                                 }
-                                if (rowIndex > 1)
-                                {
-                                    var model = new Base_Bom();
-                                    model.ParentGoodNo = dataReader[0].ToString();
-                                    model.ParentGoodName = dataReader[1].ToString();
-                                    model.SonGoodNo = dataReader[2].ToString();
-                                    model.SonGoodName = dataReader[3].ToString();
-                                    model.Updater = model.Creater = CurrentUser.Name;
-                                    model.RowState = 1;
-                                    _bomBizService.Add(model);
 
-                                }
+                                var model = new Base_Bom();
+                                model.ParentGoodNo = dataReader[0].ToString();
+                                model.ParentGoodName = dataReader[1].ToString();
+                                model.SonGoodNo = dataReader[2].ToString();
+                                model.SonGoodName = dataReader[3].ToString();
+                                model.Updater = model.Creater = CurrentUser.Name;
+                                model.RowState = 1;
+                                _bomBizService.Add(model);
+
+
                                 rowIndex++;
                             }
                         }

@@ -13,9 +13,9 @@ namespace VisualSmart.BizService.Implements.ProBase
 {
     public class Base_ProductionLineBizService : EntityBizService<Base_ProductionLine, Base_ProductionLineDao>, IBase_ProductionLineBizService
     {
-        public IList<string> GetAllProLineNos()
+        public IList<string> GetAllProLineNos(int ShipPlanMainId)
         {
-            return EntityDao.GetAllProLineNos();
+            return EntityDao.GetAllProLineNos(ShipPlanMainId);
         }
 
         /// <summary>

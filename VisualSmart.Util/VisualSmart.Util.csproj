@@ -33,8 +33,9 @@
     <Reference Include="log4net">
       <HintPath>..\..\..\建设平台\VisualSmart\DLL\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="NPOI">
-      <HintPath>..\..\..\太仓机票项目\Flight\Flight\bin\Debug\NPOI.dll</HintPath>
+    <Reference Include="NPOI, Version=1.2.3.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\同程网\软件开发\C#\分销系统V2.1\TC.SmartTourism.Group.New\DLL\NPOI.dll</HintPath>
     </Reference>
     <Reference Include="Spring.Data">
       <HintPath>..\DLL\Spring.Data.dll</HintPath>

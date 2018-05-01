@@ -18,20 +18,31 @@ namespace PS.Controllers.Pro
         /// </summary>
         /// <returns></returns>
         [ViewPageAttribute]
-        public ActionResult ProLines(string ShipMainProNo)
+        public ActionResult ProLines(int ShipPlanMainId, string ShipMainProNo)
         {
             ViewBag.ShipMainProNo = ShipMainProNo;
-            ViewBag.StockList = new SelectList(Smart.Instance.Base_StockMainBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", false).AddEqual("RowState", "1")), "Id", "ProNo");
-            return View(Smart.Instance.Base_ProductionLineBizService.GetAllProLineNos());
+            var stockList = Smart.Instance.Base_StockMainBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", false).AddEqual("RowState", "1").SetPager(1,50));
+            foreach (var model in stockList)
+            {
+                model.ProNo = model.ProNo + "["+model.Creater+"]";
+            }
+            ViewBag.StockList = new SelectList(stockList, "Id", "ProNo");
+            ViewBag.ShipPlanMainId = ShipPlanMainId;
+            return View(Smart.Instance.Base_ProductionLineBizService.GetAllProLineNos(ShipPlanMainId));
         }
         /// <summary>
         /// 排产
         /// </summary>
-        /// <param name="proLineNosList"></param>
+        /// <param name="proLineNosList">选择的产线信息</param>
+        /// <param name="StockId">库存信息</param>
+        /// <param name="ShipMainProNo">发运计划单号</param>
+        /// <param name="Id"></param>
+        /// <param name="MainId">排产单ID（修改时使用）</param>
         /// <param name="page"></param>
         /// <returns></returns>
         [ViewPageAttribute]
-        public ActionResult Index(string proLineNosList, string StockId, string ShipMainProNo, int Id = 0,int MainId=0, int page = 1)
+        public ActionResult Index(string proLineNosList, string StockId, string ShipMainProNo,int ShipPlanMainId=0,
+            int Id = 0,int MainId=0, int page = 1)
         {
             List<Pro_ShipPlan> shipPlanList = new List<Pro_ShipPlan>();
             List<Pro_ShipPlans> _shipPlansList = new List<Pro_ShipPlans>();
@@ -39,21 +50,23 @@ namespace PS.Controllers.Pro
             if (MainId == 0)
             {
                 ViewBag.Id = Id;
-                var query = QueryCondition.Instance.AddEqual("LineNos", proLineNosList).AddEqual("StockMainId", StockId);
-                //发运计划产品信息
-                shipPlanList = Smart.Instance.Pro_ShipPlanBizService.GetAllDomainByLineNos(query).ToList();
 
-                //发运计划时间段
-                var mainDate = Smart.Instance.Pro_ShipPlanMainBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", false))[0];
+                //1.发运计划时间段
+                var mainDate = Smart.Instance.Pro_ShipPlanMainBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", false).AddEqual("Id", ShipPlanMainId.ToString()))[0];
                 ViewBag.MainDate = mainDate;
 
-                //发运时间明细
+                var query = QueryCondition.Instance.AddEqual("LineNos", proLineNosList).AddEqual("StockMainId", StockId)
+                    .AddEqual("MainId", ShipPlanMainId.ToString());
+                //2.发运计划产品信息
+                shipPlanList = Smart.Instance.Pro_ShipPlanBizService.GetAllDomainByLineNos(query).ToList();
+
+                //3.发运时间明细
                 _shipPlansList = Smart.Instance.Pro_ShipPlansBizService.GetAllDomainByLineNos(query).ToList();
+
                 ViewBag.ShipPlansList = _shipPlansList;
 
                 //生产线
                 var ProLineNos = proLineNosList.Replace("'", "").Split(',').ToList();
-
                 foreach (var line in ProLineNos)
                 {
                     var lineModel = new Pro_SchedulingLine();
@@ -85,6 +98,7 @@ namespace PS.Controllers.Pro
             _shipPlansList = Smart.Instance.Pro_ShipPlansBizService.GetPro_SchedulingGoodsNumByEdit(MainId).ToList();
             ViewBag.ShipPlansList = _shipPlansList;
 
+            ViewBag.ShipMainProNo = schedulingModel.ShipMainProNo;
             return View(shipPlanList);
         } 
 
@@ -110,7 +124,7 @@ namespace PS.Controllers.Pro
             return Json(new { Mess = "success", Data = list });
         }
         /// <summary>
-        /// 新增主表
+        /// 1.1新增主表
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -119,8 +133,7 @@ namespace PS.Controllers.Pro
         public JsonResult AddPro_Scheduling(Pro_Scheduling model)
         {
             if (model.Id == 0)
-            {
-                model.ProNo = "20180410001";
+            {              
                 model.Creater = model.Updater = CurrentUser.Name;
                 model.RowState = 1;
                 return Json(new { Mess = "success", Id = Smart.Instance.Pro_SchedulingBizService.AddGetId(model) });
@@ -130,7 +143,7 @@ namespace PS.Controllers.Pro
         }
 
         /// <summary>
-        /// 新增主表-
+        /// 1.2新增主表-
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -143,7 +156,7 @@ namespace PS.Controllers.Pro
         }
 
         /// <summary>
-        /// 新增主表-
+        /// 1.3新增主表-
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -271,13 +284,40 @@ namespace PS.Controllers.Pro
         /// </summary>
         /// <returns></returns>
         [ViewPageAttribute]
-        public ActionResult List(int page = 1)
+        public ActionResult List(string ProNo,string ShipMainProNo,DateTime? Time,int page = 1)
         {
             var query = QueryCondition.Instance.AddOrderBy("Id", false).SetPager(page, 10);
             query.AddEqual("RowState", "1");
+            if (!string.IsNullOrEmpty(ProNo))
+            {
+                query.AddLike("ProNo", ProNo);
+                ViewBag.ProNo = ProNo;
+            }
+            if (!string.IsNullOrEmpty(ShipMainProNo))
+            {
+                query.AddLike("ShipMainProNo", ShipMainProNo);
+                ViewBag.ShipMainProNo = ShipMainProNo;
+            }
+            if (Time != null)
+            {
+                query.AddEqualLarger("PlanFromDate", Time.Value.ToString("yyy-MM-dd"));
+                query.AddEqualSmaller("PlanFromDate", Time.Value.ToString("yyy-MM-dd"));
+                ViewBag.Time = Time.Value.ToString("yyy-MM-dd");
+            }
             ViewBag.Page = query.GetPager();
             var list = Smart.Instance.Pro_SchedulingBizService.GetAllDomain(query);
             return View(list);
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public JsonResult Delete(int id)
+        {
+            if (CurrentUser != null)
+            {
+                Smart.Instance.Pro_SchedulingBizService.Delete(id);
+            }
+            return Json(new { Mess = "success" });
         }
 
         /// <summary>

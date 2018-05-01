@@ -60,7 +60,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="NPOI, Version=1.2.3.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\同程网\软件开发\C#\支付平台\VisualSmart\OA\bin\NPOI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\同程网\软件开发\C#\分销系统V2.1\TC.SmartTourism.Group.New\DLL\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML">
+      <HintPath>..\..\..\..\..\..\同程网\软件开发\C#\分销系统V2.1\TC.SmartTourism.Group.New\DLL\NPOI.OOXML.dll</HintPath>
     </Reference>
     <Reference Include="Spring.Aop">
       <HintPath>..\..\..\..\电子化四面板项目\VisualSmart\DLL\Spring.Aop.dll</HintPath>
@@ -231,8 +234,13 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\BOM.png" />
+    <Content Include="Content\images\Good.png" />
+    <Content Include="Content\images\Line.png" />
     <Content Include="Content\images\logo.png" />
     <Content Include="Content\images\logo1.ico" />
+    <Content Include="Content\images\Plan.png" />
+    <Content Include="Content\images\Stock.png" />
     <Content Include="Content\MyTable.css" />
     <Content Include="Content\StyleSheet1.css" />
     <Content Include="favicon.ico" />

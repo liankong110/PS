@@ -9,12 +9,12 @@ using VisualSmart.Util;
 namespace VisualSmart.Dao.DataQuickStart.Pro
 {
     public class Pro_SchedulingDao : EntityDao<Pro_Scheduling>
-    {  
+    {
         /// <summary>
-       /// 新增
-       /// </summary>
-       /// <param name="entity"></param>
-       /// <returns></returns>
+        /// 新增
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public override bool Add(Pro_Scheduling entity)
         {
             try
@@ -22,9 +22,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
                 entity.ProNo = GetProNo("Pro_Scheduling", "ProNo");
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Pro_Scheduling(");
-                strSql.Append("ProNo,PlanFromDate,PlanToDate,CreateTime,Creater,UpdateTime,Updater,RowState)");
+                strSql.Append("ProNo,ShipMainProNo,PlanFromDate,PlanToDate,CreateTime,Creater,UpdateTime,Updater,RowState)");
                 strSql.Append(" values (");
-                strSql.Append("@ProNo,@PlanFromDate,@PlanToDate,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
+                strSql.Append("@ProNo,@ShipMainProNo,@PlanFromDate,@PlanToDate,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
                 strSql.Append(";select @@IDENTITY");
                 var parameters = GetBaseParams(entity);
                 return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
@@ -41,16 +41,16 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public  int AddGetId(Pro_Scheduling entity)
+        public int AddGetId(Pro_Scheduling entity)
         {
             try
             {
                 entity.ProNo = GetProNo("Pro_Scheduling", "ProNo");
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Pro_Scheduling(");
-                strSql.Append("ProNo,PlanFromDate,PlanToDate,CreateTime,Creater,UpdateTime,Updater,RowState)");
+                strSql.Append("ProNo,ShipMainProNo,PlanFromDate,PlanToDate,CreateTime,Creater,UpdateTime,Updater,RowState)");
                 strSql.Append(" values (");
-                strSql.Append("@ProNo,@PlanFromDate,@PlanToDate,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
+                strSql.Append("@ProNo,@ShipMainProNo,@PlanFromDate,@PlanToDate,@CreateTime,@Creater,@UpdateTime,@Updater,@RowState)");
                 strSql.Append(";select @@IDENTITY");
                 var parameters = GetBaseParams(entity);
                 return Convert.ToInt32(ReadAdoTemplate.ExecuteScalar(CommandType.Text, strSql.ToString(), parameters));
@@ -70,9 +70,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         public override bool Update(Pro_Scheduling entity)
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("update Pro_Scheduling set "); 
+            strSql.Append("update Pro_Scheduling set ");
             strSql.Append("UpdateTime=@UpdateTime,");
-            strSql.Append("Updater=@Updater,");        
+            strSql.Append("Updater=@Updater");
             strSql.Append(" where Id=@Id");
             var parameters = GetBaseParams(entity);
             parameters.Add("ID", DbType.Int32, 0).Value = entity.Id;
@@ -87,8 +87,11 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         public override bool Delete(int Id)
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("delete from Pro_Scheduling ");
-            strSql.Append(" where ID=@ID ");
+            strSql.Append(@"delete from Pro_SchedulingGoodsNum  where SGoodId IN (select id from [dbo].[Pro_SchedulingGoods]
+ where SLineId IN(select id from[dbo].[Pro_SchedulingLine] where MainId =@ID)); ");
+            strSql.Append("delete from [Pro_SchedulingGoods] where SLineId IN ( select id from[dbo].[Pro_SchedulingLine] where MainId=@ID);");
+            strSql.Append("delete from [Pro_SchedulingLine] where MainId=@ID;");
+            strSql.Append("delete from Pro_Scheduling where ID=@ID;");       
             var parameters = WriteAdoTemplate.CreateDbParameters();
             parameters.Add("ID", DbType.Int32, 0).Value = Id;
             return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
@@ -104,7 +107,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
             strSql.Append("select   ");
-            strSql.Append(" Id,ProNo,PlanFromDate,PlanToDate,CreateTime,Creater,UpdateTime,Updater,RowState ");
+            strSql.Append(" Id,ProNo,ShipMainProNo,PlanFromDate,PlanToDate,CreateTime,Creater,UpdateTime,Updater,RowState ");
             strSql.Append(" from Pro_Scheduling ");
             if (query.GetPager() != null)
             {
@@ -135,6 +138,8 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
                 model.Id = (int)ojb;
             }
             model.ProNo = dataReader["ProNo"].ToString();
+            model.ShipMainProNo = dataReader["ShipMainProNo"].ToString();
+            
             ojb = dataReader["PlanFromDate"];
             if (ojb != null && ojb != DBNull.Value)
             {
@@ -173,17 +178,18 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         private IDbParameters GetBaseParams(Pro_Scheduling entity)
         {
             var parameters = ReadAdoTemplate.CreateDbParameters();
+
+            parameters.Add("ShipMainProNo", DbType.String).Value = entity.ShipMainProNo;
             parameters.Add("ProNo", DbType.String).Value = entity.ProNo;
             parameters.Add("PlanFromDate", DbType.Date).Value = entity.PlanFromDate;
             parameters.Add("PlanToDate", DbType.Date).Value = entity.PlanToDate;
-
             parameters.Add("CreateTime", SqlDbType.NVarChar).Value = DateTime.Now;
             parameters.Add("Creater", SqlDbType.NVarChar).Value = entity.Creater ?? "";
             parameters.Add("UpdateTime", SqlDbType.DateTime).Value = DateTime.Now;
             parameters.Add("Updater", SqlDbType.NVarChar).Value = entity.Updater ?? "";
             parameters.Add("RowState", SqlDbType.TinyInt).Value = entity.RowState;
             return parameters;
-        } 
-       
+        }
+
     }
 }

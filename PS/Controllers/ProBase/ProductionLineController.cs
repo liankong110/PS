@@ -150,8 +150,8 @@ namespace PS.Controllers.ProBase
             {
                 modelList = new List<Base_ProductionLines>();
                 NewProCapacityDesc = "";
-            }   
-
+            }
+            NewProCapacityDesc = NewProCapacityDesc.Trim(',');
             return modelList;
         }
         /// <summary>
@@ -211,7 +211,7 @@ namespace PS.Controllers.ProBase
                     {
                         conn.Open();
                         OleDbCommand objCommand = new OleDbCommand(string.Format("select * from [" + sheetName + "]"), conn);
-                        int rowIndex = 1;
+                        //int rowIndex = 1;
                         using (OleDbDataReader dataReader = objCommand.ExecuteReader())
                         {
                             while (dataReader.Read())
@@ -221,8 +221,8 @@ namespace PS.Controllers.ProBase
                                     error = "Excel解析错误";
                                     break;
                                 }
-                                if (rowIndex > 1)
-                                {
+                                //if (rowIndex > 1)
+                                //{
                                     var model = new Base_ProductionLine();
                                     model.ProLineNo = dataReader[0].ToString();
                                     model.GoodNo = dataReader[1].ToString();
@@ -256,13 +256,7 @@ namespace PS.Controllers.ProBase
                                     }
                                     else
                                     {
-                                        model.Id = _productionLineBizService.AddGetId(model);
-                                        //解析人员配置及每小时产出 列：7人75件/H，6人64件/H，5人53件/H
-                                        foreach (var item in proCapacityDescList)
-                                        {
-                                            item.ProLineId = model.Id;
-                                            _productionLinesBizService.Add(item);
-                                        }
+                                        model.Id = _productionLineBizService.AddGetId(model);                                       
                                     }
                                     //解析人员配置及每小时产出 列：7人75件/H，6人64件/H，5人53件/H
                                     foreach (var item in proCapacityDescList)
@@ -270,8 +264,8 @@ namespace PS.Controllers.ProBase
                                         item.ProLineId = model.Id;
                                         _productionLinesBizService.Add(item);
                                     }
-                                }
-                                rowIndex++;
+                                //}
+                                //rowIndex++;
                             }
                         }
                         conn.Close();

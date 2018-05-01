@@ -26,8 +26,7 @@ using System.Xml;
 using NPOI.HSSF.UserModel;
 using System.Threading;
 using System.ComponentModel;
-
- 
+using NPOI.SS.UserModel;
 
 namespace VisualSmart.Util
 {
@@ -50,7 +49,6 @@ namespace VisualSmart.Util
     /// </summary>
     public class CommonMethod
     {
-       
         /// <summary>
         /// 向页面输出excel文件
         /// 添加人：刘文信
@@ -58,14 +56,14 @@ namespace VisualSmart.Util
         /// </summary>
         /// <param name="workbook"></param>
         /// <param name="excelName">Excel的名称</param>
-        public static void WriteToFile(HSSFWorkbook workbook, string excelName)
+        public static void WriteToFile(IWorkbook workbook, string excelName)
         {
             var rootPath = HttpContext.Current.Server.MapPath("/UploadFiles/Excel/");
             if (!Directory.Exists(rootPath))
             {
                 Directory.CreateDirectory(rootPath);
             }
-            var title = "/" + excelName.Replace(" ","") + ".xls";
+            var title = "/" + excelName.Replace(" ", "") + ".xlsx";
             if (!string.IsNullOrEmpty(HttpContext.Current.Request.Browser.Browser))
             {
                 if (HttpContext.Current.Request.Browser.Browser.ToLower().IndexOf("ie") >= 0)
@@ -73,11 +71,11 @@ namespace VisualSmart.Util
                     title = HttpContext.Current.Server.UrlEncode(title);
                 }
             }
-            var fs = new FileStream(rootPath + "/" + excelName + ".xls", FileMode.Create, FileAccess.ReadWrite);
+            var fs = new FileStream(rootPath + "/" + excelName + ".xlsx", FileMode.Create, FileAccess.ReadWrite);
             workbook.Write(fs);
             fs.Close();
             //把文件以流方式指定xls格式提供下载
-            fs = File.OpenRead(rootPath + "/" + excelName + ".xls");
+            fs = File.OpenRead(rootPath + "/" + excelName + ".xlsx");
             var fileArray = new byte[fs.Length];
             fs.Read(fileArray, 0, fileArray.Length);
             fs.Close();
@@ -93,6 +91,40 @@ namespace VisualSmart.Util
             HttpContext.Current.Response.End();
             HttpContext.Current.Response.Clear();
         }
+
+        /// <summary>
+        /// 向页面输出excel文件
+        /// 添加人：刘文信
+        /// 添加时间：2013-05-09
+        /// </summary>
+        /// <param name="workbook"></param>
+        /// <param name="excelName">Excel的名称</param>
+        public static string WriteToFileAndGetFileUrl(IWorkbook workbook, string excelName)
+        {
+            var rootPath = HttpContext.Current.Server.MapPath("/UploadFiles/Excel/");
+            if (!Directory.Exists(rootPath))
+            {
+                Directory.CreateDirectory(rootPath);
+            }
+            var title = "/" + excelName.Replace(" ", "") + ".xlsx";
+            if (!string.IsNullOrEmpty(HttpContext.Current.Request.Browser.Browser))
+            {
+                if (HttpContext.Current.Request.Browser.Browser.ToLower().IndexOf("ie") >= 0)
+                {
+                    title = HttpContext.Current.Server.UrlEncode(title);
+                }
+            }
+            var fs = new FileStream(rootPath + "/" + excelName + ".xlsx", FileMode.Create, FileAccess.ReadWrite);
+            workbook.Write(fs);
+            fs.Close();
+            //把文件以流方式指定xls格式提供下载
+            fs = File.OpenRead(rootPath + "/" + excelName + ".xlsx");
+            var fileArray = new byte[fs.Length];
+            fs.Read(fileArray, 0, fileArray.Length);
+            fs.Close();
+            return rootPath + "/" + excelName + ".xlsx";
+        }
+
         /// <summary>
         /// 截取字符串
         /// </summary>

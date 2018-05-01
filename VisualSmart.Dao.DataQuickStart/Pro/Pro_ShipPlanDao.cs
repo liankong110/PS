@@ -203,7 +203,8 @@ left join Base_StockMain on Base_StockMain.Id=Base_Stock.MainId");
 
             var lineNos = query.GetCondition("LineNos").Value;
             var stockMainId = query.GetCondition("StockMainId").Value;
-            strSql.AppendFormat(" where ProLineNo IN ({0}) and Base_StockMain.Id={1} ", lineNos, stockMainId);
+            var mainId = query.GetCondition("MainId").Value;
+            strSql.AppendFormat(" where ProLineNo IN ({0}) and Base_StockMain.Id={1} and Pro_ShipPlan.MainId={2}", lineNos, stockMainId, mainId);
 
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlan>(CommandType.Text, strSql.ToString(), MapRowByLineNos, parameters);
         }

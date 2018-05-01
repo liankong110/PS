@@ -138,10 +138,10 @@ namespace PS.Controllers
         /// <param name="sheet">工作薄</param>
         /// <param name="fontSize">字体大小</param>
         /// <param name="alignment">字体对齐方式</param>
-        protected void AddRow(int fristRow, int lastRow, int fristColumn, int lastColumn, string title, HSSFWorkbook hssfworkbook, Sheet sheet, short fontSize, NPOI.SS.UserModel.HorizontalAlignment alignment)
+        protected void AddRow(int fristRow, int lastRow, int fristColumn, int lastColumn, string title, IWorkbook hssfworkbook, ISheet sheet, short fontSize, NPOI.SS.UserModel.HorizontalAlignment alignment)
         {
             sheet.AddMergedRegion(new CellRangeAddress(fristRow, lastRow, fristColumn, lastColumn - 1));
-            sheet.GetRow(fristRow).CreateCell(0).SetCellValue(title);
+            sheet.GetRow(fristRow).CreateCell(fristColumn).SetCellValue(title);
             for (var i = 1; i < lastColumn; i++)
             {
                 sheet.GetRow(fristRow).CreateCell(i).SetCellValue("");
@@ -149,10 +149,10 @@ namespace PS.Controllers
             var subtotalStyle = hssfworkbook.CreateCellStyle();
             subtotalStyle.Alignment = alignment;
             subtotalStyle.VerticalAlignment = VerticalAlignment.CENTER;
-            subtotalStyle.BorderTop = CellBorderType.THIN;
-            subtotalStyle.BorderBottom = CellBorderType.THIN;
-            subtotalStyle.BorderLeft = CellBorderType.THIN;
-            subtotalStyle.BorderRight = CellBorderType.THIN;
+            subtotalStyle.BorderTop = BorderStyle.THIN;
+            subtotalStyle.BorderBottom = BorderStyle.THIN;
+            subtotalStyle.BorderLeft = BorderStyle.THIN;
+            subtotalStyle.BorderRight = BorderStyle.THIN;
             subtotalStyle.TopBorderColor = IndexedColors.BLACK.Index;
             subtotalStyle.BottomBorderColor = IndexedColors.BLACK.Index;
             subtotalStyle.LeftBorderColor = IndexedColors.BLACK.Index;
@@ -255,6 +255,25 @@ namespace PS.Controllers
             string domainName = Environment.UserDomainName;
             string username = Environment.UserName;
 
+        }
+
+        /// <summary>
+        /// 设置excel公共样式，边框加黑线      
+        /// </summary>
+        /// <param name="cs"></param>
+        protected  void SetExcelBoderStyle(ICellStyle cs)
+        {
+            cs.Alignment = HorizontalAlignment.CENTER;
+            cs.VerticalAlignment = VerticalAlignment.CENTER;
+            cs.BorderTop = BorderStyle.THIN;
+            cs.BorderBottom = BorderStyle.THIN;
+            cs.BorderLeft = BorderStyle.THIN;
+            cs.BorderRight = BorderStyle.THIN;
+            cs.TopBorderColor = IndexedColors.BLACK.Index;
+            cs.BottomBorderColor = IndexedColors.BLACK.Index;
+            cs.LeftBorderColor = IndexedColors.BLACK.Index;
+            cs.RightBorderColor = IndexedColors.BLACK.Index;
+            cs.WrapText = true; //自动换行
         }
     }
 }

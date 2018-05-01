@@ -97,10 +97,10 @@ namespace PS.Controllers.Alipay
             //设置单元格式-居中
             var stylecenter = hssfworkbook.CreateCellStyle();
             stylecenter.VerticalAlignment = VerticalAlignment.CENTER;
-            stylecenter.BorderTop = CellBorderType.THIN;
-            stylecenter.BorderBottom = CellBorderType.THIN;
-            stylecenter.BorderLeft = CellBorderType.THIN;
-            stylecenter.BorderRight = CellBorderType.THIN;
+            //stylecenter.BorderTop = CellBorderType.THIN;
+            //stylecenter.BorderBottom = CellBorderType.THIN;
+            //stylecenter.BorderLeft = CellBorderType.THIN;
+            //stylecenter.BorderRight = CellBorderType.THIN;
             stylecenter.TopBorderColor = IndexedColors.BLACK.Index;
             stylecenter.BottomBorderColor = IndexedColors.BLACK.Index;
             stylecenter.LeftBorderColor = IndexedColors.BLACK.Index;
@@ -117,7 +117,7 @@ namespace PS.Controllers.Alipay
 
 
             sheet.CreateRow(0).HeightInPoints = 40;
-            AddRow(0, 0, 0, columns.Count, "订单退款审批列表", hssfworkbook, sheet, 12, NPOI.SS.UserModel.HorizontalAlignment.CENTER);
+            //AddRow(0, 0, 0, columns.Count, "订单退款审批列表", hssfworkbook, sheet, 12, NPOI.SS.UserModel.HorizontalAlignment.CENTER);
 
 
             //添加列名

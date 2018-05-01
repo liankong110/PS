@@ -15,7 +15,7 @@
 <link href="~/Scripts/handsontable/handsontable.full.min.css" rel="stylesheet" />
 <script src="~/Scripts/handsontable/handsontable.full.min.js"></script>
 <script src="~/Scripts/handsontable/jquery-1.10.2.min.js"></script>
-<div class="page-content" style="font-size:5px;">
+<div class="page-content" style="font-size:8px;">
 
     <div class="page-header">
         <h1>
@@ -261,7 +261,7 @@
                             var xuqiu_obj = new HotData();
                             xuqiu_obj.Type = "需求差异";
                             xuqiu_obj.ChanNeng = null;
-                            xuqiu_obj.StockNum = m.Qty;
+                            //xuqiu_obj.StockNum = m.Qty;
 
                             //供需求差异
                             var gongxuqiu_obj = new HotData();
@@ -277,25 +277,22 @@
                             var eveningInt = (int)ClassType.Evening;
                             if (mainPlan != null)
                             {
-                                for (int i = 0; i < 21; i++)
+                                for (int i = 0; i <21; i++)
                                 {
                                     SchedulingDateNumModel dateNumModel = new SchedulingDateNumModel();
                                     if (i == 0)
                                     {
                                         dateNumModel.TopGongRequestDiffNum = m.Qty;
                                     }
-                                    else
-                                    {
-                                        dateNumModel.TopGongRequestDiffNum = dateNumList[i - 1].RequestDiffNum;
-                                    }
+
 
                                     var date = mainPlan.PlanFromDate.AddDays(i);
                                     var itemList = currentLineShipPlansList.FindAll(t => t.PlanDate == date);
                                     dateNumModel.date = date;
                                     if (itemList.Count > 0)
                                     {
-                                        int sumPlanNum = 0;
                                         var item = itemList.Find(t => t.SType == requestInt);
+
                                         if (item != null)
                                         {
                                             HotHelp.SetValue(xu_obj, item.PlanNum, i);
@@ -322,7 +319,10 @@
                                         }
 
                                     }
-
+                                    if (i > 0)
+                                    {
+                                        dateNumModel.TopGongRequestDiffNum = dateNumList[i - 1].GongRequestDiffNum;
+                                    }
                                     dateNumList.Add(dateNumModel);
                                 }
                             }
@@ -330,9 +330,8 @@
 
                             if (mainPlan != null)
                             {
-                                for (int i = 0; i < 21; i++)
+                                for (int i = 0; i <21; i++)
                                 {
-
                                     var RequestDiffNum = dateNumList[i].RequestDiffNum;
                                     if (RequestDiffNum != null)
                                     {
@@ -614,7 +613,7 @@
             colHeaders:MyColHeaders,
             //fixedRowsTop: 2,
             //fixedColumnsLeft: 3,
-            //renderAllRows:true,//是否呈现所有行
+            renderAllRows:false,//是否呈现所有行
             afterSetCellMeta: function (row, col, key, val,prop) {
                 console.log("cell meta changed", row, col, key, val,prop);
             },
@@ -664,7 +663,7 @@
                         var gongRequestDiffNum =0;
                         var topGongRequestDiffNum=0;
 
-                        for(var i=colIndex;i<27;i++){
+                        for(var i=colIndex;i<=27;i++){
 
                             //编辑的是否是第一行数据，第一行数据要拿库存作为 供需求查询默认值
                             //初始化数据
@@ -755,7 +754,7 @@
 
         //如果全部都是0 则统计为0
         if (zbPeople == 0 && mbPeople == 0 && wbPeople == 0) {
-            for (var i = 0; i < 21; i++) {
+            for (var i = 0; i <=21; i++) {
                 $("#sum" + proLineNo + i).html("");
             }
             return;
@@ -771,7 +770,7 @@
                 if (data.Mess == "success") {
                     //如果没有找到对应的人数产能的信息则情况
                     if (data.Data.length==0) {
-                        for (var i = 0; i < 21; i++) {
+                        for (var i = 0; i <=21; i++) {
                             $("#sum" + proLineNo + i).html("");
                         }
                         return;
@@ -918,7 +917,8 @@
             {
                 PlanFromDate:'@mainPlan.PlanFromDate',
                 PlanToDate:'@mainPlan.PlanFromTo',
-                Id:$("#Id").val()
+                Id:$("#Id").val(),
+                ShipMainProNo:$("#ShipMainProNo").val() 
             };
         var url="/Scheduling/AddPro_Scheduling";
         $.ajax({

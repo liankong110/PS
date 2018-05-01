@@ -22,6 +22,8 @@
                 <input type="hidden" id="page" name="page" />
                 @Html.AntiForgeryToken() 
                 <input type="hidden" name="ShipMainProNo" id="ShipMainProNo" value="@ViewBag.ShipMainProNo" />
+                <input type="hidden" name="ShipPlanMainId" id="ShipPlanMainId" value="@ViewBag.ShipPlanMainId" />
+
                 <div class="form-group">
                     <label class="col-sm-2 control-label no-padding-top" for="duallist">选择库存版本：</label>
                     <div class="col-sm-9">

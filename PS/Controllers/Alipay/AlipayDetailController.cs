@@ -115,7 +115,7 @@ namespace PS.Controllers.Alipay
 
             if (isExcel == 1)
             {
-                OutExcelToList(Smart.Instance.AlipayDetailBizService.GetAllDomain(query));
+                //OutExcelToList(Smart.Instance.AlipayDetailBizService.GetAllDomain(query));
             }
 
             ViewBag.Page = query.SetPager(page, 10).GetPager();
@@ -124,101 +124,101 @@ namespace PS.Controllers.Alipay
             return View(userList);
         }
 
-        /// <summary>
-        /// 导出企业证件信息表
-        /// </summary>
-        /// <param name="alipayDetailList">数据源</param>
-        /// <param name="sheetName">EXCEL标题名称</param>
-        private void OutExcelToList(IList<AlipayDetailDomain> alipayDetailList)
-        {
-            var hssfworkbook = new HSSFWorkbook();
-            var dsi = PropertySetFactory.CreateDocumentSummaryInformation();
-            dsi.Company = "NPOI Team";
-            hssfworkbook.DocumentSummaryInformation = dsi;
-            SummaryInformation si = PropertySetFactory.CreateSummaryInformation();
-            si.Subject = "NPOI SDK Example";
-            hssfworkbook.SummaryInformation = si;
-            var sheet = hssfworkbook.CreateSheet("支付宝交易列表");
-            //设置单元格式-居中
-            var stylecenter = hssfworkbook.CreateCellStyle();
-            stylecenter.VerticalAlignment = VerticalAlignment.CENTER;
-            stylecenter.BorderTop = CellBorderType.THIN;
-            stylecenter.BorderBottom = CellBorderType.THIN;
-            stylecenter.BorderLeft = CellBorderType.THIN;
-            stylecenter.BorderRight = CellBorderType.THIN;
-            stylecenter.TopBorderColor = IndexedColors.BLACK.Index;
-            stylecenter.BottomBorderColor = IndexedColors.BLACK.Index;
-            stylecenter.LeftBorderColor = IndexedColors.BLACK.Index;
-            stylecenter.RightBorderColor = IndexedColors.BLACK.Index;
-            var columns = new List<string>
-                              {
-                                  "景区名称",
-                                  "批次号",
-                                  "订单号",
-                                  "游玩日期",
-                                  "商家订单号",
-                                  "交易时间",
-                                  "交易金额", 
-                                  "买家支付宝账号",
-                                  "支付宝APPID",  
-                                  "支付宝交易号",       
-                                  "交易状态",     
+        ///// <summary>
+        ///// 导出企业证件信息表
+        ///// </summary>
+        ///// <param name="alipayDetailList">数据源</param>
+        ///// <param name="sheetName">EXCEL标题名称</param>
+        //private void OutExcelToList(IList<AlipayDetailDomain> alipayDetailList)
+        //{
+        //    var hssfworkbook = new HSSFWorkbook();
+        //    var dsi = PropertySetFactory.CreateDocumentSummaryInformation();
+        //    dsi.Company = "NPOI Team";
+        //    hssfworkbook.DocumentSummaryInformation = dsi;
+        //    SummaryInformation si = PropertySetFactory.CreateSummaryInformation();
+        //    si.Subject = "NPOI SDK Example";
+        //    hssfworkbook.SummaryInformation = si;
+        //    var sheet = hssfworkbook.CreateSheet("支付宝交易列表");
+        //    //设置单元格式-居中
+        //    var stylecenter = hssfworkbook.CreateCellStyle();
+        //    stylecenter.VerticalAlignment = VerticalAlignment.CENTER;
+        //    stylecenter.BorderTop = CellBorderType.THIN;
+        //    stylecenter.BorderBottom = CellBorderType.THIN;
+        //    stylecenter.BorderLeft = CellBorderType.THIN;
+        //    stylecenter.BorderRight = CellBorderType.THIN;
+        //    stylecenter.TopBorderColor = IndexedColors.BLACK.Index;
+        //    stylecenter.BottomBorderColor = IndexedColors.BLACK.Index;
+        //    stylecenter.LeftBorderColor = IndexedColors.BLACK.Index;
+        //    stylecenter.RightBorderColor = IndexedColors.BLACK.Index;
+        //    var columns = new List<string>
+        //                      {
+        //                          "景区名称",
+        //                          "批次号",
+        //                          "订单号",
+        //                          "游玩日期",
+        //                          "商家订单号",
+        //                          "交易时间",
+        //                          "交易金额", 
+        //                          "买家支付宝账号",
+        //                          "支付宝APPID",  
+        //                          "支付宝交易号",       
+        //                          "交易状态",     
                                  
-                              };
+        //                      };
 
-            sheet.CreateRow(0).HeightInPoints = 40;
-            AddRow(0, 0, 0, columns.Count, "支付宝交易列表", hssfworkbook, sheet, 13, NPOI.SS.UserModel.HorizontalAlignment.CENTER);
+        //    sheet.CreateRow(0).HeightInPoints = 40;
+        //    AddRow(0, 0, 0, columns.Count, "支付宝交易列表", hssfworkbook, sheet, 13, NPOI.SS.UserModel.HorizontalAlignment.CENTER);
 
 
-            //添加列名
-            sheet.CreateRow(1);
-            for (var i = 0; i < columns.Count; i++)
-            {
-                sheet.GetRow(1).CreateCell(i).SetCellValue(columns[i]);
-                var cell = sheet.GetRow(1).GetCell(i);
-                cell.CellStyle = stylecenter;
-            }
-            for (var i = 0; i < alipayDetailList.Count; i++)
-            {
-                sheet.CreateRow(2 + i);
-                var detail = alipayDetailList[i];
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("景区名称")).SetCellValue(detail.SceneryName);
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("批次号")).SetCellValue(detail.BatchNumber);
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("订单号")).SetCellValue(detail.SerialId);
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("游玩日期")).SetCellValue(detail.AlipayPlayDate.ToString("yyyy-MM-dd"));
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("商家订单号")).SetCellValue(detail.Out_trade_no);
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("交易时间")).SetCellValue(detail.Send_pay_date.ToString("yyyy-MM-dd hh:mm:ss"));
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("交易金额")).SetCellValue(detail.Total_amount.ToString());
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("买家支付宝账号")).SetCellValue(detail.Buyer_logon_id);
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("支付宝APPID")).SetCellValue(detail.AppId);
+        //    //添加列名
+        //    sheet.CreateRow(1);
+        //    for (var i = 0; i < columns.Count; i++)
+        //    {
+        //        sheet.GetRow(1).CreateCell(i).SetCellValue(columns[i]);
+        //        var cell = sheet.GetRow(1).GetCell(i);
+        //        cell.CellStyle = stylecenter;
+        //    }
+        //    for (var i = 0; i < alipayDetailList.Count; i++)
+        //    {
+        //        sheet.CreateRow(2 + i);
+        //        var detail = alipayDetailList[i];
+        //        sheet.GetRow(2 + i).CreateCell(columns.IndexOf("景区名称")).SetCellValue(detail.SceneryName);
+        //        sheet.GetRow(2 + i).CreateCell(columns.IndexOf("批次号")).SetCellValue(detail.BatchNumber);
+        //        sheet.GetRow(2 + i).CreateCell(columns.IndexOf("订单号")).SetCellValue(detail.SerialId);
+        //        sheet.GetRow(2 + i).CreateCell(columns.IndexOf("游玩日期")).SetCellValue(detail.AlipayPlayDate.ToString("yyyy-MM-dd"));
+        //        sheet.GetRow(2 + i).CreateCell(columns.IndexOf("商家订单号")).SetCellValue(detail.Out_trade_no);
+        //        sheet.GetRow(2 + i).CreateCell(columns.IndexOf("交易时间")).SetCellValue(detail.Send_pay_date.ToString("yyyy-MM-dd hh:mm:ss"));
+        //        sheet.GetRow(2 + i).CreateCell(columns.IndexOf("交易金额")).SetCellValue(detail.Total_amount.ToString());
+        //        sheet.GetRow(2 + i).CreateCell(columns.IndexOf("买家支付宝账号")).SetCellValue(detail.Buyer_logon_id);
+        //        sheet.GetRow(2 + i).CreateCell(columns.IndexOf("支付宝APPID")).SetCellValue(detail.AppId);
                
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("支付宝交易号")).SetCellValue(detail.Trade_no);
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("交易状态")).SetCellValue(detail.Trade_status);
+        //        sheet.GetRow(2 + i).CreateCell(columns.IndexOf("支付宝交易号")).SetCellValue(detail.Trade_no);
+        //        sheet.GetRow(2 + i).CreateCell(columns.IndexOf("交易状态")).SetCellValue(detail.Trade_status);
 
-                for (var j = 0; j < columns.Count; j++)
-                {
-                    var cell = sheet.GetRow(2 + i).GetCell(j);
-                    cell.CellStyle = stylecenter;
-                }
-            }
-            for (var i = 0; i < columns.Count; i++)
-            {
-                sheet.AutoSizeColumn(i);
-            }
-            sheet.SetColumnWidth(0, 20 * 256);
-            sheet.SetColumnWidth(1, 22 * 256);
-            sheet.SetColumnWidth(2, 20 * 256);
-            sheet.SetColumnWidth(3, 20 * 256);
-            sheet.SetColumnWidth(4, 30 * 256);
+        //        for (var j = 0; j < columns.Count; j++)
+        //        {
+        //            var cell = sheet.GetRow(2 + i).GetCell(j);
+        //            cell.CellStyle = stylecenter;
+        //        }
+        //    }
+        //    for (var i = 0; i < columns.Count; i++)
+        //    {
+        //        sheet.AutoSizeColumn(i);
+        //    }
+        //    sheet.SetColumnWidth(0, 20 * 256);
+        //    sheet.SetColumnWidth(1, 22 * 256);
+        //    sheet.SetColumnWidth(2, 20 * 256);
+        //    sheet.SetColumnWidth(3, 20 * 256);
+        //    sheet.SetColumnWidth(4, 30 * 256);
 
-            sheet.SetColumnWidth(5, 20 * 256);
-            sheet.SetColumnWidth(6, 20 * 256);
-            sheet.SetColumnWidth(7, 20 * 256);
-            sheet.SetColumnWidth(8, 15 * 256);
-            sheet.SetColumnWidth(9, 15 * 256);
-            sheet.ForceFormulaRecalculation = true;
-            CommonMethod.WriteToFile(hssfworkbook, "支付宝交易列表");
-        }
+        //    sheet.SetColumnWidth(5, 20 * 256);
+        //    sheet.SetColumnWidth(6, 20 * 256);
+        //    sheet.SetColumnWidth(7, 20 * 256);
+        //    sheet.SetColumnWidth(8, 15 * 256);
+        //    sheet.SetColumnWidth(9, 15 * 256);
+        //    sheet.ForceFormulaRecalculation = true;
+        //    CommonMethod.WriteToFile(hssfworkbook, "支付宝交易列表");
+        //}
         ///// <summary>
         ///// 退款
         ///// </summary>

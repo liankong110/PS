@@ -200,15 +200,16 @@ namespace PS.Controllers.ProBase
                                     error = "Excel解析错误";
                                     break;
                                 }
-                                if (rowIndex == 2)
+                                if (rowIndex == 1)
                                 {
                                     Base_StockMain mianModel = new Base_StockMain();
-                                    mianModel.ProNo = "201800001";
+                                    mianModel.Creater = CurrentUser.Name;
+                                    mianModel.Updater = CurrentUser.Name;
                                     mianModel.RowState = 1;
                                     mainId =Smart.Instance.Base_StockMainBizService.AddGetId(mianModel);
                                 }
-                                if (rowIndex > 1)
-                                {
+                                //if (rowIndex > 1)
+                                //{
                                     var model = new Base_Stock();
                                     model.Location = dataReader[0].ToString();
                                     model.WH = dataReader[1].ToString();
@@ -220,7 +221,7 @@ namespace PS.Controllers.ProBase
                                     model.Updater = model.Creater = CurrentUser.Name;
                                     model.RowState = 1;
                                     _stockBizService.Add(model);                                   
-                                }
+                                //}
                                 rowIndex++;
                             }
                         }

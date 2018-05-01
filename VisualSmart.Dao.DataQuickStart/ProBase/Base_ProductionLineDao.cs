@@ -252,9 +252,12 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
         /// 获取所有产线信息
         /// </summary>
         /// <returns></returns>
-        public IList<string> GetAllProLineNos()
+        public IList<string> GetAllProLineNos(int ShipPlanMainId)
         {
-            string sql = string.Format("select ProLineNo from [dbo].[Base_ProductionLine] group by ProLineNo");
+            string sql = string.Format(@" select ProLineNo from [dbo].[Base_ProductionLine] 
+ left join[dbo].[Pro_ShipPlan]  on Base_ProductionLine.GoodNo = Pro_ShipPlan.GoodNo
+ where Pro_ShipPlan.MainId = {0}
+ group by ProLineNo", ShipPlanMainId);
             return ReadAdoTemplate.QueryWithRowMapperDelegate<string>(CommandType.Text, sql, delegate (IDataReader dataReader, int rowNum)
             {
                 return dataReader["ProLineNo"].ToString(); ;
