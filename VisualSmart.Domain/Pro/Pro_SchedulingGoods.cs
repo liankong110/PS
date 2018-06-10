@@ -126,5 +126,14 @@ namespace VisualSmart.Domain.Pro
 
 
         public List<Pro_SchedulingGoodsNum> Items { get; set; }
+
+        /// <summary>
+        /// 主节点-商品
+        /// </summary>
+        public string ParentGoodNo { get; set; }
+        /// <summary>
+        /// 父节点-shipto
+        /// </summary>
+        public string ParentGoodName { get; set; }
     }
 }

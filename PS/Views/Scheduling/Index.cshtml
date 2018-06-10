@@ -15,20 +15,24 @@
 <link href="~/Scripts/handsontable/handsontable.full.min.css" rel="stylesheet" />
 <script src="~/Scripts/handsontable/handsontable.full.min.js"></script>
 <script src="~/Scripts/handsontable/jquery-1.10.2.min.js"></script>
+<style>
+    #test2 { position:fixed; top:20px; background:#EDEDED; z-index:9999; }
+</style>
 <div class="page-content" style="font-size:8px;">
 
     <div class="page-header">
-        <h1>
+        <h1 >
             生产排产
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 填写信息后，进行保存
-                <button class="btn btn-sm btn-primary " id="save" type="button">
+                <button class="btn btn-sm btn-primary " id="save" type="button" style="float:right;" >
                     <i class="ace-icon fa fa-save bigger-110"></i>
                     保存
                 </button>
             </small>
         </h1>
+    <br />
     </div><!-- /.page-header -->
     <div class="row">
         <div class="col-xs-12">
@@ -102,6 +106,11 @@
             </form>
         </div>
     </div>
+    @* 先隐藏 *@
+    @*<div id="test2">
+       搜索内容： <input  type="text" value="" width="200" id="SelectContent"/><input type="button"  value="查询" onclick="SelectContent()"/>
+        <div id="selectResult" style="font-size:18px;color:red; "></div>
+    </div>*@
 
     <div class="row">
         <div class="col-xs-12">
@@ -112,6 +121,7 @@
                 <ul class="nav nav-tabs padding-18 tab-size-bigger" id="myTab">
                     @{
                         string allLines = "";
+                        int Id = Convert.ToInt32(ViewBag.Id);
                     }
                     @for (int ii = 0; ii < proLineNos.Count; ii++)
                     {
@@ -163,6 +173,8 @@
                                 string week = Day[Convert.ToInt32(date.DayOfWeek.ToString("d"))].ToString();
                                 allColumns.Add(week + "<br/>" + date.ToString("MM-dd"));
                             }
+                            //allColumns.Add("ParentGoodNo");
+                            //allColumns.Add("ParentGoodName");
                         }
                         //数据
                         List<List<object>> lineData = new List<List<object>>();
@@ -236,11 +248,11 @@
                             //需求
                             var xu_obj = new HotData();
                             xu_obj.Type = "需求";
-                            xu_obj.StockNum = m.Qty;
+                            //xu_obj.StockNum = m.Qty;
                             //早
                             var zao_obj = new HotData();
                             zao_obj.Type = "早班";
-                            zao_obj.StockNum = m.Qty;
+                            //zao_obj.StockNum = m.Qty;
                             zao_obj.ChanNeng = m.MorningNum > 0 ? m.MorningNum.ToString() : null;
                             //中
                             var zhong_obj = new HotData();
@@ -251,24 +263,28 @@
                             zhong_obj.Type = "中班";
                             zhong_obj.ChanNeng = null;
                             zhong_obj.StockNum = m.Qty;
-                            zhong_obj.ChanNeng =m.MiddleNum > 0 ? m.MiddleNum.ToString() : null;
+                            zhong_obj.ChanNeng = m.MiddleNum > 0 ? m.MiddleNum.ToString() : null;
+                            //zhong_obj.ParentGoodNo = m.ParentGoodNo;
+                            //zhong_obj.ParentGoodName = m.ParentGoodName;
                             //晚
                             var wan_obj = new HotData();
                             wan_obj.Type = "晚班";
-                            wan_obj.StockNum = m.Qty;
+                            //wan_obj.StockNum = m.Qty;
                             wan_obj.ChanNeng = m.EveningNum > 0 ? m.EveningNum.ToString() : null;
                             //需求差异
                             var xuqiu_obj = new HotData();
                             xuqiu_obj.Type = "需求差异";
                             xuqiu_obj.ChanNeng = null;
                             //xuqiu_obj.StockNum = m.Qty;
-
+                            xuqiu_obj.GoodNo = m.ParentGoodNo;
+                            xuqiu_obj.GoodName = m.ParentGoodName;
                             //供需求差异
                             var gongxuqiu_obj = new HotData();
                             //gongxuqiu_obj.GoodNo = "整箱包装数";
                             //gongxuqiu_obj.GoodName = "10";
                             gongxuqiu_obj.Type = "供需求差异";
-
+                            gongxuqiu_obj.GoodNo = "整托包装数";
+                            gongxuqiu_obj.GoodName = m.ShipPkgQty == null ? "" : m.ShipPkgQty.ToString();
                             List<SchedulingDateNumModel> dateNumList = new List<SchedulingDateNumModel>();
                             var currentLineShipPlansList = _shipPlansList.FindAll(t => t.PlanId == m.Id);
                             var requestInt = (int)ClassType.Requet;
@@ -277,14 +293,13 @@
                             var eveningInt = (int)ClassType.Evening;
                             if (mainPlan != null)
                             {
-                                for (int i = 0; i <21; i++)
+                                for (int i = 0; i < 21; i++)
                                 {
                                     SchedulingDateNumModel dateNumModel = new SchedulingDateNumModel();
                                     if (i == 0)
                                     {
                                         dateNumModel.TopGongRequestDiffNum = m.Qty;
                                     }
-
 
                                     var date = mainPlan.PlanFromDate.AddDays(i);
                                     var itemList = currentLineShipPlansList.FindAll(t => t.PlanDate == date);
@@ -293,10 +308,20 @@
                                     {
                                         var item = itemList.Find(t => t.SType == requestInt);
 
+                                        int newPlanNum = 0;
                                         if (item != null)
                                         {
-                                            HotHelp.SetValue(xu_obj, item.PlanNum, i);
-                                            dateNumModel.RequestNum = item.PlanNum;
+                                            //需求量 是BOM时 需要根据比例进行修改对应的信息 比如1个成本需要2个子产品
+                                            if (Id == 0)
+                                            {
+                                                newPlanNum = item.PlanNum * m.BiLi;
+                                            }
+                                            else
+                                            {
+                                                newPlanNum = item.PlanNum;
+                                            }
+                                            HotHelp.SetValue(xu_obj, newPlanNum, i);
+                                            dateNumModel.RequestNum = newPlanNum;
                                         }
 
                                         item = itemList.Find(t => t.SType == morningInt);
@@ -330,7 +355,7 @@
 
                             if (mainPlan != null)
                             {
-                                for (int i = 0; i <21; i++)
+                                for (int i = 0; i < 21; i++)
                                 {
                                     var RequestDiffNum = dateNumList[i].RequestDiffNum;
                                     if (RequestDiffNum != null)
@@ -382,7 +407,8 @@
 <script src="~/Content/components/datatables.net-buttons/js/buttons.colVis.js"></script>
 <script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
 <link href="~/Content/StyleSheet1.css" rel="stylesheet" />
-<script>
+<script src="~/Content/components/jquery.gritter/js/jquery.gritter.js"></script>
+<script type="text/javascript">
 
     var allJson =@allJson ;
 
@@ -410,7 +436,7 @@
     var MyColHeaders = @hearsJson;
 
 
-    var colHeadersName = ['GoodNo', 'GoodName', 'ShipTo', 'ShipToName', 'Type', 'StockNum', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21'];
+    var colHeadersName = ['GoodNo', 'GoodName', 'ShipTo', 'ShipToName', 'Type', 'StockNum', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '18', '16', '17', '18', '19', '20', '21'];
 
 
     var MyRenderer = function (instance, td, row, col, prop, value, cellProperties) {
@@ -420,8 +446,7 @@
         // $(td).css("vertical-align", "center");
         if (row % 6 == 0) {
             $(td).css("background-color", "lemonchiffon");
-            if (col < 4) {
-                //console.log(cellProperties);
+            if (col < 4||col==6) {
 
                 td.style.border = "0";
             }
@@ -438,7 +463,7 @@
             cellProperties.readOnly = true;
 
         } else {
-            if (col<4) {
+            if (col<4||col==6) {
                 td.style.border = "0";
             }
         }
@@ -462,6 +487,7 @@
         var hotElementContainer = hotElement.parentNode;
         var hotSettings = {
             data: dataObject,
+            //maxCols:28,
             columns: [
                 {
                     data: 'GoodNo',
@@ -582,18 +608,24 @@
                                 data: 'TwentyOne',
                                 type: 'numeric'
                             }
+                            
             ],
             stretchH: 'all',
             //width: 1024,
             autoWrapRow: true,
+            //colWidths:[30,60,30,60,20,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,-1,-1],    
             //height: 487,
             //maxRows: 22,
+            //maxCols:28,
             search: true,
             trimRows: [
               1,
               2,
               5
             ],
+   
+            filters: true,
+            dropdownMenu: ['filter_by_condition', 'filter_by_value', 'filter_action_bar'],
             mergeCells: true,
             contextMenu: false,
             mergeCells: htbingList,
@@ -613,7 +645,7 @@
             colHeaders:MyColHeaders,
             //fixedRowsTop: 2,
             //fixedColumnsLeft: 3,
-            renderAllRows:false,//是否呈现所有行
+            //renderAllRows:true,//是否呈现所有行
             afterSetCellMeta: function (row, col, key, val,prop) {
                 console.log("cell meta changed", row, col, key, val,prop);
             },
@@ -653,7 +685,7 @@
                         var XQ_RowData=hot.getDataAtRow(XQNum_Index);
 
                         var ZB_RowData=hot.getDataAtRow(XQNum_Index+1);
-                        console.log(ZB_RowData);
+                        //console.log(ZB_RowData);
                         var MB_RowData=hot.getDataAtRow(XQNum_Index+2);
                         var WB_RowData=hot.getDataAtRow(XQNum_Index+3);
                         var aa=XQNum_Index+4;
@@ -669,11 +701,12 @@
                             //初始化数据
                             if(i==colIndex){
                                 if(i==7){
-                                    topGongRequestDiffNum=XQ_RowData[i-1];
+                                    topGongRequestDiffNum=MB_RowData[i-1];
+                                    //console.log(topGongRequestDiffNum);
                                 }else{
                                     topGongRequestDiffNum=hot.getDataAtCell(bb,i-1);
                                 }
-                                console.log(topGongRequestDiffNum);
+                                //console.log(topGongRequestDiffNum);
                             }
                             //计算当前的信息
                             requestDiffNum = topGongRequestDiffNum - parseToInt(XQ_RowData[i]);
@@ -755,7 +788,7 @@
         //如果全部都是0 则统计为0
         if (zbPeople == 0 && mbPeople == 0 && wbPeople == 0) {
             for (var i = 0; i <=21; i++) {
-                $("#sum" + proLineNo + i).html("");
+                $("#sum" + index + i).html("");
             }
             return;
         }
@@ -767,14 +800,10 @@
             async: false,
             cache: false,
             success: function (data) {
+                //console.log(data);
+                //console.log(proLineNo);
                 if (data.Mess == "success") {
-                    //如果没有找到对应的人数产能的信息则情况
-                    if (data.Data.length==0) {
-                        for (var i = 0; i <=21; i++) {
-                            $("#sum" + proLineNo + i).html("");
-                        }
-                        return;
-                    }
+                    
                     //先清空所有功能
                     var hot=allHotList[index];
 
@@ -783,13 +812,28 @@
                     var sum=0;
                     var editData=[];
                     for(var i=1;i<colDataList.length;i++){
+                        //早 中 晚
                         if ((i - 1) % 6 == 0||(i - 2) % 6 == 0||(i - 3) % 6 == 0) {
                             //早
                             editData.push([i, 5, null]);
                         }
-                    }
+                    }                  
                     hot.setDataAtCell(editData);
 
+                    //如果没有找到对应的人数产能的信息则情况
+                    if (data.Data.length==0) {
+                        for (var i = 0; i <=21; i++) {
+                            $("#sum" + index + i).html("");
+                        }
+                        var className = "gritter-error gritter-light";
+                        error = "没有匹配到产能信息！";
+                        $.gritter.add({
+                            title: error,
+                            text: "",
+                            class_name: className
+                        });
+                        return;
+                    }
                     var newData=[];
                     //获取商品编码列
                     var goodDataList=hot.getDataAtCol(0);
@@ -860,14 +904,20 @@
     }
 
     function LoadSum(){
-        var allLines=$("#allLines").val().split(',');
-        console.log(allLines.length);
-        for(var i=0;i<allLines.length;i++){
-            var hot=allHotList[i];
+        var allLines=$("#allLines").val().split(',');     
+
+        for(var index=0;index<allHotList.length;index++){
+            var hot=allHotList[index];
+            //console.log("hot  index :"+index);
+          
             for (var day = 7; day <= 28; day++) {
-              
+
+                //获取一列的所有数据
                 var colDataList=hot.getDataAtCol(day);
+               
+                
                 var sum=0;
+                //遍历这一列
                 for(var i=1;i<colDataList.length;i++){
 
                     if ((i - 1) % 6 == 0||(i - 2) % 6 == 0||(i - 3) % 6 == 0) {
@@ -876,18 +926,21 @@
                         if(channeng!=null&&colDataList[i]!=null){
                             //转换成秒
                             sum+=colDataList[i]/channeng*60*60;
+                            //console.log("sum+="+colDataList[i]+"/"+channeng+"*60*60="+sum);
                         }
                     }
 
                 }
+               
                 //实际工时数=SUM（零件的早班生产量/早班人数的产能量+零件的中班生产量/中班人数的产能量+零件的晚班生产量/晚班人数的产能量）
                 //注意：1）早中晚班的工时要换算成秒，才可以相加，最终的总工时才可以换算成小时。
                 //2）SUM是将所有零件的所有工时，加总到一起。
                 //3）建议，每更新一个生产计划，相关的需求差异和实际工时数会自动更新。
                 if (sum == 0) {
-                    $("#sum"+currentLineIndex+(day-7)).html("");
+                    $("#sum"+index+(day-7)).html("");
                 }else{
-                    $("#sum"+currentLineIndex+(day-7)).html((sum/3600).toFixed(2));
+                    
+                    $("#sum"+index+(day-7)).html((sum/3600).toFixed(2));
                 }
             }
         }
@@ -904,8 +957,8 @@
             async: true,
             complete:function(){
                 SaveData();
-            } 
-        }); 
+            }
+        });
     });
     //保存信息
     function SaveData(){
@@ -918,7 +971,7 @@
                 PlanFromDate:'@mainPlan.PlanFromDate',
                 PlanToDate:'@mainPlan.PlanFromTo',
                 Id:$("#Id").val(),
-                ShipMainProNo:$("#ShipMainProNo").val() 
+                ShipMainProNo:$("#ShipMainProNo").val()
             };
         var url="/Scheduling/AddPro_Scheduling";
         $.ajax({
@@ -981,13 +1034,20 @@
                         if(zhongDetail[0]==null){
                             continue;
                         }
+                        
+                        //增加父零件号+零件名称
+                        zhongDetail.push(hot.getDataAtCell(rowIndex+4,0));
+                        zhongDetail.push(hot.getDataAtCell(rowIndex+4,1));
 
-                        //3.保存 产线+库存+产能信息                       
+                        //增加整托包装数
+                        zhongDetail.push(hot.getDataAtCell(rowIndex+5,1));
+                        //console.log(zaoDetail);
+                        //3.保存 产线+库存+产能信息
                         goodsList.push(xuDetail);
                         goodsList.push(zaoDetail);
                         goodsList.push(zhongDetail);
-                        goodsList.push(wanDetail); 
-                    } 
+                        goodsList.push(wanDetail);
+                    }
                     url="/Scheduling/AddPro_SchedulingGoods";
                     console.log(JSON.stringify(goodsList));
                     $.ajax({
@@ -1008,6 +1068,50 @@
             }
             alert("保存成功！");
             window.close();
+        }
+    }
+
+    //jq部分
+    $(document).scroll(function(e) {
+        if($(document).scrollTop()!=0){
+            $("#test2").stop();
+            $("#test2").animate({"top":"0"});
+        }
+        else{
+            $("#test2").stop();
+            $("#test2").animate({"top":"20px"});
+        }
+    });
+
+    function SelectContent(){
+        $("#selectResult").html("");
+        var selectContent=$("#SelectContent").val();
+      
+        if(selectContent==""){
+            return;
+        }
+
+        var hot=allHotList[currentLineIndex];
+        var goodNoList=hot.getDataAtCol(0);
+        var goodNameList=hot.getDataAtCol(1);
+        var shipNo=hot.getDataAtCol(2);
+        var shipName=hot.getDataAtCol(3);
+        var sum=0;
+        var result="行号：";     
+        var count=0;
+        for(var i=1;i<goodNoList.length;i++){
+            if ((i - 2) % 6 == 0&&count<10) {               
+                if(goodNoList[i].indexOf(selectContent)>-1||
+                   goodNameList[i].indexOf(selectContent)>-1||
+                    shipNo[i].indexOf(selectContent)>-1||
+                    shipName[i].indexOf(selectContent)>-1) {                
+                    result+=(i+1)+ ",";
+                    count=count+1;
+                }                
+            }
+        }
+        if(result!="行号："){
+            $("#selectResult").html(result.trim(","));
         }
     }
 </script>

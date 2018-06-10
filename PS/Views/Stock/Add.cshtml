@@ -25,14 +25,15 @@
                 <div class="col-xs-12">
                     <!-- PAGE CONTENT BEGINS -->
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>生产线</label>
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>地点</label>
 
                         <div class="col-sm-9">
                             @Html.HiddenFor(t => t.Id)
                             @Html.HiddenFor(T => T.CreateTime)
+                            @Html.HiddenFor(T => T.MainId)
                             @Html.AntiForgeryToken()
                             @Html.TextBoxFor(t => t.Location, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right",
-                           @title = "请输入库位", @placeholder = "请输入库位", @data_trigger = "focus" })
+                           @title = "请输地点", @placeholder = "请输地点", @data_trigger = "focus" })
                         </div>
                     </div>
 
@@ -51,7 +52,10 @@
 
                         <div class="col-sm-9">
 
-                            @Html.TextBoxFor(t => t.GoodNo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入产品编码", @placeholder = "请输入产品编码", @data_trigger = "focus" })
+                            @Html.TextBoxFor(t => t.GoodNo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip",
+                           @data_placement = "right", @title = "请输入产品编码", @placeholder = "请输入产品编码", @data_trigger = "focus",
+                           @onblur = "ChangeInfo('GoodNo','GoodName');"
+                       })
                         </div>
                     </div>
 
@@ -60,7 +64,7 @@
 
                         <div class="col-sm-9">
 
-                            @Html.TextBoxFor(t => t.GoodNo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入产品名称", @placeholder = "请输入产品名称", @data_trigger = "focus" })
+                            @Html.TextBoxFor(t => t.GoodName, new { @class = "col-xs-10 col-sm-5", @readonly = true, @data_rel = "tooltip", @data_placement = "right", @title = "请输入产品名称", @placeholder = "请输入产品名称", @data_trigger = "focus" })
                         </div>
                     </div>
                     <div class="form-group">
@@ -95,7 +99,7 @@
                                 </button>
 
                                 &nbsp; &nbsp; &nbsp;
-                                <a class="btn" href="/Stock/Index">
+                                <a class="btn" href="/Stock/Index?mainId=@Model.MainId">
                                     <i class="ace-icon fa fa-undo bigger-110 "></i>
                                     返回
                                 </a>
@@ -108,12 +112,17 @@
         <!-- /.table-responsive -->
     </div>
 </div><!-- /.row -->
+@{
 
+    var GoodList = ViewBag.GoodList as IList<string>;
+    var stringGoodList = new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(GoodList));
+}
+<script src="~/Content/components/jquery-ui/jquery-ui.js"></script>
 <script type="text/javascript">
     jQuery(function ($) {
 
-        $('[data-rel=tooltip]').tooltip({ container: 'body' });
-        $('[data-rel=popover]').popover({ container: 'body' });
+        //$('[data-rel=tooltip]').tooltip({ container: 'body' });
+        //$('[data-rel=popover]').popover({ container: 'body' });
         var error = $("#error").val();
         if (error != "") {
             var className = "gritter-error gritter-light";
@@ -128,8 +137,27 @@
                 class_name: className
             });
         }
+        //autocomplete
+        var availableTags = @stringGoodList;
+
+        $("#GoodNo").autocomplete({
+            source: availableTags
+        }); 
     });
 
+    function ChangeInfo(goodNo,goodName){
+        var goodNoVal= $("#" + goodNo + "").val();
+        if(goodNoVal!=""){           
+            var arr = goodNoVal.split(',');
+            console.log(arr);
+            if(arr.length>1){
+                $("#" + goodNo + "").val(arr[0]);
+                $("#" + goodName + "").val(arr[1]);
+            }
+        }else{
+            $("#" + goodName + "").val("");
+        }
+    }
 
     $("#btnSave").click(function () {
 

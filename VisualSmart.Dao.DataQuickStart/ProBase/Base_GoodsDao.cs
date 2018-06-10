@@ -102,7 +102,18 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
 
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Base_Goods>(CommandType.Text, strSql.ToString(), MapRow, parameters);
         }
-
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<string> GetGoodName(QueryCondition query)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("select GoodNo+','+GoodName as good from Base_Goods where RowState=1 group by GoodNo,GoodName");   
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<string>(CommandType.Text, strSql.ToString(), MapRowToString, parameters);
+        }
         /// <summary>
         /// 获取id
         /// </summary>
@@ -123,7 +134,16 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
             }
             return Convert.ToInt32(result);
         }
-
+        /// <summary>
+        /// 列表基本参数
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="rowNum"></param>
+        /// <returns></returns>
+        public string MapRowToString(IDataReader dataReader, int rowNum)
+        {            
+            return  dataReader["good"].ToString(); 
+        }
         /// <summary>
         /// 列表基本参数
         /// </summary>
@@ -186,7 +206,7 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
             parameters.Add("PML", DbType.String).Value = entity.PML ?? "";
             parameters.Add("ShipPkgQty", DbType.String).Value = entity.ShipPkgQty ?? "";
             parameters.Add("UM", DbType.String).Value = entity.UM ?? "";
-            parameters.Add("StandardDays", DbType.Int32).Value = entity.StandardDays;          
+            parameters.Add("StandardDays", DbType.Decimal).Value = entity.StandardDays;          
             parameters.Add("CreateTime", SqlDbType.NVarChar).Value = DateTime.Now;
             parameters.Add("Creater", SqlDbType.NVarChar).Value = entity.Creater ?? "";
             parameters.Add("UpdateTime", SqlDbType.DateTime).Value = DateTime.Now;

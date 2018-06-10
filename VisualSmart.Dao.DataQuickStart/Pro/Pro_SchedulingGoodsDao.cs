@@ -46,9 +46,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             {
                 StringBuilder strSql = new StringBuilder();
                 strSql.Append("insert into Pro_SchedulingGoods(");
-                strSql.Append("SLineId,GoodNo,GoodName,ShipTo,ShipToName,StockNum,PackNum,MorningNum,MiddleNum,EveningNum)");
+                strSql.Append("SLineId,GoodNo,GoodName,ShipTo,ShipToName,StockNum,PackNum,MorningNum,MiddleNum,EveningNum,ParentGoodNo,ParentGoodName)");
                 strSql.Append(" values (");
-                strSql.Append("@SLineId,@GoodNo,@GoodName,@ShipTo,@ShipToName,@StockNum,@PackNum,@MorningNum,@MiddleNum,@EveningNum)");
+                strSql.Append("@SLineId,@GoodNo,@GoodName,@ShipTo,@ShipToName,@StockNum,@PackNum,@MorningNum,@MiddleNum,@EveningNum,@ParentGoodNo,@ParentGoodName)");
                 strSql.Append(";select @@IDENTITY");
                 var parameters = GetBaseParams(entity);
                 return Convert.ToInt32(ReadAdoTemplate.ExecuteScalar(CommandType.Text, strSql.ToString(), parameters));
@@ -108,7 +108,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
-            strSql.Append("select Id,SLineId,GoodNo,GoodName,ShipTo,ShipToName,StockNum,PackNum,MorningNum,MiddleNum,EveningNum ");
+            strSql.Append("select Id,SLineId,GoodNo,GoodName,ShipTo,ShipToName,StockNum,PackNum,MorningNum,MiddleNum,EveningNum,ParentGoodNo,ParentGoodName ");
             strSql.Append(" FROM Pro_SchedulingGoods ");
             if (query.GetPager() != null)
             {
@@ -172,6 +172,8 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             {
                 model.EveningNum = (int)ojb;
             }
+            model.ParentGoodNo = dataReader["ParentGoodNo"].ToString();
+            model.ParentGoodName = dataReader["ParentGoodName"].ToString();
             return model;
         }
 
@@ -183,6 +185,9 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         private IDbParameters GetBaseParams(Pro_SchedulingGoods entity)
         {
             var parameters = ReadAdoTemplate.CreateDbParameters();
+            parameters.Add("ParentGoodNo", DbType.String).Value = entity.ParentGoodNo;
+            parameters.Add("ParentGoodName", DbType.String).Value = entity.ParentGoodName;
+
             parameters.Add("SLineId", DbType.String).Value = entity.SLineId;
             parameters.Add("GoodNo", DbType.String).Value = entity.GoodNo;
             parameters.Add("GoodName", DbType.String).Value = entity.GoodName;
@@ -211,6 +216,14 @@ LEFT JOIN Pro_SchedulingGoodsNum ON Pro_SchedulingGoodsNum.SGoodId=Pro_Schedulin
 
             strSql.AppendFormat(" where SType IN (2,3,4) and Pro_SchedulingLine.MainId={0}", query.GetCondition("MainId").Value);
             strSql.Append(" and GoodNo is not null");
+            if (query.GetCondition("GoodNo") != null)
+            {
+                strSql.AppendFormat(" and GoodNo like '%{0}%'", query.GetCondition("GoodNo").Value);
+            }
+            if (query.GetCondition("GoodName") != null)
+            {
+                strSql.AppendFormat(" and GoodName like '%{0}%'", query.GetCondition("GoodName").Value);
+            }
             strSql.Append(" GROUP BY  GoodNo,GoodName,ProLineNo,ShipTo,ShipToName,PackNum,Pro_SchedulingGoods.Id,SType;");
 
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_SchedulingGoods>(CommandType.Text, strSql.ToString(), MapRowByDetailList, parameters);

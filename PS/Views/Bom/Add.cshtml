@@ -18,7 +18,7 @@
 
     <div class="row">
         <div class="col-xs-12">
-            <form class="form-horizontal" role="form" action="/Goods/Add" method="post">
+            <form class="form-horizontal" role="form" action="/Bom/Add" method="post">
 
                 <div class="col-xs-12">
                     <!-- PAGE CONTENT BEGINS -->
@@ -29,8 +29,16 @@
                             @Html.HiddenFor(t => t.Id)
                             @Html.HiddenFor(T => T.CreateTime)
                             @Html.AntiForgeryToken()
-                            @Html.TextBoxFor(t => t.ParentGoodNo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", 
-                            @title = "请输入父产品编码", @placeholder = "请输入父产品编码", @data_trigger = "focus" })
+                            @Html.TextBoxFor(t => t.ParentGoodNo, new
+                       {
+                           @class = "col-xs-10 col-sm-5",
+                           @placeholder = "请输入父产品编码",
+                           @onblur = "ChangeInfo('ParentGoodNo','ParentGoodName');",
+                           @data_rel = "tooltip",
+                           @data_placement = "right",
+                           @data_trigger = "focus",
+                           @title = "请输入父产品编码"
+                       })
                         </div>
                     </div>
 
@@ -39,8 +47,14 @@
 
                         <div class="col-sm-9">
 
-                            @Html.TextBoxFor(t => t.ParentGoodName, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", 
-                            @data_placement = "right", @title = "请输入父产品名称", @placeholder = "请输入父产品名称", @data_trigger = "focus" })
+                            @Html.TextBoxFor(t => t.ParentGoodName, new
+                       {
+                           @class = "col-xs-10 col-sm-5",
+                           @data_placement = "right",
+                           @title = "请输入父产品名称",
+                           @placeholder = "请输入父产品名称",
+                           @data_trigger = "focus"
+                       })
                         </div>
                     </div>
                     <div class="form-group">
@@ -48,8 +62,15 @@
 
                         <div class="col-sm-9">
 
-                            @Html.TextBoxFor(t => t.SonGoodNo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right",
-                             @title = "请输入子产品编号", @placeholder = "请输入子产品编号", @data_trigger = "focus" })
+                            @Html.TextBoxFor(t => t.SonGoodNo, new
+                       {
+                           @class = "col-xs-10 col-sm-5",
+                           @data_placement = "right",
+                           @title = "请输入子产品编号",
+                           @placeholder = "请输入子产品编号",
+                           @data_trigger = "focus",
+                           @onblur = "ChangeInfo('SonGoodNo','SonGoodName');"
+                       })
                         </div>
                     </div>
                     <div class="form-group">
@@ -57,10 +78,33 @@
 
                         <div class="col-sm-9">
 
-                            @Html.TextBoxFor(t => t.SonGoodName, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right",
-                             @title = "请输入子产品名称", @placeholder = "请输入子产品名称", @data_trigger = "focus" })
+                            @Html.TextBoxFor(t => t.SonGoodName, new
+                       {
+                           @class = "col-xs-10 col-sm-5",
+                           @data_placement = "right",
+                           @title = "请输入子产品名称",
+                           @placeholder = "请输入子产品名称",
+                           @data_trigger = "focus"
+
+                       })
                         </div>
-                    </div> 
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>用量</label>
+
+                        <div class="col-sm-9">
+
+                            @Html.TextBoxFor(t => t.BiLi, new
+                       {
+                           @class = "col-xs-10 col-sm-5",
+                           @data_placement = "right",
+                           @title = "请输入用量",
+                           @placeholder = "请输入用量",
+                           @data_trigger = "focus"
+
+                       })
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row">
@@ -89,11 +133,24 @@
     </div>
 </div><!-- /.row -->
 
+@*<script src="~/Content/components/bootstrap/dist/js/bootstrap.js"></script>*@
+
+<!-- page specific plugin scripts -->
+
+@*<script src="~/Content/assets/js/src/ace.searchbox-autocomplete.js"></script>*@
+
+@{
+
+    var GoodList = ViewBag.GoodList as IList<string>;
+    var stringGoodList = new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(GoodList));
+}
 <script type="text/javascript">
+
     jQuery(function ($) {
 
-        $('[data-rel=tooltip]').tooltip({ container: 'body' });
-        $('[data-rel=popover]').popover({ container: 'body' });
+      
+        //$('[data-rel=tooltip]').tooltip({ container: 'body' });
+        //$('[data-rel=popover]').popover({ container: 'body' });
 
         var error = $("#error").val();
 
@@ -110,7 +167,33 @@
                 class_name: className
             });
         }
+        //autocomplete
+        var availableTags = @stringGoodList;
+
+        $("#ParentGoodNo").autocomplete({
+            source: availableTags
+        });
+        $("#SonGoodNo").autocomplete({
+            source: availableTags
+        });
+
+       
     });
+
+
+    function ChangeInfo(goodNo,goodName){
+        var goodNoVal= $("#" + goodNo + "").val();
+        if(goodNoVal!=""){           
+            var arr = goodNoVal.split(',');
+            console.log(arr);
+            if(arr.length>1){
+                $("#" + goodNo + "").val(arr[0]);
+                $("#" + goodName + "").val(arr[1]);
+            }
+        }else{
+            $("#" + goodName + "").val("");
+        }
+    }
 
 
 
@@ -130,4 +213,7 @@
         return true;
     }
 
+
 </script>
+
+<script src="~/Content/components/jquery-ui/jquery-ui.js"></script>

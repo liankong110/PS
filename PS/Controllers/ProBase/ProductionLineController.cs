@@ -49,6 +49,7 @@ namespace PS.Controllers.ProBase
         /// <returns></returns>
         public ActionResult Add(int? Id, string Error)
         {
+            ViewBag.GoodList = Smart.Instance.Base_GoodsBizService.GetGoodName(QueryCondition.Instance.AddEqual("RowState", "1"));
             ViewBag.Error = Error;
             var model = new Base_ProductionLine();
             if (Id.HasValue)
@@ -81,21 +82,23 @@ namespace PS.Controllers.ProBase
             }
             if (_productionLineBizService.GetAllDomain(query).Count > 0)
             {
+                ViewBag.GoodList = Smart.Instance.Base_GoodsBizService.GetGoodName(QueryCondition.Instance.AddEqual("RowState", "1"));
                 ViewBag.Error = string.Format("已经存在相同的生产线:{1},产品编号:{0},请重新填写", model.ProLineNo, model.GoodNo);
                 return View(model);
             }
             string newProCapacityDesc;
-            var proCapacityDescList = GetCapacityList(model.ProCapacityDesc,out newProCapacityDesc);
+            var proCapacityDescList = GetCapacityList(model.ProCapacityDesc, out newProCapacityDesc);
             if (proCapacityDescList.Count == 0)
             {
+                ViewBag.GoodList = Smart.Instance.Base_GoodsBizService.GetGoodName(QueryCondition.Instance.AddEqual("RowState", "1"));
                 ViewBag.Error = string.Format("人员配置及每小时产出,解析出错，规则：*人*件/H", model.ProLineNo, model.GoodNo);
                 return View(model);
             }
-            
-          
+
+
             if (model.Id == 0)
             {
-                int mainId=_productionLineBizService.AddGetId(model);
+                int mainId = _productionLineBizService.AddGetId(model);
                 //解析人员配置及每小时产出 列：7人75件/H，6人64件/H，5人53件/H
                 foreach (var item in proCapacityDescList)
                 {
@@ -106,7 +109,7 @@ namespace PS.Controllers.ProBase
                 ViewBag.Error = "1";
                 return RedirectToAction("Add", "ProductionLine", new { Error = 1 });
             }
-            ViewBag.Error = "1";          
+            ViewBag.Error = "1";
             _productionLineBizService.Update(model);
             _productionLinesBizService.DeleteByMainId(model.Id);
             foreach (var item in proCapacityDescList)
@@ -122,13 +125,13 @@ namespace PS.Controllers.ProBase
         /// </summary>
         /// <param name="ProCapacityDesc"></param>
         /// <returns></returns>
-        private List<Base_ProductionLines> GetCapacityList(string ProCapacityDesc,out string NewProCapacityDesc)
+        private List<Base_ProductionLines> GetCapacityList(string ProCapacityDesc, out string NewProCapacityDesc)
         {
             NewProCapacityDesc = "";
             List<Base_ProductionLines> modelList = new List<Base_ProductionLines>();
-          
+
             ProCapacityDesc = ProCapacityDesc.Replace('，', ',').ToUpper();
-            var capactiyDescList=ProCapacityDesc.Split(',').ToList();
+            var capactiyDescList = ProCapacityDesc.Split(',').ToList();
             Hashtable hs = new Hashtable();
             Dictionary<int, int> list = new Dictionary<int, int>();
             try
@@ -139,10 +142,10 @@ namespace PS.Controllers.ProBase
                     var key = Convert.ToInt32(model[0]);
                     var value = Convert.ToInt32(model[1]);
                     if (model.Count == 3 && !hs.ContainsKey(key))
-                    {                      
-                        hs.Add(key,null);
-                        modelList.Add(new Base_ProductionLines { People=key,Number=value });
-                        NewProCapacityDesc += string.Format("{0}人{1}件/H,",key,value);
+                    {
+                        hs.Add(key, null);
+                        modelList.Add(new Base_ProductionLines { People = key, Number = value });
+                        NewProCapacityDesc += string.Format("{0}人{1}件/H,", key, value);
                     }
                 }
             }
@@ -194,7 +197,8 @@ namespace PS.Controllers.ProBase
         /// <returns></returns>
         public override string LoadExcel(string fileAddress)
         {
-            string error = "";
+            int rowIndex = 2;
+            string error = "success";
             try
             {
                 string strConn;
@@ -211,71 +215,82 @@ namespace PS.Controllers.ProBase
                     {
                         conn.Open();
                         OleDbCommand objCommand = new OleDbCommand(string.Format("select * from [" + sheetName + "]"), conn);
-                        //int rowIndex = 1;
+
                         using (OleDbDataReader dataReader = objCommand.ExecuteReader())
                         {
                             while (dataReader.Read())
                             {
-                                if (dataReader.FieldCount != 6)
+                                if (dataReader.FieldCount != 5)
                                 {
-                                    error = "Excel解析错误";
+                                    error = "解析错误,Excel 列头必须是5列，请下载模板 进行对比！";
                                     break;
                                 }
-                                //if (rowIndex > 1)
-                                //{
-                                    var model = new Base_ProductionLine();
-                                    model.ProLineNo = dataReader[0].ToString();
-                                    model.GoodNo = dataReader[1].ToString();
-                                    model.GoodName = dataReader[2].ToString();
-                                    model.ProCapacityDesc = dataReader[3].ToString();
-                                    model.BoxNum = Convert.ToInt32(dataReader[4]);
-                                    model.LineMins = Convert.ToInt32(dataReader[5]);
 
-                                    model.ProShift = 0;
-                                    model.PCS = 0;
-                                    model.StandPers = 0;
-                                    model.MinProNum = 0;
+                                var model = new Base_ProductionLine();
+                                model.ProLineNo = dataReader[0].ToString();
+                                model.GoodNo = dataReader[1].ToString();
+                                //model.GoodName = dataReader[2].ToString();
+                                model.ProCapacityDesc = dataReader[2].ToString(); 
+                               
+                                if (!(dataReader[3] is DBNull) && dataReader[3] != null)
+                                {
+                                    model.BoxNum = Convert.ToInt32(dataReader[3]);
+                                }
+                                if (!(dataReader[4] is DBNull) && dataReader[4] != null)
+                                {
+                                    model.LineMins = Convert.ToInt32(dataReader[4]);
+                                }
+                                model.ProShift = 0;
+                                model.PCS = 0;
+                                model.StandPers = 0;
+                                model.MinProNum = 0;
 
-                                    model.Updater = model.Creater = CurrentUser.Name;
-                                    model.RowState = 1;
-                                    var query = QueryCondition.Instance;
-                                    query.AddEqual("GoodNo", model.GoodNo);
-                                    query.AddEqual("ProLineNo", model.ProLineNo);
-                                    query.AddEqual("RowState", "1");
+                                model.Updater = model.Creater = CurrentUser.Name;
+                                model.RowState = 1;
+                                var query = QueryCondition.Instance;
+                                query.AddEqual("GoodNo", model.GoodNo);
+                                query.AddEqual("ProLineNo", model.ProLineNo);
+                                query.AddEqual("RowState", "1");
 
-                                    string newProCapacityDesc;
-                                    var proCapacityDescList = GetCapacityList(model.ProCapacityDesc, out newProCapacityDesc);
-                                    model.ProCapacityDesc = newProCapacityDesc;
-                                    var id = _productionLineBizService.GetId(query);
-                                    if (id > 0)
-                                    {
-                                        model.Id = id;
-                                        _productionLineBizService.Update(model);
-                                        _productionLinesBizService.DeleteByMainId(model.Id);
+                                string newProCapacityDesc;
+                                var proCapacityDescList = GetCapacityList(model.ProCapacityDesc, out newProCapacityDesc);
+                                if (newProCapacityDesc == "")
+                                {
+                                    error = "Excel解析错误,成功" + (rowIndex - 1) + "条，错误行号：" + rowIndex + ",人员配置及每小时产出,解析出错，规则：*人*件/H,请检查 数据格式。";
+                                    break;
+                                }
+                                model.ProCapacityDesc = newProCapacityDesc;
+                                var id = _productionLineBizService.GetId(query);
+                                if (id > 0)
+                                {
+                                    model.Id = id;
+                                    _productionLineBizService.Update(model);
+                                    _productionLinesBizService.DeleteByMainId(model.Id);
 
-                                    }
-                                    else
-                                    {
-                                        model.Id = _productionLineBizService.AddGetId(model);                                       
-                                    }
-                                    //解析人员配置及每小时产出 列：7人75件/H，6人64件/H，5人53件/H
-                                    foreach (var item in proCapacityDescList)
-                                    {
-                                        item.ProLineId = model.Id;
-                                        _productionLinesBizService.Add(item);
-                                    }
-                                //}
-                                //rowIndex++;
+                                }
+                                else
+                                {
+                                    model.Id = _productionLineBizService.AddGetId(model);
+                                }
+                                //解析人员配置及每小时产出 列：7人75件/H，6人64件/H，5人53件/H
+                                foreach (var item in proCapacityDescList)
+                                {
+                                    item.ProLineId = model.Id;
+                                    _productionLinesBizService.Add(item);
+                                }
+
+                                rowIndex++;
                             }
                         }
                         conn.Close();
                     }
+                    break;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                error = "Excel解析错误";
-
+                error = "Excel解析错误,成功" + (rowIndex - 1) + "条，错误行号：" + rowIndex + ",请检查 数据格式。";
+                LogHelper.WriteLog("产线导入错误", ex);
             }
             return error;
         }

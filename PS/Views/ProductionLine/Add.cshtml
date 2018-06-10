@@ -35,25 +35,22 @@
                         </div>
                     </div>
 
-                  
+
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>产品编号</label>
 
                         <div class="col-sm-9">
 
-                            @Html.TextBoxFor(t => t.GoodNo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入产品编号", @placeholder = "请输入产品编号", @data_trigger = "focus" })
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>产品名称</label>
-
-                        <div class="col-sm-9">
-
-                            @Html.TextBoxFor(t => t.GoodName, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip", @data_placement = "right", @title = "请输入产品名称", @placeholder = "请输入产品名称", @data_trigger = "focus" })
+                            @Html.TextBoxFor(t => t.GoodNo, new { @class = "col-xs-10 col-sm-5", @data_rel = "tooltip",
+                           @data_placement = "right", @title = "请输入产品编号", @placeholder = "请输入产品编号"
+                           , @data_trigger = "focus",
+                           @onblur = "ChangeInfo('GoodNo');",
+                       })
                         </div>
                     </div>
 
-                    
+
+
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="RoleDec">整托包装数</label>
 
@@ -62,7 +59,7 @@
 
                         </div>
                     </div>
-                  
+
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="RoleDec">换线时间（Min）</label>
 
@@ -73,44 +70,60 @@
                     </div>
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="RoleDec"><span style="color:red;">*</span>人员配置及每小时产出</label>
-                        <div class="col-sm-9"> 
-                            @Html.TextBoxFor(t => t.ProCapacityDesc, new { @class = "col-xs-10 col-sm-10", @data_rel = "tooltip", @data_placement = "right",
-                             @title = "请输入信息", @placeholder = "请输入信息", @data_trigger = "focus" })
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(t => t.ProCapacityDesc, new
+                       {
+                           @class = "col-xs-10 col-sm-10",
+                           @data_rel = "tooltip",
+                           @data_placement = "right",
+                           @title = "请输入信息",
+                           @placeholder = "请输入信息",
+                           @data_trigger = "focus"
+                       })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleDec"></label>
+                        <div class="col-sm-9">
+                            提示：人员配置及每小时产出，规则：*人*件/H
                         </div>
                     </div>
 
-                </div>
+                    <div class="row">
+                        <div class="col-xs-12">
 
-                <div class="row">
-                    <div class="col-xs-12">
+                            <div class="clearfix form-actions">
+                                <div class="col-md-offset-3 col-md-9">
+                                    <button class="btn btn-info" type="submit" id="btnSave">
+                                        <i class="ace-icon fa fa-check bigger-110 "></i>
+                                        保存
+                                    </button>
 
-                        <div class="clearfix form-actions">
-                            <div class="col-md-offset-3 col-md-9">
-                                <button class="btn btn-info" type="submit" id="btnSave">
-                                    <i class="ace-icon fa fa-check bigger-110 "></i>
-                                    保存
-                                </button>
-
-                                &nbsp; &nbsp; &nbsp;
-                                <a class="btn" href="/ProductionLine/Index">
-                                    <i class="ace-icon fa fa-undo bigger-110 "></i>
-                                    返回
-                                </a>
+                                    &nbsp; &nbsp; &nbsp;
+                                    <a class="btn" href="/ProductionLine/Index">
+                                        <i class="ace-icon fa fa-undo bigger-110 "></i>
+                                        返回
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
             </form>
         </div><!-- /.col -->
         <!-- /.table-responsive -->
     </div>
 </div><!-- /.row -->
+@{
 
+    var GoodList = ViewBag.GoodList as IList<string>;
+    var stringGoodList = new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(GoodList));
+}
+<script src="~/Content/components/jquery-ui/jquery-ui.js"></script>
 <script type="text/javascript">
     jQuery(function ($) {
 
-        $('[data-rel=tooltip]').tooltip({ container: 'body' });
-        $('[data-rel=popover]').popover({ container: 'body' });
+        //$('[data-rel=tooltip]').tooltip({ container: 'body' });
+        //$('[data-rel=popover]').popover({ container: 'body' });
         var error = $("#error").val();
         if (error != "") {
             var className = "gritter-error gritter-light";
@@ -125,12 +138,31 @@
                 class_name: className
             });
         }
+
+
+        //autocomplete
+        var availableTags = @stringGoodList;
+
+        $("#GoodNo").autocomplete({
+            source: availableTags
+        }); 
     });
 
+    function ChangeInfo(goodNo){
+        var goodNoVal= $("#" + goodNo + "").val();
+        if(goodNoVal!=""){           
+            var arr = goodNoVal.split(',');
+            console.log(arr);
+            if(arr.length>1){
+                $("#" + goodNo + "").val(arr[0]);
+             
+            }
+        } 
+    }
 
     $("#btnSave").click(function () {
 
-        var result = CheckValue("ProLineNo") && CheckValue("GoodNo") && CheckValue("GoodName") && CheckValue("ProCapacityDesc");
+        var result = CheckValue("ProLineNo") && CheckValue("GoodNo") && CheckValue("ProCapacityDesc");
         return result;
     });
 

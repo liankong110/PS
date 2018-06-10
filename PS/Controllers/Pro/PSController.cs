@@ -63,7 +63,7 @@ namespace PS.Controllers.Pro
                 scheduList.Add(new Pro_SchedulingLine { Id = model.LineId, ProLineNo = model.ProLineNo });
                 ViewBag.AllLine = new SelectList(scheduList, "Id", "ProLineNo", fristLine.Id);
                 //获取明细
-                PSDetail = Smart.Instance.Pro_PSDetailBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", false).AddEqual("MainId", PSId.ToString()));
+                PSDetail = Smart.Instance.Pro_PSDetailBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", true).AddEqual("MainId", PSId.ToString()));
             }
             else
             {
@@ -218,7 +218,7 @@ namespace PS.Controllers.Pro
             var model = Smart.Instance.Pro_PSBizService.GetAllDomain(QueryCondition.Instance.AddEqual("Id", id.ToString()))[0];
 
             //获取明细
-            var PSDetail = Smart.Instance.Pro_PSDetailBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", false).AddEqual("MainId", id.ToString()));
+            var PSDetail = Smart.Instance.Pro_PSDetailBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", true).AddEqual("MainId", id.ToString()));
             string fileName = model.ProNo + "PS详细" + ".xlsx";
             string mapfilePath = ExportOrderDetailExcel(PSDetail, model, model.ProNo);//路径
             return File(new FileStream(mapfilePath, FileMode.Open), MimeMapping.GetMimeMapping(fileName), fileName);

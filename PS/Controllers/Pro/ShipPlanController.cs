@@ -105,10 +105,13 @@ namespace PS.Controllers.Pro
         /// <returns></returns>
         public override string LoadExcel(string fileAddress)
         {
+            int rowIndex = 2;
+            string error = "success";
+
             var _shipPlanBizService = Smart.Instance.Pro_ShipPlanBizService;
             var _shipPlansBizService = Smart.Instance.Pro_ShipPlansBizService;
             int mainId = 0;
-            string error = "";
+           
             try
             {
                 var goodsBizSer = Smart.Instance.Base_GoodsBizService;
@@ -126,7 +129,7 @@ namespace PS.Controllers.Pro
                     {
                         conn.Open();
                         OleDbCommand objCommand = new OleDbCommand(string.Format("select * from [" + sheetName + "]"), conn);
-                        int rowIndex = 1;
+                        
                         Pro_ShipPlanMain mainModel = new Pro_ShipPlanMain();
                         using (OleDbDataReader dataReader = objCommand.ExecuteReader())
                         {
@@ -134,10 +137,10 @@ namespace PS.Controllers.Pro
                             {
                                 if (dataReader.FieldCount < 30)
                                 {
-                                    error = "Excel解析错误";
+                                    error = "解析错误,Excel 列头必须是30列（9列+21天），请下载模板 进行对比！";
                                     break;
                                 }
-                                if (rowIndex == 1)
+                                if (rowIndex == 2)
                                 {                                   
                                     mainModel.ProNo = "20180401001";
                                     mainModel.Updater = mainModel.Creater = CurrentUser.Name;
@@ -146,7 +149,7 @@ namespace PS.Controllers.Pro
                                     mainModel.PlanFromTo = Convert.ToDateTime(dataReader[9 + 20]);
                                     mainId = Smart.Instance.Pro_ShipPlanMainBizService.AddGetId(mainModel);
                                 }
-                                else if (rowIndex > 1)
+                                else if (rowIndex > 2)
                                 {
                                     var model = new Pro_ShipPlan();
                                     model.ScheduleNo = dataReader[0].ToString();
@@ -180,11 +183,13 @@ namespace PS.Controllers.Pro
                         }
                         conn.Close();
                     }
+                    break;
                 }
             }
             catch (Exception ex)
             {
-                error = "Excel解析错误";
+                error = "Excel解析错误,成功" + (rowIndex - 1) + "条，错误行号：" + rowIndex + ",请检查 数据格式。";
+                LogHelper.WriteLog("返货单导入错误", ex);
 
             }
             return error;

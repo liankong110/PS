@@ -191,21 +191,59 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         /// <returns></returns>
         public IList<Pro_ShipPlan> GetAllDomainByLineNos(QueryCondition query)
         {
-            var parameters = WriteAdoTemplate.CreateDbParameters();
-            StringBuilder strSql = new StringBuilder();
-            strSql.Append(@"select Distinct ProLineNo,Qty, Pro_ShipPlan.ID,Pro_ShipPlan.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
-Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName
-FROM Pro_ShipPlan
-left join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=Pro_ShipPlan.GoodNo
-left join [dbo].[Base_Stock] on [dbo].[Base_Stock].GoodNo=Pro_ShipPlan.GoodNo
-left join Base_StockMain on Base_StockMain.Id=Base_Stock.MainId");
-
-
             var lineNos = query.GetCondition("LineNos").Value;
             var stockMainId = query.GetCondition("StockMainId").Value;
             var mainId = query.GetCondition("MainId").Value;
-            strSql.AppendFormat(" where ProLineNo IN ({0}) and Base_StockMain.Id={1} and Pro_ShipPlan.MainId={2}", lineNos, stockMainId, mainId);
 
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            //子产品
+            //            strSql.AppendFormat(@"select ProLineNo,Qty, TB.ID,TB.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
+            //SonGoodNo as GoodNo,SonGoodName as GoodName,ParentGoodNo,ShipTo AS ParentShipTo
+            // from(
+            //select Distinct  Pro_ShipPlan.ID,Pro_ShipPlan.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
+            //Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName
+            //FROM Pro_ShipPlan
+            //where  Pro_ShipPlan.MainId={2}
+            //) AS TB inner join [dbo].[Base_Bom] on TB.GoodNo=Base_Bom.ParentGoodNo
+            //LEFT join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=[Base_Bom].SonGoodNo
+            //left join [dbo].[Base_Stock] on [dbo].[Base_Stock].GoodNo=[Base_Bom].SonGoodNo
+            //left join Base_StockMain on Base_StockMain.Id=Base_Stock.MainId
+            //where ProLineNo IN ({0}) and
+            //Base_StockMain.Id={1} ", lineNos, stockMainId, mainId);
+
+            //            strSql.Append(" union all ");
+            //            //主产品
+            //            strSql.Append(@"select Distinct ProLineNo,Qty, Pro_ShipPlan.ID,Pro_ShipPlan.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
+            //Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName,'' as ParentGoodNo,'' as ParentShipTo
+            //FROM Pro_ShipPlan
+            //left join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=Pro_ShipPlan.GoodNo
+            //left join [dbo].[Base_Stock] on [dbo].[Base_Stock].GoodNo=Pro_ShipPlan.GoodNo
+            //left join Base_StockMain on Base_StockMain.Id=Base_Stock.MainId");
+            //            strSql.AppendFormat(" where ProLineNo IN ({0}) and Base_StockMain.Id={1} and Pro_ShipPlan.MainId={2}", lineNos, stockMainId, mainId);
+            //子产品
+            strSql.AppendFormat(@"select ShipPkgQty,NEWTB.* from (select ProLineNo,Qty, TB.ID,TB.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
+SonGoodNo as GoodNo,SonGoodName as GoodName,ParentGoodNo,ParentGoodName,BiLi
+ from(
+select Pro_ShipPlan.ID,Pro_ShipPlan.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
+Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName
+FROM Pro_ShipPlan
+where  Pro_ShipPlan.MainId={2}
+) AS TB inner join [dbo].[Base_Bom] on TB.GoodNo=Base_Bom.ParentGoodNo
+LEFT join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=[Base_Bom].SonGoodNo
+left join [dbo].[Base_Stock_View] on [dbo].[Base_Stock_View].GoodNo=[Base_Bom].SonGoodNo and Base_Stock_View.MainId={1}
+where ProLineNo IN ({0})) AS NEWTB
+left join Base_Goods on Base_Goods.GoodNo=NEWTB.GoodNo and Base_Goods.ShipTo=NEWTB.ShipTo ", lineNos, stockMainId, mainId);
+
+            strSql.Append(" union all ");
+            //主产品
+            strSql.AppendFormat(@"select ShipPkgQty,ProLineNo,Qty, Pro_ShipPlan.ID,Pro_ShipPlan.MainId,ScheduleNo,Term,EditionNo,CityNo,Pro_ShipPlan.ShipTo,Pro_ShipPlan.ShipToName,
+Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName,'' as ParentGoodNo,'' as ParentGoodName,1 as BiLi
+FROM Pro_ShipPlan
+left join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=Pro_ShipPlan.GoodNo
+left join [dbo].[Base_Stock_View] on [dbo].[Base_Stock_View].GoodNo=Pro_ShipPlan.GoodNo and Base_Stock_View.MainId={0}
+left join Base_Goods on Base_Goods.GoodNo=Pro_ShipPlan.GoodNo and Base_Goods.ShipTo=Pro_ShipPlan.ShipTo", stockMainId);
+            strSql.AppendFormat(" where ProLineNo IN ({0})  and Pro_ShipPlan.MainId={1}", lineNos, mainId);
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlan>(CommandType.Text, strSql.ToString(), MapRowByLineNos, parameters);
         }
 
@@ -242,11 +280,26 @@ left join Base_StockMain on Base_StockMain.Id=Base_Stock.MainId");
             model.GoodNo = dataReader["GoodNo"].ToString();
             model.GoodName = dataReader["GoodName"].ToString();
             model.ProLineNo = dataReader["ProLineNo"].ToString();
+
+            model.ParentGoodNo = dataReader["ParentGoodNo"].ToString();
+            model.ParentGoodName = dataReader["ParentGoodName"].ToString();
+
             ojb = dataReader["Qty"];
             if (ojb != null && ojb != DBNull.Value)
             {
                 model.Qty = Convert.ToInt32(ojb);
             }
+            ojb = dataReader["ShipPkgQty"];
+            if (ojb != null && ojb != DBNull.Value&& ojb.ToString()!="")
+            {
+                model.ShipPkgQty = Convert.ToInt32(ojb);
+            }
+            ojb = dataReader["BiLi"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.BiLi = Convert.ToInt32(ojb);
+            }
+            
             return model;
         }
         /// <summary>
@@ -257,7 +310,7 @@ left join Base_StockMain on Base_StockMain.Id=Base_Stock.MainId");
         public IList<Pro_ShipPlan> GetPro_SchedulingByEdit(int Id)
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
-            string sql = string.Format(@"select Pro_SchedulingGoods.Id,ProLineNo,GoodNo,GoodName,ShipTo,ShipToName,StockNum,PackNum,MorningNum,MiddleNum,EveningNum from Pro_SchedulingLine
+            string sql = string.Format(@"select Pro_SchedulingGoods.Id,ProLineNo,GoodNo,GoodName,ShipTo,ShipToName,StockNum,PackNum,MorningNum,MiddleNum,EveningNum,ParentGoodNo,ParentGoodName from Pro_SchedulingLine
 left join Pro_SchedulingGoods on Pro_SchedulingLine.Id=Pro_SchedulingGoods.SLineId where [MainId]={0}", Id);
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlan>(CommandType.Text, sql, MapPro_SchedulingByEdit, parameters);
         }
@@ -280,6 +333,9 @@ left join Pro_SchedulingGoods on Pro_SchedulingLine.Id=Pro_SchedulingGoods.SLine
             model.MorningNum = Convert.ToInt32(dataReader["MorningNum"]);
             model.MiddleNum = Convert.ToInt32(dataReader["MiddleNum"]);
             model.EveningNum = Convert.ToInt32(dataReader["EveningNum"]);
+            model.ParentGoodNo = dataReader["ParentGoodNo"].ToString();
+            model.ParentGoodName = dataReader["ParentGoodName"].ToString();
+            model.ShipPkgQty = Convert.ToInt32(dataReader["PackNum"]);
             return model;
         }
     }

@@ -25,19 +25,19 @@ namespace PS.Controllers.ProBase
         /// <param name="page"></param>
         /// <returns></returns>
         [ViewPageAttribute]
-        public ActionResult Index(string GoodNo, string GoodName, int page = 1)
+        public ActionResult Index(string ParentGoodNo, string SonGoodNo, int page = 1)
         {
             var query = QueryCondition.Instance.AddOrderBy("Id", false).SetPager(page, 10);
             query.AddEqual("RowState", "1");
-            if (!string.IsNullOrEmpty(GoodNo))
+            if (!string.IsNullOrEmpty(ParentGoodNo))
             {
-                query.AddLike("GoodNo", GoodNo);
-                ViewBag.GoodNo = GoodNo;
+                query.AddLike("ParentGoodNo", ParentGoodNo);
+                ViewBag.ParentGoodNo = ParentGoodNo;
             }
-            if (!string.IsNullOrEmpty(GoodName))
+            if (!string.IsNullOrEmpty(SonGoodNo))
             {
-                query.AddLike("GoodName", GoodName);
-                ViewBag.GoodName = GoodName;
+                query.AddLike("SonGoodNo", SonGoodNo);
+                ViewBag.SonGoodNo = SonGoodNo;
             }
             ViewBag.Page = query.GetPager();
             var list = _bomBizService.GetAllDomain(query);
@@ -49,15 +49,26 @@ namespace PS.Controllers.ProBase
         /// <param name="Id"></param>
         /// <param name="Error"></param>
         /// <returns></returns>
-        public ActionResult Add(int? Id, string Error)
+        public ActionResult Add(int? Id, string Error, string ParentGoodNo, string ParentGoodName)
         {
+            ViewBag.GoodList = Smart.Instance.Base_GoodsBizService.GetGoodName(QueryCondition.Instance.AddEqual("RowState", "1"));
             ViewBag.Error = Error;
             var model = new Base_Bom();
+            model.BiLi = 1;
             if (Id.HasValue)
             {
                 var query = QueryCondition.Instance.AddEqual("Id", Id.Value.ToString());
                 model = _bomBizService.GetAllDomain(query).FirstOrDefault();
             }
+            else
+            {
+                if (ParentGoodName != null && ParentGoodNo != null)
+                {
+                    model.ParentGoodName = ParentGoodName;
+                    model.ParentGoodNo = ParentGoodNo;
+                }
+            }
+
             AddOrUpdateBaseInfo(model);
             return View(model);
         }
@@ -82,14 +93,15 @@ namespace PS.Controllers.ProBase
             }
             if (_bomBizService.GetAllDomain(query).Count > 0)
             {
-                ViewBag.Error = string.Format("已经存在相同的父商品:{1},子商品:{0},请重新填写", model.ParentGoodNo, model.SonGoodNo);
+                ViewBag.GoodList = Smart.Instance.Base_GoodsBizService.GetGoodName(QueryCondition.Instance.AddEqual("RowState", "1"));
+                ViewBag.Error = string.Format("已经存在相同的父商品:{0},子商品:{1},请重新填写", model.ParentGoodNo, model.SonGoodNo);
                 return View(model);
             }
             if (model.Id == 0)
             {
                 _bomBizService.Add(model);
                 ViewBag.Error = "1";
-                return RedirectToAction("Add", "Bom", new { Error = 1 });
+                return RedirectToAction("Add", "Bom", new { Error = 1, ParentGoodNo = model.ParentGoodNo, ParentGoodName = model.ParentGoodName });
             }
             ViewBag.Error = "1";
             _bomBizService.Update(model);
@@ -129,7 +141,9 @@ namespace PS.Controllers.ProBase
         /// <returns></returns>
         public override string LoadExcel(string fileAddress)
         {
-            string error = "";
+            int rowIndex = 2;
+            string error = "success";
+
             try
             {
                 var goodsBizSer = Smart.Instance.Base_GoodsBizService;
@@ -147,43 +161,52 @@ namespace PS.Controllers.ProBase
                     {
                         conn.Open();
                         OleDbCommand objCommand = new OleDbCommand(string.Format("select * from [" + sheetName + "]"), conn);
-                        int rowIndex = 1;
+
                         using (OleDbDataReader dataReader = objCommand.ExecuteReader())
                         {
                             while (dataReader.Read())
                             {
                                 if (dataReader.FieldCount != 4)
                                 {
-                                    error = "Excel解析错误";
+                                    error = "解析错误,Excel 列头必须是4列，请下载模板 进行对比！";
                                     break;
                                 }
-                                if (rowIndex == 1)
-                                {
-                                    _bomBizService.DeleteAll(0);
-                                }
+                                //if (rowIndex == 2)
+                                //{
+                                //    _bomBizService.DeleteAll(0);
+                                //}
 
                                 var model = new Base_Bom();
                                 model.ParentGoodNo = dataReader[0].ToString();
                                 model.ParentGoodName = dataReader[1].ToString();
                                 model.SonGoodNo = dataReader[2].ToString();
                                 model.SonGoodName = dataReader[3].ToString();
+                                model.BiLi = Convert.ToInt32(dataReader[4]);
                                 model.Updater = model.Creater = CurrentUser.Name;
                                 model.RowState = 1;
-                                _bomBizService.Add(model);
+                                var query = QueryCondition.Instance;
+                                query.AddEqual("ParentGoodNo", model.ParentGoodNo);
+                                query.AddEqual("SonGoodNo", model.SonGoodNo);
+                                query.AddEqual("RowState", "1");
 
-
+                                var id = _bomBizService.GetId(query);
+                                if (id == -1)
+                                {
+                                    _bomBizService.Add(model);
+                                }
                                 rowIndex++;
                             }
                         }
                         conn.Close();
                     }
+                    break;
                 }
             }
             catch (Exception ex)
             {
-                error = "Excel解析错误";
-                LogHelper.WriteLog(ex.Message);
+                error = "Excel解析错误,成功" + (rowIndex - 1) + "条，错误行号：" + rowIndex + ",请检查 数据格式。";
 
+                LogHelper.WriteLog("BOM导入错误", ex);
             }
             return error;
         }

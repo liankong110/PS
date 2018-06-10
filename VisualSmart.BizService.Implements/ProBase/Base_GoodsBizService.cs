@@ -22,5 +22,15 @@ namespace VisualSmart.BizService.Implements.ProBase
         {
             return EntityDao.GetId(query);
         }
+
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<string> GetGoodName(QueryCondition query)
+        {
+            return EntityDao.GetGoodName(query);
+        }
     }
 }

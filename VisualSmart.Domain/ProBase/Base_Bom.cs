@@ -51,5 +51,9 @@ namespace VisualSmart.Domain.ProBase
             set { _songoodname = value; }
             get { return _songoodname; }
         }
+        /// <summary>
+        /// 用量 比例
+        /// </summary>
+        public int BiLi { get; set; }
     }
 }

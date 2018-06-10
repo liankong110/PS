@@ -26,7 +26,32 @@
             <form class="form-horizontal " role="form" action="/Scheduling/DetailList" id="index" method="get">
                 <input type="hidden" id="page" name="page" />
                 @Html.AntiForgeryToken()
+                <!-- 查询条件-->
+                <div class="form-group" style="margin-bottom:6px;">
+                  
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产品编号：</label>
+                    <div class="col-sm-3 ">
+                        <input type="text" name="GoodNo" id="GoodNo" placeholder="产品编号" value="@ViewBag.GoodNo" />
+                    </div>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产品名称：</label>
+                    <div class="col-sm-3 ">
+                        <input type="text" name="GoodName" id="GoodName" placeholder="产品名称" value="@ViewBag.GoodName" />
+                        <input type="hidden" name="Id" id="Id" value="@ViewBag.Id" />
+                    </div>
 
+
+                    <div class="col-sm-3 ">
+
+                        <button class="btn btn-sm btn-success" type="submit">
+                            <i class="ace-icon fa fa-search bigger-110 "></i>
+                            查询
+                        </button>
+                    </div>
+                    <div class="col-sm-1 control-label no-padding-right">
+
+                    </div>
+
+                </div>
                 <hr class="no-padding no-margin" />
                 <div class="row">
                     <div class="col-xs-12">
@@ -43,11 +68,11 @@
                                             <th>生产线</th>
                                             <th>班次</th>
                                             <th>客户(ship-to)</th>
-                                            <th>Package</th>
+                                            <th>整托包装数</th>
                                             @for (int i = 0; i < 21; i++)
                                             {
                                                 var date = mainModel.PlanFromDate.AddDays(i);
-                                                <th>@date.ToString("MM-dd")</th>
+                                            <th>@date.ToString("MM-dd")</th>
                                             }
                                         </tr>
                                     </thead>
@@ -56,30 +81,34 @@
                                         {
                                             var currentGoods = goodsNumList.FindAll(t => t.SGoodId == m.Id && t.SType == m.SType);
 
-                                            <tr>
-                                                <td>@m.GoodNo</td>
-                                                <td>@m.GoodName</td>
-                                                <td>@m.ProLineNo</td>
-                                                <td>
-                                                    @(EnumOperate.GetEnumDesc((VisualSmart.Util.Menus.ClassType)m.SType))
-                                                </td>
-                                                <td>@m.ShipTo</td>
-                                                <td>@m.PackNum</td>
-                                                @for (int i = 0; i < 21; i++)
+                                        <tr>
+                                            <td>@m.GoodNo</td>
+                                            <td>@m.GoodName</td>
+                                            <td>@m.ProLineNo</td>
+                                            <td>
+                                                @(EnumOperate.GetEnumDesc((VisualSmart.Util.Menus.ClassType)m.SType))
+                                            </td>
+                                            <td>@m.ShipTo</td>
+                                            <td>@m.PackNum</td>
+                                            @for (int i = 0; i < 21; i++)
                                                 {
                                                     var date = mainModel.PlanFromDate.AddDays(i);
                                                     var dateNum = currentGoods.Find(t => t.SDate == date);
                                                     if (dateNum != null)
                                                     {
-                                                        <th>@dateNum.SNum</th>
+                                                <th>@dateNum.SNum</th>
                                                     }
                                                     else
                                                     {
-                                                        <th></th>
+                                                <th></th>
                                                     }
 
                                                 }
-                                            </tr>
+                                        </tr>
+                                        }
+                                        @if (Model.Count == 0)
+                                        {
+                                            <tr><td colspan="27" style="height:200px;" class="center">暂无数据</td></tr>
                                         }
                                     </tbody>
 

@@ -83,8 +83,8 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             strSql.Append("FinalMorningNum=@FinalMorningNum,");
             strSql.Append("FinalMiddleNum=@FinalMiddleNum,");
             strSql.Append("FinalEveningNum=@FinalEveningNum,");
-            strSql.Append("CreateTime=@CreateTime,");
-            strSql.Append("Creater=@Creater,");
+            //strSql.Append("CreateTime=@CreateTime,");
+            //strSql.Append("Creater=@Creater,");
             strSql.Append("UpdateTime=@UpdateTime,");
             strSql.Append("Updater=@Updater,");
             strSql.Append("RowState=@RowState");

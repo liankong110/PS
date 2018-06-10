@@ -17,5 +17,12 @@ namespace VisualSmart.BizService.ProBase
         /// <param name="query"></param>
         /// <returns></returns>
         int GetId(QueryCondition query);
+
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        IList<string> GetGoodName(QueryCondition query);
     }
 }

@@ -20,7 +20,7 @@ namespace PS.Controllers.ProBase
         /// <param name="page"></param>
         /// <returns></returns>
         [ViewPageAttribute]
-        public ActionResult Index(string GoodNo,string GoodName,int page = 1)
+        public ActionResult Index(string GoodNo, string GoodName, int page = 1)
         {
             var query = QueryCondition.Instance.AddOrderBy("Id", false).SetPager(page, 10);
             query.AddEqual("RowState", "1");
@@ -45,7 +45,7 @@ namespace PS.Controllers.ProBase
         /// <param name="Error"></param>
         /// <returns></returns>
         public ActionResult Add(int? Id, string Error)
-        {            
+        {
             ViewBag.Error = Error;
             var model = new Base_Goods();
             if (Id.HasValue)
@@ -117,7 +117,7 @@ namespace PS.Controllers.ProBase
             Response.Write(Upload("Goods"));
             Response.End(); //停止Response后续写入动作，保证Response内只有我们写入内容
             return View();
-        }       
+        }
         /// <summary>
         /// 重载 解析Excel
         /// </summary>
@@ -125,9 +125,10 @@ namespace PS.Controllers.ProBase
         /// <returns></returns>
         public override string LoadExcel(string fileAddress)
         {
-            string error = "";
+            int rowIndex = 2;
+            string error = "success";
             try
-            {             
+            {
                 var goodsBizSer = Smart.Instance.Base_GoodsBizService;
                 string strConn;
                 strConn = "Provider=Microsoft.ACE.OLEDB.12.0; Data Source=" + fileAddress + "; Extended Properties='Excel 12.0 Xml;HDR=YES;IMEX=1'";
@@ -143,58 +144,58 @@ namespace PS.Controllers.ProBase
                     {
                         conn.Open();
                         OleDbCommand objCommand = new OleDbCommand(string.Format("select * from [" + sheetName + "]"), conn);
-                        //int rowIndex = 1;
+
                         using (OleDbDataReader dataReader = objCommand.ExecuteReader())
                         {
                             while (dataReader.Read())
                             {
                                 if (dataReader.FieldCount != 8)
                                 {
-                                    error = "Excel解析错误";
+                                    error = "解析错误,Excel 列头必须是8列，请下载模板 进行对比！";
                                     break;
                                 }
-                                //if (rowIndex > 1)
-                                //{
-                                    var model = new Base_Goods();
-                                    model.ShipTo = dataReader[0].ToString();
-                                    model.ShipToName = dataReader[1].ToString();
-                                    model.GoodNo = dataReader[2].ToString();
-                                    model.GoodName = dataReader[3].ToString();
-                                    model.PML = dataReader[4].ToString();
-                                    model.ShipPkgQty = dataReader[5].ToString();
-                                    model.UM = dataReader[6].ToString();
-                                    model.StandardDays = Convert.ToDecimal(dataReader[7]);
-                                    model.Updater = model.Creater = CurrentUser.Name;
-                                    model.RowState = 1;
-                                    var query = QueryCondition.Instance;
-                                    query.AddEqual("GoodNo", model.GoodNo);
-                                    query.AddEqual("ShipTo", model.ShipTo);
-                                    query.AddEqual("RowState", "1");
-                                    var id = goodsBizSer.GetId(query);
-                                    if (id > 0)
-                                    {
-                                        model.Id = id;
-                                        goodsBizSer.Update(model);
-                                    }
-                                    else
-                                    {
-                                        goodsBizSer.Add(model);
-                                    }
-                                //}
-                                //rowIndex++;
+                                var model = new Base_Goods();
+                                model.ShipTo = dataReader[0].ToString();
+                                model.ShipToName = dataReader[1].ToString();
+                                model.GoodNo = dataReader[2].ToString();
+                                model.GoodName = dataReader[3].ToString();
+                                model.PML = dataReader[4].ToString();
+                                model.ShipPkgQty = dataReader[5].ToString();
+                                model.UM = dataReader[6].ToString();
+                                model.StandardDays = Convert.ToDecimal(dataReader[7]);
+                                model.Updater = model.Creater = CurrentUser.Name;
+                                model.RowState = 1;
+                                var query = QueryCondition.Instance;
+                                query.AddEqual("GoodNo", model.GoodNo);
+                                query.AddEqual("ShipTo", model.ShipTo);
+                                query.AddEqual("RowState", "1");
+                                var id = goodsBizSer.GetId(query);
+                                if (id > 0)
+                                {
+                                    model.Id = id;
+                                    goodsBizSer.Update(model);
+                                }
+                                else
+                                {
+                                    goodsBizSer.Add(model);
+                                }
+
+                                rowIndex++;
                             }
                         }
                         conn.Close();
                     }
+
+                    break;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                error = "Excel解析错误";
-
+                error = "Excel解析错误,成功" + (rowIndex - 1) + "条，错误行号：" + rowIndex + ",请检查 数据格式。";
+                LogHelper.WriteLog("商品导入错误", ex);
             }
             return error;
-        }      
+        }
 
     }
 }

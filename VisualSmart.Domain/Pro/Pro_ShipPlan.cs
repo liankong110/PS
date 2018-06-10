@@ -133,5 +133,21 @@ namespace VisualSmart.Domain.Pro
         /// </summary>
         public int EveningNum { get; set; }
 
+
+        /// <summary>
+        /// 父节点- 商品编码
+        /// </summary>
+        public string ParentGoodNo { get; set; }
+
+        /// <summary>
+        /// 父节点-商品名称
+        /// </summary>
+        public string ParentGoodName { get; set; }
+
+        /// <summary>
+        /// 整托包装数
+        /// </summary>
+        public int? ShipPkgQty { get; set; }
+        public int BiLi { get; set; }
     }
 }

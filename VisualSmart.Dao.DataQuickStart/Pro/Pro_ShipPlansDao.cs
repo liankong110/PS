@@ -174,7 +174,7 @@ FROM Pro_ShipPlans LEFT JOIN Pro_ShipPlan ON Pro_ShipPlans.PlanId = Pro_ShipPlan
             StringBuilder strSql = new StringBuilder();
             strSql.Append("select ID,PlanId,PlanDate,PlanNum ");
             strSql.Append(" FROM Pro_ShipPlans ");
-            strSql.AppendFormat(@" WHERE [PlanId] IN (SELECT ID FROM [dbo].[Pro_ShipPlan] WHERE  MainId={1} and GoodNo IN (select GoodNo from [dbo].[Base_ProductionLine] where ProLineNo IN ({0})))", lineNos, mainId);
+            strSql.AppendFormat(@" WHERE [PlanId] IN (SELECT ID FROM [dbo].[Pro_ShipPlan] WHERE  MainId={1} and (GoodNo IN (select GoodNo from [dbo].[Base_ProductionLine] where ProLineNo IN ({0}))) OR GoodNo IN (SELECT [ParentGoodNo] FROM Base_Bom))", lineNos, mainId);
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlans>(CommandType.Text, strSql.ToString(), MapRow, parameters);
         }
 

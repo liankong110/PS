@@ -18,6 +18,39 @@ namespace PS.Controllers
     [AuthorizeFilter]
     public class BaseController : Controller
     {
+
+        public FileStreamResult download(int Id)
+        {
+            var urlpath = string.Format(@"/UploadFiles/Model/");
+
+            string name = "";
+            if (Id == 1) //产品excel模板
+            {
+                name = "商品模板.xlsx";
+            }
+            else if (Id == 2)   //产线excel模板
+            {
+                name = "产线模板.xlsx";
+            }
+            else if (Id == 3)   //Bom excel模板
+            {
+                name = "Bom模板.xlsx";
+            }
+            else if (Id == 4)   //库存 excel模板
+            {
+                name = "库存模板.xlsx";
+            }
+            else if (Id == 5)   //发运计划 excel模板
+            {
+                name = "发运计划模板.xlsx";
+            }
+            return downLoadFile(name, urlpath+name);
+        }
+        private FileStreamResult downLoadFile(string fileName, string filePath)
+        {
+            string mapfilePath = Server.MapPath(filePath);//路径
+            return File(new FileStream(mapfilePath, FileMode.Open), MimeMapping.GetMimeMapping(fileName), fileName);
+        }
         /// <summary>
         /// 当前用户
         /// </summary>
@@ -27,6 +60,9 @@ namespace PS.Controllers
             {
                 if (Session["User"] == null)
                 {
+                    var authenticationType = System.Web.HttpContext.Current.User.Identity.AuthenticationType;
+                    var domainUserName = System.Web.HttpContext.Current.User.Identity.Name;
+                    LogHelper.WriteLog(string.Format("authenticationType:{0},domainUserName:{1}", authenticationType, domainUserName));
                     string domainName = Environment.UserDomainName;
                     string username = Environment.UserName;
                     var LoginId = domainName + "\\" + username;
@@ -261,7 +297,7 @@ namespace PS.Controllers
         /// 设置excel公共样式，边框加黑线      
         /// </summary>
         /// <param name="cs"></param>
-        protected  void SetExcelBoderStyle(ICellStyle cs)
+        protected void SetExcelBoderStyle(ICellStyle cs)
         {
             cs.Alignment = HorizontalAlignment.CENTER;
             cs.VerticalAlignment = VerticalAlignment.CENTER;

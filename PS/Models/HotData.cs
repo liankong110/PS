@@ -36,5 +36,8 @@ namespace PS.Models
         public decimal? Twenty { get; set; }
         public decimal? TwentyOne { get; set; }
 
+        //public string ParentGoodNo { get; set; }
+        //public string ParentGoodName { get; set; }
+
     }
 }

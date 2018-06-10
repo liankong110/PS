@@ -1,0 +1,757 @@
+﻿@{
+    ViewBag.Title = "生产排产";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using VisualSmart.Domain.Pro;
+@using VisualSmart.Util;
+@using PS.Models;
+@model IList<Pro_ShipPlan>
+@{
+    var mainPlan = ViewBag.MainDate as Pro_ShipPlanMain;
+    var shipPlansList = ViewBag.ShipPlansList as IList<Pro_ShipPlans>;
+}
+<link href="~/Scripts/handsontable/handsontable.full.min.css" rel="stylesheet" />
+<script src="~/Scripts/handsontable/handsontable.full.min.js"></script>
+<script src="~/Scripts/handsontable/jquery-1.10.2.min.js"></script>
+<div class="page-content">
+
+    <div class="page-header">
+        <h1>
+            生产排产
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                填写信息后，进行保存
+                <a class="btn btn-sm btn-primary " href="/ShipPlan/Add">
+                    <i class="ace-icon fa fa-save bigger-110"></i>
+                    保存
+                </a>
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal " role="form" action="/ShipPlan/Index" id="index" method="get">
+                <input type="hidden" id="page" name="page" />
+                @Html.AntiForgeryToken()
+                <!-- 查询条件-->
+
+                <hr class="no-padding no-margin" />
+                <div class="row">
+                    <div class="col-xs-12">
+
+
+                        <div class="space-4"></div>
+                        <!-- 查询列表 -->
+                        <div class="row">
+
+                            @{
+                                List<string> proLineNos = ViewBag.ProLineNos as List<string>;
+                            }
+
+                            <div class="col-xs-12 table-responsive">
+                                <table id="simple-table" class="table table-hover table-condensed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>实际工时数</th>
+
+                                            @if (mainPlan != null)
+                                            {
+                                                for (int i = 0; i < 21; i++)
+                                                {
+                                                    var date = mainPlan.PlanFromDate.AddDays(i);
+                                                    <th>@date.ToString("MM-dd")</th>
+                                                }
+                                            }
+
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var line in proLineNos)
+                                        {
+                                            <tr>
+                                                <td>@line</td>
+                                                @if (mainPlan != null)
+                                                {
+                                                    for (int i = 0; i < 21; i++)
+                                                    {
+
+                                                        string id = "sum" + line + i;
+                                                        <td><lable id="@id"></lable></td>
+                                                    }
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+
+
+                                </table>
+                            </div>
+                            <!-- /.span -->
+
+
+                        </div><!-- /.row -->
+                        <!-- PAGE CONTENT ENDS -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <!-- PAGE CONTENT BEGINS -->
+            <div>
+                <!-- #section:pages/faq -->
+
+                <ul class="nav nav-tabs padding-18 tab-size-bigger" id="myTab">
+                    @{
+                        string allLines = "";
+                    }
+                    @for (int ii = 0; ii < proLineNos.Count; ii++)
+                    {
+                        string line = proLineNos[ii];
+                        allLines = string.Format("{0}", line);
+                        if (ii == 0)
+                        {
+                            <li class="active">
+                                <a data-toggle="tab" href="#" onclick="show(@ii);">
+                                    @line
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a data-toggle="tab" href="#" onclick="show(@ii);">
+                                    @line
+                                </a>
+                            </li>
+                        }
+                    }
+
+                </ul>
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="allLineCount" value="@proLineNos.Count" />
+                <!-- /section:pages/faq -->
+                <div class=" no-border padding-24">
+                    @{
+                        int startIndex = 0;
+                        //列
+                        List<string> allColumns = new List<string>();
+                        if (mainPlan != null)
+                        {
+                            allColumns.Add("零件号");
+                            allColumns.Add("零件名称");
+                            allColumns.Add("发运地");
+                            allColumns.Add("发运地说明");
+                            allColumns.Add("类型");
+                            allColumns.Add("产能");
+                            allColumns.Add("库存");
+
+                            string[] Day = new string[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+                            for (int i = 0; i < 21; i++)
+                            {
+                                var date = mainPlan.PlanFromDate.AddDays(i);
+                                string week = Day[Convert.ToInt32(date.DayOfWeek.ToString("d"))].ToString();
+                                allColumns.Add(week + "<br/>" + date.ToString("MM-dd"));
+                            }
+                        }
+                        //数据
+                        List<List<object>> lineData = new List<List<object>>();
+                        DateTime start = DateTime.Now;
+                    }
+                    @foreach (var line in proLineNos)
+                    {
+                        var currentLineList = Model.ToList().FindAll(t => t.ProLineNo == line);
+                        List<object> dataNumList = new List<object>();
+                        string goodNos = "";
+                        string temoGoodNos = "";
+                        foreach (var m in currentLineList)
+                        {
+                            goodNos += string.Format("'{0}',", m.GoodNo);
+                            temoGoodNos += string.Format("{0},", m.GoodNo);
+                        }
+                        goodNos = goodNos.Trim(',');
+
+                        string startClass = "";
+                        string startDivClass = "display:none;";
+                        if (startIndex == 0)
+                        {
+                            startClass = "  in active";
+                            startDivClass = "";
+                        }
+
+                        string hot = "hot" + startIndex;
+                        var id = "line" + startIndex;
+                        startIndex++;
+                        var ZBPeople = line + "ZB";
+                        var MBPeople = line + "MB";
+                        var WBPeople = line + "WB";
+                        var goodsLine = line + "Goods";
+                        var tempGoodsLine = "temp" + line + "Goods";
+
+                        <div id="@id" class="@startClass"  style="@startDivClass">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <!--早中晚人数信息-->
+                                    <div class="form-group" style="margin-bottom:6px; margin-top:10px;">
+                                        <input type="hidden" value="@goodNos" id="@goodsLine" />
+                                        <input type="hidden" value="@temoGoodNos" id="@tempGoodsLine" />
+                                        <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">早班人数：</label>
+                                        <div class="col-sm-2 ">
+                                            <input type="text" name="@ZBPeople" id="@ZBPeople" placeholder="早班人数" onchange="sumGongShiAndChanNeng();" value="@ViewBag.RoleName" />
+
+                                        </div>
+                                        <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">中班人数：</label>
+                                        <div class="col-sm-2 ">
+                                            <input type="text" name="@MBPeople" id="@MBPeople" placeholder="中班人数" onchange="channeng('@line',@currentLineList.Count,@startIndex);" value="@ViewBag.RoleName" />
+
+                                        </div>
+                                        <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">晚班人数：</label>
+                                        <div class="col-sm-3 ">
+                                            <input type="text" name="@WBPeople" id="@WBPeople" placeholder="晚班人数" onchange="channeng('@line',@currentLineList.Count,@startIndex);" value="@ViewBag.RoleName" />
+
+                                        </div>
+
+                                        @*<div class="col-sm-2 ">
+                                                <a class="btn btn-sm btn-success" href="/PS/edit?SchedulingLineId=1&SDate=2017-11-26" target="_blank">
+                                                    <i class="ace-icon fa fa-undo bigger-110 "></i>
+                                                    PS 确认
+                                                </a>
+                                            </div>*@
+                                    </div>
+                                    <hr class="no-padding" />
+
+                                    <!-- 产品 时间 数量明细 -->
+
+                                    <div id="@hot"></div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        foreach (var m in currentLineList)
+                        {
+                            //需求                            
+                            
+                            dynamic xu_obj = new System.Dynamic.ExpandoObject();
+                            //xu_obj.GoodNo = m.GoodNo;
+                            //xu_obj.GoodName = m.GoodName;
+                            //xu_obj.ShipTo = m.ShipTo;
+                            //xu_obj.ShipToName = m.ShipToName;
+                            xu_obj.Type = "需求";
+                            //xu_obj.ChanNeng = null;
+                            xu_obj.StockNum = m.Qty;
+                            //早
+                            dynamic zao_obj = new System.Dynamic.ExpandoObject();
+                            //zao_obj.GoodNo = m.GoodNo;
+                            //zao_obj.GoodName = m.GoodName;
+                            //zao_obj.ShipTo = m.ShipTo;
+                            //zao_obj.ShipToName = m.ShipToName;
+                            zao_obj.Type = "早班";
+                            //zao_obj.ChanNeng = null;
+                            zao_obj.StockNum = m.Qty;
+                            //中
+                            dynamic zhong_obj = new System.Dynamic.ExpandoObject();
+                            zhong_obj.GoodNo = m.GoodNo;
+                            zhong_obj.GoodName = m.GoodName;
+                            zhong_obj.ShipTo = m.ShipTo;
+                            zhong_obj.ShipToName = m.ShipToName;
+                            zhong_obj.Type = "中班";
+                            zhong_obj.ChanNeng = null;
+                            zhong_obj.StockNum = m.Qty;
+                            //晚
+                            dynamic wan_obj = new System.Dynamic.ExpandoObject();
+                            //wan_obj.GoodNo = m.GoodNo;
+                            //wan_obj.GoodName = m.GoodName;
+                            //wan_obj.ShipTo = m.ShipTo;
+                            //wan_obj.ShipToName = m.ShipToName;
+                            wan_obj.Type = "晚班";
+                            //wan_obj.ChanNeng = null;
+                            wan_obj.StockNum = m.Qty;
+
+                            //需求差异
+                            dynamic xuqiu_obj = new System.Dynamic.ExpandoObject();
+                            //xuqiu_obj.GoodNo = m.GoodNo;
+                            //xuqiu_obj.GoodName = m.GoodName;
+                            //xuqiu_obj.ShipTo = m.ShipTo;
+                            //xuqiu_obj.ShipToName = m.ShipToName;
+                            xuqiu_obj.Type = "需求差异";
+                            xuqiu_obj.ChanNeng = null;
+                            xuqiu_obj.StockNum = m.Qty;
+
+                            //供需求差异
+                            dynamic gongxuqiu_obj = new System.Dynamic.ExpandoObject();
+                            gongxuqiu_obj.GoodNo = "整箱包装数";
+                            gongxuqiu_obj.GoodName = "10";
+                            gongxuqiu_obj.Type = "供需求差异";
+
+                            List<SchedulingDateNumModel> dateNumList = new List<SchedulingDateNumModel>();
+                            if (mainPlan != null)
+                            {
+                                for (int i = 0; i < 21; i++)
+                                {
+                                    SchedulingDateNumModel dateNumModel = new SchedulingDateNumModel();
+                                    if (i == 0)
+                                    {
+                                        dateNumModel.TopGongRequestDiffNum = m.Qty;
+                                    }
+                                    else
+                                    {
+                                        dateNumModel.TopGongRequestDiffNum = dateNumList[i - 1].RequestDiffNum;
+                                    }
+
+                                    var date = mainPlan.PlanFromDate.AddDays(i);
+                                    var item = shipPlansList.FirstOrDefault(t => t.PlanId == m.Id && t.PlanDate == date);
+                                    dateNumModel.date = date;
+
+                                    if (item != null)
+                                    {
+                                        //DynamicHelp.SetValue(xu_obj, item.PlanNum, i);
+                                        dateNumModel.RequestNum = item.PlanNum;
+                                    }
+
+                                    dateNumList.Add(dateNumModel);
+                                }
+                            }
+
+
+                            if (mainPlan != null)
+                            {
+                                for (int i = 0; i < 21; i++)
+                                {
+
+                                    var RequestDiffNum = dateNumList[i].RequestDiffNum;
+                                    if (RequestDiffNum == null)
+                                    {
+                                        //xuqiu_obj.PlanNum = null;
+                                    }
+                                    else
+                                    {
+                                        //DynamicHelp.SetValue(xuqiu_obj, RequestDiffNum.Value, i);
+                                    }
+                                }
+                            }
+
+
+                            if (mainPlan != null)
+                            {
+                                for (int i = 0; i < 21; i++)
+                                {
+                                    //供需求差异id=产线+行号+GQXQCY+日期索引
+
+                                    var GongRequestDiffNum = dateNumList[i].GongRequestDiffNum;
+                                    if (GongRequestDiffNum == null)
+                                    {
+                                        //gongxuqiu_obj.PlanNum = null;
+                                    }
+                                    else
+                                    {
+                                        //DynamicHelp.SetValue(gongxuqiu_obj, GongRequestDiffNum.Value, i);
+                                    }
+                                }
+                            }
+                            dataNumList.Add(xu_obj);
+                            dataNumList.Add(zao_obj);
+                            dataNumList.Add(zhong_obj);
+                            dataNumList.Add(wan_obj);
+                            dataNumList.Add(xuqiu_obj);
+                            dataNumList.Add(gongxuqiu_obj);
+                        }
+                        lineData.Add(dataNumList);
+                    }
+                    @{
+                        TimeSpan ts = DateTime.Now - start;
+                        var allJson = new MvcHtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(lineData));
+                        var hearsJson = new MvcHtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(allColumns));
+                    }
+                </div>
+            </div>
+
+            <!-- PAGE CONTENT ENDS -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+
+
+</div>
+
+<script src="~/Content/components/datatables/media/js/jquery.dataTables.js"></script>
+<script src="~/Content/components/_mod/datatables/jquery.dataTables.bootstrap.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/dataTables.buttons.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.flash.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.html5.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.print.js"></script>
+<script src="~/Content/components/datatables.net-buttons/js/buttons.colVis.js"></script>
+<script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
+<link href="~/Content/StyleSheet1.css" rel="stylesheet" />
+<script>
+
+    var allJson =@allJson ;
+
+    function parseToInt(obj) {
+        var val = 0;
+        if (isNaN(obj) || obj==null||obj == "") {
+            val = 0;
+        } else {
+            val = parseInt(obj);
+        }
+        return val;
+    }
+
+
+    var htbingList = [];
+    //for (var i = 0; i < 3600; i = i + 6) {
+
+    //    //htbingList.push({ row: i, col: 0, rowspan: 5, colspan: 1 });
+    //    htbingList.push({ row: i, col: 1, rowspan: 5, colspan: 1 });
+    //    //htbingList.push({ row: i, col: 2, rowspan: 5, colspan: 1 });
+    //    //htbingList.push({ row: i, col: 3, rowspan: 5, colspan: 1 });
+    //    //htbingList.push({ row: i, col: 5, rowspan: 5, colspan: 1 });
+
+    //}
+    var MyColHeaders = @hearsJson;
+
+
+    var colHeadersName = ['GoodNo', 'GoodName', 'ShipTo', 'ShipToName', 'Type', 'StockNum', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21'];
+
+
+    var MyRenderer = function (instance, td, row, col, prop, value, cellProperties) {
+        Handsontable.renderers.TextRenderer.apply(this, arguments);
+
+        // $(td).css("text-align", "center");
+        // $(td).css("vertical-align", "center");
+        if (row % 6 == 0) {
+            $(td).css("background-color", "lemonchiffon");
+            if (col < 4) {
+                //console.log(cellProperties);
+
+                td.style.border = "0";
+            }
+            cellProperties.readOnly = true;
+        }
+            //需求差异
+        else if ((row - 4) % 6 == 0) {
+            $(td).css("background-color", "aliceblue");
+            cellProperties.readOnly = true;
+        }
+            //供需求差异
+        else if ((row - 5) % 6 == 0) {
+            $(td).css("background-color", "aliceblue");
+            cellProperties.readOnly = true;
+
+        } else {
+            if (col<4) {
+                td.style.border = "0";
+            }
+        }
+
+        if ($(td).html() < 0) {
+            $(td).css("color", "red");
+        }
+
+        //$(td).attr("class", "htDimmed")
+    };
+
+    var allHotList=[];
+
+    for(var i=0;i<$("#allLineCount").val();i++){
+        var dataObject = allJson[i];// [];
+        var hotElement = document.querySelector('#hot'+i);
+        var hotElementContainer = hotElement.parentNode;
+        var hotSettings = {
+            data: dataObject,
+            columns: [
+                {
+                    data: 'GoodNo',
+                    type: 'text',
+                    readOnly: true
+                },
+                  {
+                      data: 'GoodName',
+                      type: 'text',
+                      readOnly: true
+                  },
+                   {
+                       data: 'ShipTo',
+                       type: 'text',
+                       readOnly: true
+                   },
+                   {
+                       data: 'ShipToName',
+                       type: 'text',
+                       readOnly: true
+                   },
+                   {
+                       data: 'Type',
+                       type: 'text',
+                       readOnly: true
+                   },
+                   {
+                       data: 'ChanNeng',
+                       type: 'text',
+                       readOnly: true
+                   },
+                   {
+                       data: 'StockNum',
+                       type: 'text',
+                       readOnly: true
+                   },
+                   {
+                       data: 'One',
+                       type: 'numeric'
+                   },
+                   {
+                       data: 'Two',
+                       type: 'numeric'
+                   },
+                   {
+                       data: 'Three',
+                       type: 'numeric'
+                   },
+                   {
+                       data: 'Four',
+                       type: 'numeric'
+                   },
+                   {
+                       data: 'Five',
+                       type: 'numeric'
+                   },
+                   {
+                       data: 'Six',
+                       type: 'numeric'
+                   },
+                   {
+                       data: 'Seven',
+                       type: 'numeric'
+                   },
+                   {
+                       data: 'Eight',
+                       type: 'numeric'
+                   },
+                   {
+                       data: 'Nine',
+                       type: 'numeric'
+                   },
+                   {
+                       data: 'Ten',
+                       type: 'numeric'
+                   },
+                   {
+                       data: 'Eleven',
+                       type: 'numeric'
+                   },
+                   {
+                       data: 'Twelve',
+                       type: 'numeric'
+                   },
+                    {
+                        data: 'Thirteen',
+                        type: 'numeric'
+                    },
+                     {
+                         data: 'Fourteen',
+                         type: 'numeric'
+                     },
+                      {
+                          data: 'Fifteen',
+                          type: 'numeric'
+                      },
+                       {
+                           data: 'Sixteen',
+                           type: 'numeric'
+                       },
+                        {
+                            data: 'Seventeen',
+                            type: 'numeric'
+                        },
+                         {
+                             data: 'Eighteen',
+                             type: 'numeric'
+                         },
+                          {
+                              data: 'Nineteen',
+                              type: 'numeric'
+                          },
+                           {
+                               data: 'Twenty',
+                               type: 'numeric'
+                           },
+                            {
+                                data: 'TwentyOne',
+                                type: 'numeric'
+                            }
+            ],
+            stretchH: 'all',
+            //width: 1024,
+            autoWrapRow: true,
+            //height: 487,
+            //maxRows: 22,
+            search: true,
+            trimRows: [
+              1,
+              2,
+              5
+            ],
+            mergeCells: true,
+            contextMenu: false,
+            mergeCells: htbingList,
+            //cell: [
+            //       { row: 0, col: 0, className: "htCenter htMiddle" }, // 设置下标为0,0的单元格样式 水平居中、垂直居中,
+            //       { row: 0, col: 1, className: "htCenter htMiddle", readOnly: true },
+            //        { row: 6, col: 1, className: "htCenter htMiddle", readOnly: true },
+            //        { row: 0, col: 2, className: "htCenter htMiddle" },
+            //        { row: 0, col: 3, className: "htCenter htMiddle" },
+            //        { row: 5, col: 6, rowspan: 1, colspan: 10, readOnly: true, className: "htCenter htMiddle" }
+
+            //],
+            cells: function (row, col, prop) {
+                this.renderer = MyRenderer;
+            },
+            rowHeaders: true,
+            colHeaders:MyColHeaders,
+            //fixedRowsTop: 2,
+            //fixedColumnsLeft: 3,
+            //renderAllRows:true,//是否呈现所有行
+            afterSetCellMeta: function (row, col, key, val,prop) {
+                console.log("cell meta changed", row, col, key, val,prop);
+            },
+            afterChange: function (changes, source) {
+
+                if (source == null || changes == null) {
+                    return;
+                }
+
+                var params = [];
+                if (changes != null) {
+                    var row = parseInt(changes[0][0]);//行
+                    var colPro = changes[0][1];//列属性
+                    var colIndex =hot.propToCol(colPro);// colHeadersName.indexOf(colPro);
+                    if(colIndex<=6){
+                        return;
+                    }
+                    //当等于1 也就是第一列 时 初期库存= 供需求差异
+                    //需求差异=需求-上一次供需求差异
+                    //供需求差异=需求差异+早中晚数量
+                    var XQNum_Index = 0;
+                    if ((row - 1) % 6 == 0) {
+                        //早
+                        XQNum_Index = row - 1;
+                    } else if ((row - 2) % 6 == 0) {
+                        //中
+                        XQNum_Index = row - 2;
+
+                    } else if ((row - 3) % 6 == 0) {
+                        //晚
+                        XQNum_Index = row - 3;
+                    }
+                    if ((row - 1) % 6 == 0 || (row - 2) % 6 == 0 || (row - 3) % 6 == 0) {
+
+                        //思路先获取 需求 早中晚的信息，然后计算需求差异，供求差异，最后整体赋值给hot
+                        var XQ_RowData=hot.getDataAtRow(XQNum_Index);
+
+                        var ZB_RowData=hot.getDataAtRow(XQNum_Index+1);
+                        console.log(ZB_RowData);
+                        var MB_RowData=hot.getDataAtRow(XQNum_Index+2);
+                        var WB_RowData=hot.getDataAtRow(XQNum_Index+3);
+                        var aa=XQNum_Index+4;
+                        var bb=XQNum_Index+5;
+                        var editData=[];
+                        var requestDiffNum =0;
+                        var gongRequestDiffNum =0;
+                        var topGongRequestDiffNum=0;
+
+                        for(var i=colIndex;i<27;i++){
+
+                            //编辑的是否是第一行数据，第一行数据要拿库存作为 供需求查询默认值
+                            //初始化数据
+                            if(i==colIndex){
+                                if(i==7){
+                                    topGongRequestDiffNum=XQ_RowData[i-1];
+                                }else{
+                                    topGongRequestDiffNum=hot.getDataAtCell(bb,i-1);
+                                }
+                                console.log(topGongRequestDiffNum);
+                            }
+                            //计算当前的信息
+                            requestDiffNum = topGongRequestDiffNum - parseToInt(XQ_RowData[i]);
+                            gongRequestDiffNum = requestDiffNum + parseToInt(ZB_RowData[i]) + parseToInt(MB_RowData[i]) + parseToInt(WB_RowData[i]);
+                            editData.push([aa, i, requestDiffNum]);
+                            editData.push( [bb, i, gongRequestDiffNum]);
+                            topGongRequestDiffNum=gongRequestDiffNum;
+                        }
+                        hot.setDataAtCell(editData);
+                        var topColIndex=0;
+                        for(var sumCol=0;sumCol<changes.length;sumCol++){
+                            var editColIndex=hot.propToCol(changes[sumCol][1]);
+                            if(topColIndex!=editColIndex){
+                                SumGongShi(editColIndex);
+                                topColIndex=editColIndex;
+                            }
+                        }
+
+                    }
+                }
+
+            }
+
+        };
+        var hot = new Handsontable(hotElement, hotSettings);
+        allHotList.push(hot);
+    }
+
+
+
+    function onlyExactMatch(queryStr, value) {
+        return queryStr.toString() === value.toString();
+    }
+
+    //Handsontable.Dom.addEvent($("#APAB03ZB"), 'keyup', function (event) {
+    //    var queryResult = hot.search.query(this.value);
+
+    //    console.log(queryResult);
+    //    hot.render();
+    //});
+
+    //计算工时信息
+    function SumGongShi(col){
+        var colDataList=hot.getDataAtCol(col);
+        var sum=0;
+        for(var i=1;i<colDataList.length;i++){
+
+            if ((i - 1) % 6 == 0||(i - 2) % 6 == 0||(i - 3) % 6 == 0) {
+                //早
+                if(colDataList[i]!=null){
+                    sum+=colDataList[i];
+                }
+            }
+        }
+        $("#sum"+(col-5)).html(sum);
+    }
+
+    function sumGongShiAndChanNeng(){
+        //获取产能列
+        var colDataList=hot.getDataAtCol(5);
+        var sum=0;
+        var editData=[];
+        for(var i=1;i<colDataList.length;i++){
+            if ((i - 1) % 6 == 0||(i - 2) % 6 == 0||(i - 3) % 6 == 0) {
+                //早
+                editData.push([i, 5, 100]);
+            }
+        }
+        hot.setDataAtCell(editData);
+    }
+
+    function show(index){
+        console.log(index);
+        $("#line"+index).css("display","block");
+        for(var i=0;i<$("#allLineCount").val();i++){
+            if(index!=i){
+                $("#line"+i).css("display","none");
+            }
+        }
+
+
+    }
+</script>

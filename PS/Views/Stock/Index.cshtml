@@ -45,7 +45,7 @@
                                         <i class="ace-icon fa fa-search bigger-110 "></i>
                                         查询
                                     </button>
-                                    <a class="btn btn-sm btn-primary " href="/Stock/Add">
+                                    <a class="btn btn-sm btn-primary " href="/Stock/Add?MainId=@ViewBag.MainId">
                                         <i class="ace-icon fa fa-plus bigger-110"></i>
                                         手工添加
                                     </a>
@@ -64,7 +64,7 @@
                                     <thead>
                                         <tr>
                                             <th>操作</th>
-                                            <th>域</th>
+                                            <th>地点</th>
                                             <th>库位</th>                                            
                                             <th>产品编码</th>
                                             <th>产品名称</th>
@@ -81,7 +81,7 @@
                                                 <td>
 
                                                     <div class="btn-group">
-                                                        <a href="/Stock/Add?Id=@m.Id" class="btn btn-xs btn-info" title="编辑">
+                                                        <a href="/Stock/Add?Id=@m.Id&MainId=@ViewBag.MainId" class="btn btn-xs btn-info" title="编辑">
                                                             <i class="ace-icon fa fa-pencil bigger-120"></i>
                                                         </a>
 
@@ -93,7 +93,7 @@
                                                 <td>@m.Location</td>
                                                 <td>@m.WH</td>
                                                 <td>@m.GoodNo</td>
-                                                <td>Model K CAB（新）右侧</td>
+                                                <td>@m.GoodName</td>
                                                 <td>@m.Qty</td>
                                                 <td>@m.Batch</td>
                                                

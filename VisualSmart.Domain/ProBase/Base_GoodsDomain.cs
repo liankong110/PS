@@ -90,7 +90,7 @@ namespace VisualSmart.Domain.ProBase
             set { _standarddays = value; }
             get { return _standarddays; }
         }
-       
+      
         #endregion Model
 
     }

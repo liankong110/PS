@@ -7,6 +7,7 @@ using VisualSmart.BizService.Implements.Base;
 using VisualSmart.BizService.ProBase;
 using VisualSmart.Dao.DataQuickStart.ProBase;
 using VisualSmart.Domain.ProBase;
+using VisualSmart.Util;
 
 namespace VisualSmart.BizService.Implements.ProBase
 {
@@ -20,6 +21,16 @@ namespace VisualSmart.BizService.Implements.ProBase
         public bool DeleteAll(int Id)
         {
             return EntityDao.DeleteAll(Id);
+        }
+
+        /// <summary>
+        /// 获取id
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public int GetId(QueryCondition query)
+        {
+            return EntityDao.GetId(query);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Spring.Data.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
@@ -73,9 +74,16 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             strSql.Append("update Pro_Scheduling set ");
             strSql.Append("UpdateTime=@UpdateTime,");
             strSql.Append("Updater=@Updater");
-            strSql.Append(" where Id=@Id");
+            strSql.Append(" where Id=@Id;");
             var parameters = GetBaseParams(entity);
             parameters.Add("ID", DbType.Int32, 0).Value = entity.Id;
+
+            //删除所有除Pro_Scheduling 的所有信息
+            strSql.Append(@"delete from Pro_SchedulingGoodsNum  where SGoodId IN (select id from [dbo].[Pro_SchedulingGoods]
+ where SLineId IN(select id from[dbo].[Pro_SchedulingLine] where MainId =@ID)); ");
+            strSql.Append("delete from [Pro_SchedulingGoods] where SLineId IN ( select id from[dbo].[Pro_SchedulingLine] where MainId=@ID);");
+            strSql.Append("delete from [Pro_SchedulingLine] where MainId=@ID;");
+
             return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
         }
 
@@ -109,9 +117,44 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             strSql.Append("select   ");
             strSql.Append(" Id,ProNo,ShipMainProNo,PlanFromDate,PlanToDate,CreateTime,Creater,UpdateTime,Updater,RowState ");
             strSql.Append(" from Pro_Scheduling ");
+            string otherWhere = "";
+            if (query.GetCondition("PlanFromDate") != null)
+            {
+                
+            }
             if (query.GetPager() != null)
             {
-                strSql = new StringBuilder(GetPagerSql(strSql.ToString(), query, parameters));
+                strSql = new StringBuilder(GetPagerSql(strSql.ToString(), query, parameters, otherWhere));
+            }
+            else
+            {
+                strSql.Append(query.GetSQL_Where(parameters));
+                strSql.Append(query.GetSQL_Order());
+            }
+
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_Scheduling>(CommandType.Text, strSql.ToString(), MapRow, parameters);
+        }
+
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public  IList<Pro_Scheduling> GetList(QueryCondition query,Hashtable hs)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("select   ");
+            strSql.Append(" Id,ProNo,ShipMainProNo,PlanFromDate,PlanToDate,CreateTime,Creater,UpdateTime,Updater,RowState ");
+            strSql.Append(" from Pro_Scheduling ");
+            string otherWhere = "";
+            if (hs.ContainsKey("PlanFromDate"))
+            {
+                otherWhere += string.Format(" and '{0}'>=PlanFromDate and '{0}'<=PlanToDate", hs["PlanFromDate"]);
+            }
+            if (query.GetPager() != null)
+            {
+                strSql = new StringBuilder(GetPagerSql(strSql.ToString(), query, parameters, otherWhere));
             }
             else
             {

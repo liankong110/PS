@@ -66,14 +66,13 @@ jQuery(function () {
     uploader.on('uploadSuccess', function (file, data) {
     
         $("#Title").val(file.name);
-        if (data._raw == "Excel解析错误") {
-            $('#' + file.id).find('span.state').text('已上传,但Excel解析错误！');
+        if (data._raw != "") {
+            $('#' + file.id).find('span.state').text(data._raw);
         } else {
             $('#' + file.id).find('span.state').text('已上传，并解析成功！');
         }
-        //uploader.removeFile(file);
-     
-        console.log(data._raw);
+      
+      
     });
 
     uploader.on('error', function (handler, file) {
