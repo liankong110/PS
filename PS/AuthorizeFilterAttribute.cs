@@ -16,6 +16,7 @@ namespace PS
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
     public class AuthorizeFilterAttribute : ActionFilterAttribute
     {
+
         //public override void OnActionExecuting(ActionExecutingContext filterContext)
         //{
         //    if (filterContext == null)
