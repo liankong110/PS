@@ -166,9 +166,9 @@ namespace PS.Controllers.ProBase
                         {
                             while (dataReader.Read())
                             {
-                                if (dataReader.FieldCount != 4)
+                                if (dataReader.FieldCount != 5)
                                 {
-                                    error = "解析错误,Excel 列头必须是4列，请下载模板 进行对比！";
+                                    error = "解析错误,Excel 列头必须是5列，请下载模板 进行对比！";
                                     break;
                                 }
                                 //if (rowIndex == 2)

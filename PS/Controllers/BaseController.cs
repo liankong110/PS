@@ -58,36 +58,35 @@ namespace PS.Controllers
         {
             get
             {
-                //if (Session["User"] == null)
-                //{
-                //    var authenticationType = System.Web.HttpContext.Current.User.Identity.AuthenticationType;
-                //    var domainUserName = System.Web.HttpContext.Current.User.Identity.Name;
-                //    LogHelper.WriteLog(string.Format("authenticationType:{0},domainUserName:{1}", authenticationType, domainUserName));
-                //    string domainName = Environment.UserDomainName;
-                //    string username = Environment.UserName;
-                //    var LoginId = domainName + "\\" + username;
-                //    var userList = Smart.Instance.UserBizService.GetAllDomain(QueryCondition.Instance.AddEqual("LoginId", LoginId));
-                //    if (userList.Count == 0)
-                //    {
-                //        //新增
-                //        var user = new UserDomain();
-                //        user.loginPwd = MD5Util.Encrypt("123456");
-                //        user.RowState = 1;
-                //        user.Creater = "system";
-                //        user.Updater = "system";
-                //        user.loginId = LoginId;
-                //        user.Name = username;
-                //        Smart.Instance.UserBizService.Add_Update_User_Role(user, System.Configuration.ConfigurationManager.AppSettings["DefaultRoleId"], "system");
-                //        user.Id = Smart.Instance.UserBizService.GetAllDomain(QueryCondition.Instance.AddEqual("LoginId", LoginId))[0].Id;
-                //        Session["User"] = user;
-                //    }
-                //    else
-                //    {
-                //        Session["User"] = userList[0];
-                //    }
-                //}
-                //return Session["User"] as UserDomain;
-                return new UserDomain();
+                if (Session["User"] == null)
+                {
+                    //var authenticationType = System.Web.HttpContext.Current.User.Identity.AuthenticationType;
+                    //var domainUserName = System.Web.HttpContext.Current.User.Identity.Name;
+                    //LogHelper.WriteLog(string.Format("authenticationType:{0},domainUserName:{1}", authenticationType, domainUserName));
+                    string domainName = Environment.UserDomainName;
+                    string username = Environment.UserName;
+                    var LoginId = domainName + "\\" + username;
+                    var userList = Smart.Instance.UserBizService.GetAllDomain(QueryCondition.Instance.AddEqual("LoginId", LoginId));
+                    if (userList.Count == 0)
+                    {
+                        //新增
+                        var user = new UserDomain();
+                        user.loginPwd = MD5Util.Encrypt("123456");
+                        user.RowState = 1;
+                        user.Creater = "system";
+                        user.Updater = "system";
+                        user.loginId = LoginId;
+                        user.Name = username;
+                        Smart.Instance.UserBizService.Add_Update_User_Role(user, System.Configuration.ConfigurationManager.AppSettings["DefaultRoleId"], "system");
+                        user.Id = Smart.Instance.UserBizService.GetAllDomain(QueryCondition.Instance.AddEqual("LoginId", LoginId))[0].Id;
+                        Session["User"] = user;
+                    }
+                    else
+                    {
+                        Session["User"] = userList[0];
+                    }
+                }
+                return Session["User"] as UserDomain;
             }
 
         }
