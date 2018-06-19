@@ -116,5 +116,9 @@ namespace VisualSmart.Domain.Pro
         public string StartTimeString { get { return StartTime.ToString("yyyy-MM-dd HH:mm:ss"); } }
         public string EndTimeString { get { return EndTime.ToString("yyyy-MM-dd HH:mm:ss"); } }
 
+
+        public string ProLineNo { get; set; }
+        public DateTime ProDate { get; set; }
+
     }
 }

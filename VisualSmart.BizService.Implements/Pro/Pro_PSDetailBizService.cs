@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using VisualSmart.BizService.Implements.Base;
 using VisualSmart.BizService.Pro;
@@ -110,6 +111,16 @@ namespace VisualSmart.BizService.Implements.Pro
             }
 
             return psDetail;
+        }
+
+        /// <summary>
+        /// 获取信息列表 导出到Excel
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Pro_PSDetail> GetAllDomainToExcel(QueryCondition query, Hashtable hs)
+        {
+            return EntityDao.GetAllDomainToExcel(query,hs);
         }
     }
 }

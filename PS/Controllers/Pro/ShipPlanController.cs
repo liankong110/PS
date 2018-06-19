@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
@@ -20,10 +21,15 @@ namespace PS.Controllers.Pro
         /// <summary>
         /// 发运计划主表列表
         /// </summary>
+        /// <param name="ProNo"></param>
+        /// <param name="PlanDate"></param>
+        /// <param name="IsGuoQi">0 不过期  1 过去 -1 全部</param>
+        /// <param name="page"></param>
         /// <returns></returns>
         [ViewPageAttribute]
-        public ActionResult MainList(string ProNo, int page = 1)
+        public ActionResult MainList(string ProNo, DateTime? PlanDate,int IsGuoQi=0, int page = 1)
         {
+            Hashtable hs = new Hashtable();
             var query = QueryCondition.Instance.AddOrderBy("Id", false).SetPager(page, 10);
             query.AddEqual("RowState", "1");
             if (!string.IsNullOrEmpty(ProNo))
@@ -31,9 +37,22 @@ namespace PS.Controllers.Pro
                 query.AddLike("ProNo", ProNo);
                 ViewBag.ProNo = ProNo;
             }
-
+            if (PlanDate != null)
+            {
+                hs.Add("PlanDate", PlanDate.Value.ToString("yyy-MM-dd"));
+                ViewBag.PlanDate = PlanDate.Value.ToString("yyy-MM-dd");
+            }
+            if (IsGuoQi == 0)
+            {
+                query.AddEqualLarger("PlanFromTo", DateTime.Now.ToString("yyyy-MM-dd"));
+            }
+            if (IsGuoQi == 1)
+            {
+                query.AddSmaller("PlanFromTo", DateTime.Now.ToString("yyyy-MM-dd"));
+            }
+            ViewBag.IsGuoQi = IsGuoQi;
             ViewBag.Page = query.GetPager();
-            var list = Smart.Instance.Pro_ShipPlanMainBizService.GetAllDomain(query);
+            var list = Smart.Instance.Pro_ShipPlanMainBizService.GetList(query,hs);
             return View(list);
         }
 

@@ -86,80 +86,80 @@ namespace PS.Controllers.Alipay
         /// <param name="refundList">数据源</param>      
         private void OutExcelToList(IList<SceneryOrderRefundDomain> refundList)
         {
-            var hssfworkbook = new HSSFWorkbook();
-            var dsi = PropertySetFactory.CreateDocumentSummaryInformation();
-            dsi.Company = "NPOI Team";
-            hssfworkbook.DocumentSummaryInformation = dsi;
-            SummaryInformation si = PropertySetFactory.CreateSummaryInformation();
-            si.Subject = "NPOI SDK Example";
-            hssfworkbook.SummaryInformation = si;
-            var sheet = hssfworkbook.CreateSheet("订单退款审批列表");
-            //设置单元格式-居中
-            var stylecenter = hssfworkbook.CreateCellStyle();
-            stylecenter.VerticalAlignment = VerticalAlignment.CENTER;
-            //stylecenter.BorderTop = CellBorderType.THIN;
-            //stylecenter.BorderBottom = CellBorderType.THIN;
-            //stylecenter.BorderLeft = CellBorderType.THIN;
-            //stylecenter.BorderRight = CellBorderType.THIN;
-            stylecenter.TopBorderColor = IndexedColors.BLACK.Index;
-            stylecenter.BottomBorderColor = IndexedColors.BLACK.Index;
-            stylecenter.LeftBorderColor = IndexedColors.BLACK.Index;
-            stylecenter.RightBorderColor = IndexedColors.BLACK.Index;
-            var columns = new List<string>
-                              {
-                                  "景区名称",
-                                  "批次号",
-                                  "订单号",
-                                  "游玩时间",
-                                  "退款金额",
-                                  "审批状态",                                                                   
-                              };
+            //var hssfworkbook = new HSSFWorkbook();
+            //var dsi = PropertySetFactory.CreateDocumentSummaryInformation();
+            //dsi.Company = "NPOI Team";
+            //hssfworkbook.DocumentSummaryInformation = dsi;
+            //SummaryInformation si = PropertySetFactory.CreateSummaryInformation();
+            //si.Subject = "NPOI SDK Example";
+            //hssfworkbook.SummaryInformation = si;
+            //var sheet = hssfworkbook.CreateSheet("订单退款审批列表");
+            ////设置单元格式-居中
+            //var stylecenter = hssfworkbook.CreateCellStyle();
+            //stylecenter.VerticalAlignment = VerticalAlignment.CENTER;
+            ////stylecenter.BorderTop = CellBorderType.THIN;
+            ////stylecenter.BorderBottom = CellBorderType.THIN;
+            ////stylecenter.BorderLeft = CellBorderType.THIN;
+            ////stylecenter.BorderRight = CellBorderType.THIN;
+            //stylecenter.TopBorderColor = IndexedColors.BLACK.Index;
+            //stylecenter.BottomBorderColor = IndexedColors.BLACK.Index;
+            //stylecenter.LeftBorderColor = IndexedColors.BLACK.Index;
+            //stylecenter.RightBorderColor = IndexedColors.BLACK.Index;
+            //var columns = new List<string>
+            //                  {
+            //                      "景区名称",
+            //                      "批次号",
+            //                      "订单号",
+            //                      "游玩时间",
+            //                      "退款金额",
+            //                      "审批状态",                                                                   
+            //                  };
 
 
-            sheet.CreateRow(0).HeightInPoints = 40;
-            //AddRow(0, 0, 0, columns.Count, "订单退款审批列表", hssfworkbook, sheet, 12, NPOI.SS.UserModel.HorizontalAlignment.CENTER);
+            //sheet.CreateRow(0).HeightInPoints = 40;
+            ////AddRow(0, 0, 0, columns.Count, "订单退款审批列表", hssfworkbook, sheet, 12, NPOI.SS.UserModel.HorizontalAlignment.CENTER);
 
 
-            //添加列名
-            sheet.CreateRow(1);
-            for (var i = 0; i < columns.Count; i++)
-            {
-                sheet.GetRow(1).CreateCell(i).SetCellValue(columns[i]);
-                var cell = sheet.GetRow(1).GetCell(i);
-                cell.CellStyle = stylecenter;
-            }
-            for (var i = 0; i < refundList.Count; i++)
-            {
-                sheet.CreateRow(2 + i);
-                var refund = refundList[i];
+            ////添加列名
+            //sheet.CreateRow(1);
+            //for (var i = 0; i < columns.Count; i++)
+            //{
+            //    sheet.GetRow(1).CreateCell(i).SetCellValue(columns[i]);
+            //    var cell = sheet.GetRow(1).GetCell(i);
+            //    cell.CellStyle = stylecenter;
+            //}
+            //for (var i = 0; i < refundList.Count; i++)
+            //{
+            //    sheet.CreateRow(2 + i);
+            //    var refund = refundList[i];
 
 
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("景区名称")).SetCellValue(refund.SceneryName);
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("批次号")).SetCellValue(refund.BatchNumber);
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("订单号")).SetCellValue(refund.SerialId);
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("游玩时间")).SetCellValue(refund.PlayDate.ToString("yyyy-MM-dd"));
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("退款金额")).SetCellValue(refund.Total.ToString());
-                sheet.GetRow(2 + i).CreateCell(columns.IndexOf("审批状态")).SetCellValue(refund.ApprovalStatusString);
+            //    sheet.GetRow(2 + i).CreateCell(columns.IndexOf("景区名称")).SetCellValue(refund.SceneryName);
+            //    sheet.GetRow(2 + i).CreateCell(columns.IndexOf("批次号")).SetCellValue(refund.BatchNumber);
+            //    sheet.GetRow(2 + i).CreateCell(columns.IndexOf("订单号")).SetCellValue(refund.SerialId);
+            //    sheet.GetRow(2 + i).CreateCell(columns.IndexOf("游玩时间")).SetCellValue(refund.PlayDate.ToString("yyyy-MM-dd"));
+            //    sheet.GetRow(2 + i).CreateCell(columns.IndexOf("退款金额")).SetCellValue(refund.Total.ToString());
+            //    sheet.GetRow(2 + i).CreateCell(columns.IndexOf("审批状态")).SetCellValue(refund.ApprovalStatusString);
 
-                for (var j = 0; j < columns.Count; j++)
-                {
-                    var cell = sheet.GetRow(2 + i).GetCell(j);
-                    cell.CellStyle = stylecenter;
-                }
-            }
-            for (var i = 0; i < columns.Count; i++)
-            {
-                sheet.AutoSizeColumn(i);
-            }
+            //    for (var j = 0; j < columns.Count; j++)
+            //    {
+            //        var cell = sheet.GetRow(2 + i).GetCell(j);
+            //        cell.CellStyle = stylecenter;
+            //    }
+            //}
+            //for (var i = 0; i < columns.Count; i++)
+            //{
+            //    sheet.AutoSizeColumn(i);
+            //}
 
-            sheet.SetColumnWidth(0, 25 * 256);
-            sheet.SetColumnWidth(1, 25 * 256);
-            sheet.SetColumnWidth(2, 25 * 256);
-            sheet.SetColumnWidth(3, 25 * 256);
-            sheet.SetColumnWidth(4, 25 * 256);
+            //sheet.SetColumnWidth(0, 25 * 256);
+            //sheet.SetColumnWidth(1, 25 * 256);
+            //sheet.SetColumnWidth(2, 25 * 256);
+            //sheet.SetColumnWidth(3, 25 * 256);
+            //sheet.SetColumnWidth(4, 25 * 256);
 
-            sheet.ForceFormulaRecalculation = true;
-            CommonMethod.WriteToFile(hssfworkbook, "订单退款审批列表");
+            //sheet.ForceFormulaRecalculation = true;
+            //CommonMethod.WriteToFile(hssfworkbook, "订单退款审批列表");
         }
 
         [HttpPost]

@@ -1,5 +1,6 @@
 ﻿using Spring.Data.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
@@ -189,6 +190,35 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             parameters.Add("Updater", SqlDbType.NVarChar).Value = entity.Updater ?? "";
             parameters.Add("RowState", SqlDbType.TinyInt).Value = entity.RowState;
             return parameters;
+        }
+
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Pro_ShipPlanMain> GetList(QueryCondition query, Hashtable hs)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();          
+            strSql.Append("select ID,ProNo,PlanFromDate,PlanFromTo,CreateTime,Creater,UpdateTime,Updater,RowState ");
+            strSql.Append(" FROM Pro_ShipPlanMain ");
+            string otherWhere = "";
+            if (hs.ContainsKey("PlanDate"))
+            {
+                otherWhere += string.Format(" and '{0}'>=PlanFromDate and '{0}'<=PlanFromTo", hs["PlanFromDate"]);
+            }
+            if (query.GetPager() != null)
+            {
+                strSql = new StringBuilder(GetPagerSql(strSql.ToString(), query, parameters, otherWhere));
+            }
+            else
+            {
+                strSql.Append(query.GetSQL_Where(parameters));
+                strSql.Append(query.GetSQL_Order());
+            }
+
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlanMain>(CommandType.Text, strSql.ToString(), MapRow, parameters);
         }
     }
 }

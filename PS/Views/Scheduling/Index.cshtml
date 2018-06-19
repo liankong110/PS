@@ -16,23 +16,28 @@
 <script src="~/Scripts/handsontable/handsontable.full.min.js"></script>
 <script src="~/Scripts/handsontable/jquery-1.10.2.min.js"></script>
 <style>
-    #test2 { position:fixed; top:20px; background:#EDEDED; z-index:9999; }
+    #test2 {
+        position: fixed;
+        top: 20px;
+        background: #EDEDED;
+        z-index: 9999;
+    }
 </style>
 <div class="page-content" style="font-size:8px;">
 
     <div class="page-header">
-        <h1 >
+        <h1>
             生产排产
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 填写信息后，进行保存
-                <button class="btn btn-sm btn-primary " id="save" type="button" style="float:right;" >
+                <button class="btn btn-sm btn-primary " id="save" type="button" style="float:right;">
                     <i class="ace-icon fa fa-save bigger-110"></i>
                     保存
                 </button>
             </small>
         </h1>
-    <br />
+        <br />
     </div><!-- /.page-header -->
     <div class="row">
         <div class="col-xs-12">
@@ -108,9 +113,9 @@
     </div>
     @* 先隐藏 *@
     @*<div id="test2">
-       搜索内容： <input  type="text" value="" width="200" id="SelectContent"/><input type="button"  value="查询" onclick="SelectContent()"/>
-        <div id="selectResult" style="font-size:18px;color:red; "></div>
-    </div>*@
+           搜索内容： <input  type="text" value="" width="200" id="SelectContent"/><input type="button"  value="查询" onclick="SelectContent()"/>
+            <div id="selectResult" style="font-size:18px;color:red; "></div>
+        </div>*@
 
     <div class="row">
         <div class="col-xs-12">
@@ -228,10 +233,21 @@
 
                                         </div>
                                         <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">晚班人数：</label>
-                                        <div class="col-sm-3 ">
+                                        <div class="col-sm-2 ">
                                             <input type="text" name="@WBPeople" id="@WBPeople" placeholder="晚班人数" onchange="sumGongShiAndChanNeng(@startIndex,'@line.ProLineNo',@currentLineList.Count);" value="@line.EveningShift" />
 
+                                            @*<button class="btn btn-sm btn-success" type="button" onclick="ChangeType(0);">
+                                                    清空
+                                                </button>*@
                                         </div>
+                                        <label class="col-sm-2 control-label no-padding-right" for="form-field-tags">
+                                            <a href="#" onclick="JiSuan(@startIndex);">
+                                                计算
+                                            </a>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <a href="#" onclick="ClearData(@startIndex);">
+                                                清空
+                                            </a>
+                                        </label>
 
                                     </div>
                                     <hr class="no-padding" />
@@ -608,12 +624,12 @@
                                 data: 'TwentyOne',
                                 type: 'numeric'
                             }
-                            
+
             ],
             stretchH: 'all',
             //width: 1024,
             autoWrapRow: true,
-            //colWidths:[30,60,30,60,20,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,-1,-1],    
+            //colWidths:[30,60,30,60,20,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,-1,-1],
             //height: 487,
             //maxRows: 22,
             //maxCols:28,
@@ -623,7 +639,7 @@
               2,
               5
             ],
-   
+
             filters: true,
             dropdownMenu: ['filter_by_condition', 'filter_by_value', 'filter_action_bar'],
             mergeCells: true,
@@ -774,6 +790,127 @@
         }
 
     }
+    //计算
+    function JiSuan(index) {
+       
+        //先清空所有功能
+        var hot = allHotList[index]; 
+
+          //获取产能列
+        var channNengDataList = hot.getDataAtCol(5);
+
+        //获取所有行
+        var allRowsCount = hot.countRows();
+        var xuData = [];
+        for (var i = 0; i < allRowsCount; i++) {
+            var editData = [];
+            var xuQuIndex = 0;
+           
+            if (i % 6 == 0) {
+                xuQuIndex = i;
+                xuData = hot.getDataAtRow(i);
+            }
+            if ((i - 1) % 6 == 0 || (i - 2) % 6 == 0 || (i - 3) % 6 == 0) {
+                //需求量有的时候 并且有产能的时候
+                var chanNeng = channNengDataList[i];
+                if (chanNeng!= null) {
+                    for (var col = 7; col < 28; col++) {
+                        if (xuData[col] != null) {
+                            editData.push([i, col, chanNeng* 8]);
+                        }
+                    }
+                }
+                if (editData.length > 0) {
+                    console.log(editData);
+                    hot.setDataAtCell(editData);
+                }
+            }
+        }
+       
+        ////获取产能列
+        //var channNengDataList = hot.getDataAtCol(5);
+
+        //for (var col = 7; col < 28; col++) {
+        //    var colDataList = hot.getDataAtCol(col);
+
+        //    var editData = [];
+        //    var xuQuIndex = 0;
+        //    for (var i = 0; i < colDataList.length; i++) {
+        //        if (i % 6 == 0) {
+        //            xuQuIndex = i;
+        //        }
+        //        //早 中 晚
+        //        if ((i - 1) % 6 == 0 || (i - 2) % 6 == 0 || (i - 3) % 6 == 0) {
+        //            //需求量有的时候 并且有产能的时候
+        //            if (colDataList[xuQuIndex] != null && channNengDataList[i] != null) {
+
+        //                //早
+        //                editData.push([i, col, channNengDataList[i]*8]);
+        //            }
+        //        }
+        //    }
+        //    if (editData.length > 0) {
+        //        hot.setDataAtCell(editData);
+        //    }
+        //}
+
+    }
+    //清空数据
+    function ClearData(index) {
+        //先清空所有功能
+        var hot = allHotList[index];
+
+        //获取产能列
+        var channNengDataList = hot.getDataAtCol(5);
+
+        //获取所有行
+        var allRowsCount = hot.countRows();
+        var xuData = [];
+        for (var i = 0; i < allRowsCount; i++) {
+            var editData = []; 
+            if ((i - 1) % 6 == 0 || (i - 2) % 6 == 0 || (i - 3) % 6 == 0) {
+                xuData = hot.getDataAtRow(i);
+
+                for (var col = 7; col < 28; col++) {
+                    if (xuData[col] != null) {
+                        editData.push([i, col, null]);
+                    }
+                }
+                if (editData.length > 0) {
+                    console.log(editData);
+                    hot.setDataAtCell(editData);
+                }
+            }
+        }
+
+        ////先清空所有功能
+        //var hot = allHotList[index];
+        ////获取产能列
+
+        //for (var col = 7; col < 28; col++) {
+        //    var colDataList = hot.getDataAtCol(col);
+
+        //    var editData = [];
+        //    for (var i = 1; i < colDataList.length; i++) {
+        //        //早 中 晚
+        //        if ((i - 1) % 6 == 0 || (i - 2) % 6 == 0 || (i - 3) % 6 == 0) {
+        //            //早
+        //            if (colDataList[i] != null) {
+        //                editData.push([i, col, null]);
+        //            }
+        //        }
+        //    }
+
+        //    if (editData.length > 0) {
+        //        hot.setDataAtCell(editData);
+        //    }
+        //}
+        ////如果没有找到对应的人数产能的信息则情况
+        //for (var i = 0; i <= 21; i++) {
+        //    $("#sum" + index + i).html("");
+        //}
+
+    }
 
     // //根据产线，人数获取对应的产能信息，如果没有获取到 则为0
     function sumGongShiAndChanNeng(index,proLineNo,lineGoodsCount){
@@ -803,7 +940,7 @@
                 //console.log(data);
                 //console.log(proLineNo);
                 if (data.Mess == "success") {
-                    
+
                     //先清空所有功能
                     var hot=allHotList[index];
 
@@ -817,7 +954,7 @@
                             //早
                             editData.push([i, 5, null]);
                         }
-                    }                  
+                    }
                     hot.setDataAtCell(editData);
 
                     //如果没有找到对应的人数产能的信息则情况
@@ -904,18 +1041,18 @@
     }
 
     function LoadSum(){
-        var allLines=$("#allLines").val().split(',');     
+        var allLines=$("#allLines").val().split(',');
 
         for(var index=0;index<allHotList.length;index++){
             var hot=allHotList[index];
             //console.log("hot  index :"+index);
-          
+
             for (var day = 7; day <= 28; day++) {
 
                 //获取一列的所有数据
                 var colDataList=hot.getDataAtCol(day);
-               
-                
+
+
                 var sum=0;
                 //遍历这一列
                 for(var i=1;i<colDataList.length;i++){
@@ -931,7 +1068,7 @@
                     }
 
                 }
-               
+
                 //实际工时数=SUM（零件的早班生产量/早班人数的产能量+零件的中班生产量/中班人数的产能量+零件的晚班生产量/晚班人数的产能量）
                 //注意：1）早中晚班的工时要换算成秒，才可以相加，最终的总工时才可以换算成小时。
                 //2）SUM是将所有零件的所有工时，加总到一起。
@@ -939,7 +1076,7 @@
                 if (sum == 0) {
                     $("#sum"+index+(day-7)).html("");
                 }else{
-                    
+
                     $("#sum"+index+(day-7)).html((sum/3600).toFixed(2));
                 }
             }
@@ -1034,7 +1171,7 @@
                         if(zhongDetail[0]==null){
                             continue;
                         }
-                        
+
                         //增加父零件号+零件名称
                         zhongDetail.push(hot.getDataAtCell(rowIndex+4,0));
                         zhongDetail.push(hot.getDataAtCell(rowIndex+4,1));
@@ -1086,7 +1223,7 @@
     function SelectContent(){
         $("#selectResult").html("");
         var selectContent=$("#SelectContent").val();
-      
+
         if(selectContent==""){
             return;
         }
@@ -1097,17 +1234,17 @@
         var shipNo=hot.getDataAtCol(2);
         var shipName=hot.getDataAtCol(3);
         var sum=0;
-        var result="行号：";     
+        var result="行号：";
         var count=0;
         for(var i=1;i<goodNoList.length;i++){
-            if ((i - 2) % 6 == 0&&count<10) {               
+            if ((i - 2) % 6 == 0&&count<10) {
                 if(goodNoList[i].indexOf(selectContent)>-1||
                    goodNameList[i].indexOf(selectContent)>-1||
                     shipNo[i].indexOf(selectContent)>-1||
-                    shipName[i].indexOf(selectContent)>-1) {                
+                    shipName[i].indexOf(selectContent)>-1) {
                     result+=(i+1)+ ",";
                     count=count+1;
-                }                
+                }
             }
         }
         if(result!="行号："){

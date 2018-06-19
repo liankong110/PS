@@ -30,7 +30,15 @@
                     </div>
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">计划时间：</label>
                     <div class="col-sm-3 ">
-                        <input type="text" name="ProNo" id="ProNo" placeholder="计划时间" value="@ViewBag.ProNo" />
+                        <input type="text" name="PlanDate" id="PlanDate" placeholder="计划时间" value="@ViewBag.PlanDate"   onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" readonly="readonly" />
+                    </div>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">是否过期：</label>
+                    <div class="col-sm-3 ">
+                        <select id="IsGuoQi" name="IsGuoQi">
+                            <option value="0">不过期</option>
+                            <option value="1">过期</option>
+                            <option value="-1">全部</option>
+                        </select>
                     </div>
                 </div>
                 <hr class="no-padding no-margin" />
@@ -135,8 +143,13 @@
 <script src="~/Content/components/datatables.net-buttons/js/buttons.print.js"></script>
 <script src="~/Content/components/datatables.net-buttons/js/buttons.colVis.js"></script>
 <script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
+<script src="~/Scripts/My97DatePicker/WdatePicker.js"></script>
 <script type="text/javascript">
 
+    $(function () {
+
+        $("#IsGuoQi").val(@ViewBag.IsGuoQi);
+    })
     function PostForm(page) {
         $("#page").val(page);
         $("#index").submit();

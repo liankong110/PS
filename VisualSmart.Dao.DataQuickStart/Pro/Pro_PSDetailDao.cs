@@ -1,5 +1,6 @@
 ﻿using Spring.Data.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
@@ -102,6 +103,79 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_PSDetail>(CommandType.Text, strSql.ToString(), MapRow, parameters);
         }
 
+        /// <summary>
+        /// 获取信息列表 导出到Excel
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Pro_PSDetail> GetAllDomainToExcel(QueryCondition query, Hashtable hs)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append(@"select ProLineNo, ProDate,GoodNo,GoodName,ShipTo,ShipToName,Qty,SType,StartTime,EndTime
+FROM Pro_PSDetail left join Pro_PS on Pro_PS.Id = Pro_PSDetail.[MainId] where 1=1 ");
+
+            if (query.GetCondition("ProNo") != null)
+            {
+                strSql.AppendFormat("  and ProNo like '%{0}%'", query.GetCondition("ProNo").Value);
+            }
+            if (query.GetCondition("ProLineNo") != null)
+            {
+                strSql.AppendFormat("  and ProLineNo like '%{0}%'", query.GetCondition("ProLineNo").Value);
+            }
+            if (query.GetCondition("ProDate") != null)
+            {
+                strSql.AppendFormat("  and ProDate >='{0}'", query.GetCondition("ProDate").Value);
+            }
+            if (hs.ContainsKey("ProDateTo"))
+            {
+                strSql.AppendFormat("  and ProDate <='{0}'", hs["ProDateTo"]);
+            }
+            if (query.GetCondition("SchedulingProNo") != null)
+            {
+                strSql.AppendFormat("  and SchedulingProNo like '%{0}%'", query.GetCondition("SchedulingProNo").Value);
+            }
+
+            strSql.Append(" order by ProDate,[ProOrderIndex] ");
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_PSDetail>(CommandType.Text, strSql.ToString(), MapRowToExcel, parameters);
+        }
+        /// <summary>
+        /// 列表基本参数
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="rowNum"></param>
+        /// <returns></returns>
+        public Pro_PSDetail MapRowToExcel(IDataReader dataReader, int rowNum)
+        {
+            Pro_PSDetail model = new Pro_PSDetail();
+            object ojb;
+            model.ProLineNo = dataReader["ProLineNo"].ToString();
+            model.ProDate =Convert.ToDateTime(dataReader["ProDate"]);
+            model.GoodNo = dataReader["GoodNo"].ToString();
+            model.GoodName = dataReader["GoodName"].ToString();
+            model.ShipTo = dataReader["ShipTo"].ToString();          
+            ojb = dataReader["Qty"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.Qty = (int)ojb;
+            }            
+            ojb = dataReader["SType"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.SType = (int)ojb;
+            }
+            ojb = dataReader["StartTime"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.StartTime = (DateTime)ojb;
+            }
+            ojb = dataReader["EndTime"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.EndTime = (DateTime)ojb;
+            }
+            return model;
+        }
         /// <summary>
         /// 列表基本参数
         /// </summary>

@@ -285,7 +285,17 @@
         });
     }
 
-    $("#save").one("click", function () {
+    $("#save").bind("click", function () {
+
+        var allGoodCount = $("#allGoodCount").val();
+        if (allGoodCount == 0) {
+            alert("没有可以保存的零件信息！");
+            return;
+        }
+        saveData();
+    });
+
+    function saveData() {
         $.ajax({
             beforeSend: function () {
                 // Handle the beforeSend event
@@ -297,7 +307,7 @@
                 SaveData();
             }
         });
-    });
+    }
 
     function SaveData() {
 

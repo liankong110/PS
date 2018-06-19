@@ -1,7 +1,10 @@
-﻿using VisualSmart.BizService.Implements.Base;
+﻿using System.Collections;
+using System.Collections.Generic;
+using VisualSmart.BizService.Implements.Base;
 using VisualSmart.BizService.Pro;
 using VisualSmart.Dao.DataQuickStart.Pro;
 using VisualSmart.Domain.Pro;
+using VisualSmart.Util;
 
 namespace VisualSmart.BizService.Implements.Pro
 {
@@ -15,6 +18,11 @@ namespace VisualSmart.BizService.Implements.Pro
         public int AddGetId(Pro_ShipPlanMain entity)
         {
             return EntityDao.AddGetId(entity);
+        }
+
+        public IList<Pro_ShipPlanMain> GetList(QueryCondition query, Hashtable hs)
+        {
+            return EntityDao.GetList(query,hs);
         }
     }
 }

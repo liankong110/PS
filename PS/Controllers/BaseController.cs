@@ -184,15 +184,15 @@ namespace PS.Controllers
             }
             var subtotalStyle = hssfworkbook.CreateCellStyle();
             subtotalStyle.Alignment = alignment;
-            subtotalStyle.VerticalAlignment = VerticalAlignment.CENTER;
-            subtotalStyle.BorderTop = BorderStyle.THIN;
-            subtotalStyle.BorderBottom = BorderStyle.THIN;
-            subtotalStyle.BorderLeft = BorderStyle.THIN;
-            subtotalStyle.BorderRight = BorderStyle.THIN;
-            subtotalStyle.TopBorderColor = IndexedColors.BLACK.Index;
-            subtotalStyle.BottomBorderColor = IndexedColors.BLACK.Index;
-            subtotalStyle.LeftBorderColor = IndexedColors.BLACK.Index;
-            subtotalStyle.RightBorderColor = IndexedColors.BLACK.Index;
+            //subtotalStyle.VerticalAlignment = VerticalAlignment.CENTER;
+            //subtotalStyle.BorderTop = BorderStyle.THIN;
+            //subtotalStyle.BorderBottom = BorderStyle.THIN;
+            //subtotalStyle.BorderLeft = BorderStyle.THIN;
+            //subtotalStyle.BorderRight = BorderStyle.THIN;
+            //subtotalStyle.TopBorderColor = IndexedColors.BLACK.Index;
+            //subtotalStyle.BottomBorderColor = IndexedColors.BLACK.Index;
+            //subtotalStyle.LeftBorderColor = IndexedColors.BLACK.Index;
+            //subtotalStyle.RightBorderColor = IndexedColors.BLACK.Index;
             var font = hssfworkbook.CreateFont();
             font.FontHeightInPoints = fontSize;
             font.Boldweight = 100 * 100;
@@ -299,16 +299,16 @@ namespace PS.Controllers
         /// <param name="cs"></param>
         protected void SetExcelBoderStyle(ICellStyle cs)
         {
-            cs.Alignment = HorizontalAlignment.CENTER;
-            cs.VerticalAlignment = VerticalAlignment.CENTER;
-            cs.BorderTop = BorderStyle.THIN;
-            cs.BorderBottom = BorderStyle.THIN;
-            cs.BorderLeft = BorderStyle.THIN;
-            cs.BorderRight = BorderStyle.THIN;
-            cs.TopBorderColor = IndexedColors.BLACK.Index;
-            cs.BottomBorderColor = IndexedColors.BLACK.Index;
-            cs.LeftBorderColor = IndexedColors.BLACK.Index;
-            cs.RightBorderColor = IndexedColors.BLACK.Index;
+            //cs.Alignment = HorizontalAlignment.CENTER;
+            //cs.VerticalAlignment = VerticalAlignment.CENTER;
+            //cs.BorderTop = BorderStyle.THIN;
+            //cs.BorderBottom = BorderStyle.THIN;
+            //cs.BorderLeft = BorderStyle.THIN;
+            //cs.BorderRight = BorderStyle.THIN;
+            //cs.TopBorderColor = IndexedColors.BLACK.Index;
+            //cs.BottomBorderColor = IndexedColors.BLACK.Index;
+            //cs.LeftBorderColor = IndexedColors.BLACK.Index;
+            //cs.RightBorderColor = IndexedColors.BLACK.Index;
             cs.WrapText = true; //自动换行
         }
     }

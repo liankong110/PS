@@ -25,36 +25,32 @@
                 <!-- 查询条件-->
                 <div class="form-group" style="margin-bottom:6px;">
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">单号：</label>
-                    <div class="col-sm-3 ">
+                    <div class="col-sm-2 ">
                         <input type="text" name="ProNo" id="ProNo" placeholder="单号" value="@ViewBag.ProNo" />
                     </div>
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">发运单号：</label>
-                    <div class="col-sm-3 ">
+                    <div class="col-sm-2 ">
                         <input type="text" name="ShipMainProNo" id="ShipMainProNo" placeholder="发运计划单号" value="@ViewBag.ShipMainProNo" />
                     </div>
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">计划时间：</label>
-                    <div class="col-sm-3 ">
-                        <input type="text" name="Time" id="Time" placeholder="计划时间"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" readonly="readonly" value="@ViewBag.Time" />
+                    <div class="col-sm-2 ">
+                        <input type="text" name="Time" id="Time" placeholder="计划时间" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" readonly="readonly" value="@ViewBag.Time" />
                     </div>
+                    <div class="col-sm-3 " id="default-buttons">
+
+                        <p>
+                            <button class="btn btn-sm btn-success" type="submit">
+                                <i class="ace-icon fa fa-search bigger-110 "></i>
+                                查询
+                            </button>
+
+                        </p>
+                        <!-- /section:elements.button.white -->
+                    </div><!-- /.col -->
                 </div>
                 <hr class="no-padding no-margin" />
                 <div class="row">
-                    <div class="col-xs-12">
-                        <!-- 查询功能-->
-                        <div class="row">
-                            <div class="col-sm-12 " id="default-buttons">
-
-                                <p>
-                                    <button class="btn btn-sm btn-success" type="submit">
-                                        <i class="ace-icon fa fa-search bigger-110 "></i>
-                                        查询
-                                    </button>
-                                    
-                                </p>
-                                <!-- /section:elements.button.white -->
-                            </div><!-- /.col -->
-                        </div><!-- /.row -->
-
+                    <div class="col-xs-12"> 
                         <div class="space-4"></div>
                         <!-- 查询列表 -->
                         <div class="row">
