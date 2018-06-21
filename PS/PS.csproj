@@ -195,9 +195,7 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="AuthorizeFilterAttribute.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\Alipay\AlipayController.cs" />
@@ -230,14 +228,11 @@
     <Compile Include="Models\HomeModel.cs" />
     <Compile Include="Models\HotData.cs" />
     <Compile Include="Models\HotHelp.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Item.cs" />
-    <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\SaveScheduingGoods.cs" />
     <Compile Include="Models\SchedulingDateNumModel.cs" />
     <Compile Include="Models\TreeRespVO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Startup.cs" />
     <Compile Include="ViewPageAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -172,6 +172,10 @@ namespace PS.Controllers.Pro
                                 {
                                     var model = new Pro_ShipPlan();
                                     model.ScheduleNo = dataReader[0].ToString();
+                                    if (string.IsNullOrEmpty(model.ScheduleNo))
+                                    {
+                                        continue;
+                                    }
                                     model.Term = Convert.ToInt32(dataReader[1]);
                                     model.EditionNo = dataReader[2].ToString();
                                     model.CityNo = dataReader[3].ToString();
@@ -191,7 +195,7 @@ namespace PS.Controllers.Pro
                                             var sonModel = new Pro_ShipPlans();
                                             sonModel.PlanId = shipId;
                                             sonModel.PlanNum = Convert.ToInt32(value);
-                                            sonModel.PlanDate = mainModel.PlanFromDate.AddDays(i-8);
+                                            sonModel.PlanDate = mainModel.PlanFromDate.AddDays(i-9);
                                             _shipPlansBizService.Add(sonModel);
                                         }
                                     }

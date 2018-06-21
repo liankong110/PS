@@ -60,11 +60,15 @@ namespace PS.Controllers
             {
                 if (Session["User"] == null)
                 {
-                    //var authenticationType = System.Web.HttpContext.Current.User.Identity.AuthenticationType;
-                    //var domainUserName = System.Web.HttpContext.Current.User.Identity.Name;
-                    //LogHelper.WriteLog(string.Format("authenticationType:{0},domainUserName:{1}", authenticationType, domainUserName));
+                    var authenticationType = System.Web.HttpContext.Current.User.Identity.AuthenticationType;
+                    var domainUserName = System.Web.HttpContext.Current.User.Identity.Name;
+                    LogHelper.WriteLog(string.Format("authenticationType:{0},domainUserName:{1}", authenticationType, domainUserName));
                     string domainName = Environment.UserDomainName;
                     string username = Environment.UserName;
+                    //if (domainUserName != "")
+                    //{
+                    //    var userArr = domainUserName.Split('\\');
+                    //}
                     var LoginId = domainName + "\\" + username;
                     var userList = Smart.Instance.UserBizService.GetAllDomain(QueryCondition.Instance.AddEqual("LoginId", LoginId));
                     if (userList.Count == 0)

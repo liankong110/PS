@@ -21,6 +21,21 @@ namespace PS.Controllers.ProBase
         /// </summary>
         IBase_StockBizService _stockBizService = Smart.Instance.Base_StockBizService;
 
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public JsonResult Check(int id)
+        {
+            var model= Smart.Instance.Base_StockMainBizService.GetAllDomain(QueryCondition.Instance.AddEqual("Id",id.ToString()))[0];
+
+            TimeSpan timeSpan = DateTime.Now - model.CreateTime;
+            if (timeSpan.TotalHours > 1)
+            {
+                return Json(new { Mess = "fail" });
+            }
+            return Json(new { Mess = "success" });
+        }
+
         /// <summary>
         /// 库存主表列表
         /// </summary>

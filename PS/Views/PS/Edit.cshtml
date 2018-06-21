@@ -460,12 +460,12 @@
 
         //1 开始时间  2 结束时间
         if (type == 1) {
-            date = new Date($("#StartTime" + i).val())
+            date = new Date($("#StartTime" + i).val().replace(/-/g, "/"));            
             var newData = new Date(date.getTime() + 1000 * sum);
             var EndTime = $("#EndTime" + i).val(newData.format('yyyy-MM-dd hh:mm:ss'));
 
         } else {
-            date = new Date($("#EndTime" + i).val())
+            date = new Date($("#EndTime" + i).val().replace(/-/g, "/"))
             var newData = new Date(date.getTime() - 1000 * sum);
             var EndTime = $("#StartTime" + i).val(newData.format('yyyy-MM-dd hh:mm:ss'));
         }
@@ -475,7 +475,7 @@
 
     function ReSetAll() {
         $.sortTable.sort("simple-table", 0);
-        var startDate = new Date($("#ProDate").val() + " 08:00:00");
+        var startDate = new Date(($("#ProDate").val() + " 07:30:00").replace(/-/g, "/"));
 
         var table = document.getElementById("simple-table");
         var tbody = table.tBodies[0];

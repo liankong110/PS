@@ -33,11 +33,11 @@ namespace VisualSmart.BizService.Implements.Pro
                 classNum++;
             }
 
-            //每天开始时间为8：00
+            //每天开始时间为8：00  修改成 7:30
             //1班次 8：00~08:00
             //2班次 8:00~ 12:45  12:45~08:00
             //3班次 8:00 ~ 16:00  16:00~00：00 00:00~08:00
-            DateTime time = Convert.ToDateTime(SDate.ToString("yyyy-MM-dd") + " 08:00:00");            
+            DateTime time = Convert.ToDateTime(SDate.ToString("yyyy-MM-dd") + " 07:30:00");            
             int i = 1;
             foreach (var good in schedulingGoods)
             {

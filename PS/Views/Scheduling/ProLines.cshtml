@@ -20,7 +20,7 @@
         <div class="col-xs-12">
             <form class="form-horizontal " role="form" action="/Scheduling/Index" id="index" method="get">
                 <input type="hidden" id="page" name="page" />
-                @Html.AntiForgeryToken() 
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="ShipMainProNo" id="ShipMainProNo" value="@ViewBag.ShipMainProNo" />
                 <input type="hidden" name="ShipPlanMainId" id="ShipPlanMainId" value="@ViewBag.ShipPlanMainId" />
 
@@ -50,7 +50,7 @@
                         <div class="hr hr-16 hr-dotted"></div>
                         @if (Model.Count == 0)
                         {
-                        <div style="color:red;"> 提示：未找到产线信息，请检查发运单中的物料信息在产线信息中是否维护！！！</div>
+                            <div style="color:red;"> 提示：未找到产线信息，请检查发运单中的物料信息在产线信息中是否维护！！！</div>
                         }
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                         <!-- 查询功能-->
                         <div class="row">
                             <div class="col-sm-12" id="default-buttons">
-                           
+
                                 <p>
                                     <button class="btn btn-sm btn-warning" style="float:right;" type="submit" onclick="return check();">
                                         <i class="ace-icon glyphicon glyphicon-ok bigger-110 "></i>
@@ -94,7 +94,7 @@
 <script src="~/Content/components/datatables.net-buttons/js/buttons.colVis.js"></script>
 <script src="~/Content/components/datatables.net-select/js/dataTables.select.js"></script>
 <script type="text/javascript">
-   
+
     jQuery(function ($) {
 
         $('[data-rel=tooltip]').tooltip({ container: 'body' });
@@ -114,8 +114,8 @@
 
 
     });
-    
-    function check() {       
+
+    function check() {
         if ($("#StockId").val() == null) {
             var className = "gritter-error gritter-light";
             error = "请选择库存信息！";
@@ -137,6 +137,30 @@
             });
             return false;
         }
+        //超过一小时没导入库存，则给一个提醒
+        //对比一下当前时间和导入时间就行了
+        var url = "/Stock/Check/?id=" + $("#StockId").val();
+        var result = true;
+        $.ajax({
+            data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+            url: url,
+            type: 'post',
+            async: false,
+            cache: false,
+            success: function (data) {
+                if (data.Mess != "success") {
+
+                    if (confirm("你选择的库存信息，超过一小时，请确认是否是最新库存，是否继续排产？") == false) {
+                        result= false;
+                    }
+                }
+
+            }
+        });
+        if (result == false) {
+            return false;
+        }
+
         $("#proLineNosList").val($("#duallist").val());
         return true;
     }

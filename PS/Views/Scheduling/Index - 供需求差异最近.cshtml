@@ -460,11 +460,6 @@
 
         // $(td).css("text-align", "center");
         // $(td).css("vertical-align", "center");
-       
-        if (col == 0 && row% 6 == 0) {
-            
-            $(td).css("color", "red");
-        }
         if (row % 6 == 0) {
             $(td).css("background-color", "lemonchiffon");
             if (col < 4||col==6) {
@@ -670,20 +665,6 @@
             afterSetCellMeta: function (row, col, key, val,prop) {
                 console.log("cell meta changed", row, col, key, val,prop);
             },
-            afterOnCellMouseDown: function (event, e, TD) {
-               
-                if (e.col == 0 && e.row % 6 == 0) {
-                    var value = hot.getDataAtCell(e.row, e.col);
-                   
-                    if (value == "" || value == null) {
-                        value = "锁定";
-                    } else {
-                        value = "";
-                    } 
-                    hot.setDataAtCell([[e.row, e.col, value]]);
-                }
-                
-            },
             afterChange: function (changes, source) {
 
                 if (source == null || changes == null) {
@@ -809,38 +790,8 @@
         }
 
     }
-
-    //重新计算需求差异+供需求差异
-    function ReSetRequestDiffNum(hot, xuArr, zaoArr, zhongArr, wanArr, xuDiffArr, gongXuDiffArr, i) {
-        //初始化 将需求和 供需求差异设置为0
-        //初始化 0
-        for (var jj = 7; jj < 28; jj++) {
-            xuDiffArr[jj] = 0;
-            gongXuDiffArr[jj] = 0;           
-        }
-        var topGongRequestDiffNum = 0;
-        for (var col = 7; col < 28; col++) {
-            if (col == 7) {
-                topGongRequestDiffNum = hot.getDataAtCell(i + 2, 6);//库存
-            }
-            else {
-                topGongRequestDiffNum = gongXuDiffArr[col - 1];
-            }
-
-            var xuValue = xuArr[col];
-
-            if (xuValue == null) {
-                xuDiffArr[col] = topGongRequestDiffNum;
-
-            } else {
-                xuDiffArr[col] = topGongRequestDiffNum - xuValue
-            }
-            gongXuDiffArr[col] = xuDiffArr[col] + zaoArr[col] + zhongArr[col] + wanArr[col];
-        }
-    }
     //计算 -高级
     function NewJiSuan(index, proLineNo) {
-
 
         //先清空所有功能
         var hot = allHotList[index];
@@ -871,203 +822,215 @@
         if (jishu == 3) {
             jishuNum = 8;
         }
-
+        
         //获取所有行
         var allRowsCount = hot.countRows();
 
-        for (var i = 0; i < allRowsCount; i += 6) {
+        for (var i = 0; i < allRowsCount; i+=6) {
+
 
             var xuData = hot.getDataAtRow(i);//获取需求整行数据
+            var xuRequestData = new Array();//获取需求整行数据
+            var gongRequestData = new Array();//获取需求整行数据
 
-            var xuRequestData = hot.getDataAtRow(i+4);//获取需求整行数据
-            var gongRequestData = hot.getDataAtRow(i + 5);//获取需求整行数据
+            var zaoData = [];//早
+            var zhongData = [];//中
+            var wanData = [];//晚
 
-            //早中晚 可以填写的数据
-            var zaoData = [];
-            var zhongData = [];
-            var wanData = [];
-
-            //初始化 0
-            for (var jj = 7; jj < 28; jj++) {
-                zaoData[jj] = 0;
-                zhongData[jj] = 0;
-                wanData[jj] = 0;
-            }
-            //产能
             var zaoChanNeng = channNengDataList[i + 1];
             var zhongChanNeng = channNengDataList[i + 2];
             var wanChanNeng = channNengDataList[i + 3];
 
+            var requestDiffNum = 0;
+            var gongRequestDiffNum = 0;
             var topGongRequestDiffNum = 0;
 
             for (var col = 7; col < 28; col++) {
 
-                ReSetRequestDiffNum(hot, xuData, zaoData, zhongData, wanData, xuRequestData, gongRequestData,i);
+                if (col == 7) {
+                    topGongRequestDiffNum = hot.getDataAtCell(i + 2,6);//库存
+                }
+                else {
+                    topGongRequestDiffNum = gongRequestData[col - 1];
+                }
+                //需求量有的时候 并且有产能的时候
+                //1.供求差异 和当天比一定要>0 并且不能大于最大产能
+                //2.供需求差异与第二天的需求差异做对比
+
+                //需求差异=需求-上一次供需求差异
+                //供需求差异=需求差异+早中晚数量
+
+
+                var xuValue = xuData[col];
+
+                if (xuValue == null) {
+                    xuRequestData[col] = topGongRequestDiffNum;
+
+                } else {
+                    xuRequestData[col] = topGongRequestDiffNum - xuValue
+                }
+                gongRequestData[col] = xuRequestData[col];
+
+                var zaoZhongWanTotal = 0;               
+                
+                gongRequestData[col] = xuRequestData[col] + zaoZhongWanTotal;
 
                 //2.供需求差异与第二天的需求差异做对比
                 //第二天需求差异如果是负数的话 前一天就要排完
                 if (col < 27) {
                     if (xuData[col + 1] != null) {
-                        var nextXu = gongRequestData[col] - xuData[col + 1];//下一天的需求差异 如果是负数的话
+
+                        var nextXu = gongRequestData[col] - xuData[col + 1];//下一天的需求差异 如果是负数的话 
                         if (nextXu < 0) {
                             var nums = -nextXu;
                             //需要循环看看前面的早中晚 有没有没排完的。 如果没有排完需要前面的拍完，不能让第二天需求差异为负数
                             for (var newCol = col; newCol > 6; newCol--) {
-                                //记录早中晚本次填写的数量
+                                if (newCol != col) {
+                                    xuValue = xuData[newCol];
+                                    if (xuValue == null) {
+                                        xuRequestData[newCol] = topGongRequestDiffNum;
+
+                                    } else {
+                                        xuRequestData[newCol] = topGongRequestDiffNum - xuValue
+                                    }
+                                    gongRequestData[newCol] = xuRequestData[newCol];
+                                }
                                 zaoZhongWanTotal = 0;
                                 if (nums > 0) {
                                     if (zaoChanNeng != null) {
                                         var zao = zaoChanNeng * jishuNum;
                                         //获取已经排的信息
-                                        var hadZao = zaoData[newCol];
-
-                                        //判断是否有剩余的数量没有排
-                                        var shengyu = zao - hadZao;
-                                        if (shengyu > 0) {
-                                            if (nums >= shengyu) {
-                                                zaoData[newCol] = zao;//更新之前的数据信息
-                                                nums = nums - shengyu;
-                                                zaoZhongWanTotal = shengyu;
+                                        var index = getIndexOf(zaoData, newCol);
+                                        if (index != -1) {
+                                            //判断是否有剩余的数量没有排
+                                            var shengyu = zao - zaoData[index][2];
+                                            if (shengyu > 0) {
+                                                if (nums >= shengyu) {
+                                                    zaoData[index] = [i + 1, newCol, zao];//更新之前的数据信息
+                                                    nums = nums - shengyu;
+                                                    zaoZhongWanTotal = shengyu;
+                                                } else {
+                                                    zaoData[index] = [i + 1, newCol, (zaoData[index][2] + nums)];//更新之前的数据信息                                               
+                                                    zaoZhongWanTotal = nums;
+                                                    nums = 0;
+                                                }
+                                            }
+                                        } else {
+                                            if (nums >= zao) {
+                                                zaoData.push([i + 1, newCol, zao]);
+                                                nums = nums - zao;
+                                                zaoZhongWanTotal = zao;
                                             } else {
-                                                zaoData[newCol] = zaoData[newCol] + nums;
+                                                zaoData.push([i + 1, newCol, nums]);
                                                 zaoZhongWanTotal = nums;
                                                 nums = 0;
                                             }
                                         }
+
                                     }
                                     if (zhongChanNeng != null && nums > 0) {
                                         var zao = zhongChanNeng * jishuNum;
-
                                         //获取已经排的信息
-                                        var hadZao = zhongData[newCol];
-
-                                        //判断是否有剩余的数量没有排
-                                        var shengyu = zao - hadZao;
-                                        if (shengyu > 0) {
-                                            if (nums >= shengyu) {
-                                                zhongData[newCol] = zao;//更新之前的数据信息
-                                                nums = nums - shengyu;
-                                                zaoZhongWanTotal += shengyu;
+                                        var index = getIndexOf(zhongData, newCol);
+                                        if (index != -1) {
+                                            //判断是否有剩余的数量没有排
+                                            var shengyu = zao - zhongData[index][2];
+                                            if (shengyu > 0) {
+                                                if (nums >= shengyu) {
+                                                    zhongData[index] = [i + 2, newCol, zao];//更新之前的数据信息
+                                                    nums = nums - shengyu;
+                                                    zaoZhongWanTotal = shengyu;
+                                                } else {
+                                                    zhongData[index] = [i + 2, newCol, (zhongData[index][2] + nums)];//更新之前的数据信息                                               
+                                                    zaoZhongWanTotal = nums;
+                                                    nums = 0;
+                                                }
+                                            }
+                                        } else {
+                                            if (nums >= zao) {
+                                                zhongData.push([i + 2, newCol, zao]);
+                                                nums = nums - zao;
+                                                zaoZhongWanTotal = zao;
                                             } else {
-                                                zhongData[newCol] = zhongData[newCol] + nums;
-                                                zaoZhongWanTotal += nums;
+                                                zhongData.push([i + 2, newCol, nums]);
+                                                zaoZhongWanTotal = nums;
                                                 nums = 0;
                                             }
                                         }
                                     }
                                     if (wanChanNeng != null && nums > 0) {
                                         var zao = wanChanNeng * jishuNum;
-
                                         //获取已经排的信息
-                                        var hadZao = wanData[newCol];
-
-                                        //判断是否有剩余的数量没有排
-                                        var shengyu = zao - hadZao;
-                                        if (shengyu > 0) {
-                                            if (nums >= shengyu) {
-                                                wanData[newCol] = zao;//更新之前的数据信息
-                                                nums = nums - shengyu;
-                                                zaoZhongWanTotal += shengyu;
+                                        var index = getIndexOf(wanData, newCol);
+                                        if (index != -1) {
+                                            //判断是否有剩余的数量没有排
+                                            var shengyu = zao - wanData[index][2];
+                                            if (shengyu > 0) {
+                                                if (nums >= shengyu) {
+                                                    wanData[index] = [i + 3, newCol, zao];//更新之前的数据信息
+                                                    nums = nums - shengyu;
+                                                    zaoZhongWanTotal = shengyu;
+                                                } else {
+                                                    wanData[index] = [i + 3, newCol, (wanData[index][2] + nums)];//更新之前的数据信息                                               
+                                                    zaoZhongWanTotal = nums;
+                                                    nums = 0;
+                                                }
+                                            }
+                                        } else {
+                                            if (nums >= zao) {
+                                                wanData.push([i + 3, newCol, zao]);
+                                                nums = nums - zao;
+                                                zaoZhongWanTotal = zao;
                                             } else {
-                                                wanData[newCol] = wanData[newCol] + nums;
-                                                zaoZhongWanTotal += nums;
+                                                wanData.push([i + 3, newCol, nums]);
+                                                zaoZhongWanTotal = nums;
                                                 nums = 0;
                                             }
                                         }
                                     }
 
-                                    if (zaoZhongWanTotal > 0) {
-                                        ReSetRequestDiffNum(hot, xuData, zaoData, zhongData, wanData, xuRequestData, gongRequestData,i);
-                                    }
 
+                                    gongRequestData[newCol] = xuRequestData[newCol] + zaoZhongWanTotal;
                                 } else {
                                     break;
                                 }
                             }
                         }
+                        
                     }
-                }
-
-
-                //最后一列需要特殊处理
-                //判断供需求是否<0  如果小于0  则只对这一天进行排 其他都不用管。
-               
-                if (col == 27) {
-                    ReSetRequestDiffNum(hot, xuData, zaoData, zhongData, wanData, xuRequestData, gongRequestData,i);
-                    
-
-                    console.log(xuData);
-                    console.log(zaoData);
-                    console.log(zhongData);
-                    console.log(wanData);
-
-                    console.log(xuRequestData);
-                    console.log(gongRequestData);
-                }
-                if (col == 27 && gongRequestData[27] < 0) {
-                    var nums= -gongRequestData[27];
-                    if (zaoChanNeng != null) {
-                        var zao = zaoChanNeng * jishuNum;
-                        if (nums >= zao) {
-                            zaoData[col] = zao;
-                            nums = nums - zao;
-
-                        } else {
-                            zaoData[col] = nums;
-                            nums = 0;
-                        }
-                    }
-                        if (zhongChanNeng != null && nums>0) {
-                            var zao = zhongChanNeng * jishuNum;
-                            if (nums >= zao) {
-                                zhongData[col] = zao;
-                                nums = nums - zao;                               
-                            } else {                                
-                                zhongData[col] = nums;
-                                nums = 0;
-                            }
-                        }
-                        if (wanChanNeng!= null && nums > 0) {
-                            var zao = wanChanNeng * jishuNum;
-                            if (nums >= zao) {
-                                wanData[col] = zao;                              
-                                nums = nums - zao;                               
-                            } else {
-                                wanData[col] = nums;                               
-                                nums = 0;
-                            }
-                        }
+                  
                 }
             }
 
-            var newZaoArr = [];
             //赋值
             if (zaoData.length > 0) {
-                newZaoArr = getValueArr(zaoData, i + 1);
-                hot.setDataAtCell(newZaoArr);
+                hot.setDataAtCell(zaoData);
             }
             if (zhongData.length > 0) {
-                hot.setDataAtCell(getValueArr(zhongData, i + 2));
+                hot.setDataAtCell(zhongData);
             }
             if (wanData.length > 0) {
-                hot.setDataAtCell(getValueArr(wanData, i + 3));
+                hot.setDataAtCell(wanData);
             }
             //重新复制 重新计算需求 和 供需求差异信息
-            if (newZaoArr.length > 0) {
-                hot.setDataAtCell([newZaoArr[0]]);
+            if (zaoData.length > 0) {
+                
+                hot.setDataAtCell([zaoData[0]]);
+                
+               
+                console.log("测试通过");
             }
-
+            
         }
     }
-     //将数组转为 hot 需要的集合 进行插入数据
-    function getValueArr(arr, row) {
-        var newArr = new Array();
-        for (var i = 7; i < arr.length; i++) {
-            if (arr[i] > 0) {
-                newArr.push([row, i, arr[i] ]);
+
+    function getIndexOf(arr, col) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i][1] == col) {
+                return i;
             }
         }
-        return newArr;
+        return -1;
     }
     //计算
     function JiSuan(index) {
@@ -1120,11 +1083,6 @@
         var xuData = [];
         for (var i = 0; i < allRowsCount; i++) {
             var editData = [];
-            if (i % 6 == 0) {
-                if (hot.getDataAtCell(i, 0) == "锁定") {
-                    i = i + 5;
-                }
-            }
             if ((i - 1) % 6 == 0 || (i - 2) % 6 == 0 || (i - 3) % 6 == 0) {
                 xuData = hot.getDataAtRow(i);
 
@@ -1139,6 +1097,34 @@
                 }
             }
         }
+
+        ////先清空所有功能
+        //var hot = allHotList[index];
+        ////获取产能列
+
+        //for (var col = 7; col < 28; col++) {
+        //    var colDataList = hot.getDataAtCol(col);
+
+        //    var editData = [];
+        //    for (var i = 1; i < colDataList.length; i++) {
+        //        //早 中 晚
+        //        if ((i - 1) % 6 == 0 || (i - 2) % 6 == 0 || (i - 3) % 6 == 0) {
+        //            //早
+        //            if (colDataList[i] != null) {
+        //                editData.push([i, col, null]);
+        //            }
+        //        }
+        //    }
+
+        //    if (editData.length > 0) {
+        //        hot.setDataAtCell(editData);
+        //    }
+        //}
+        ////如果没有找到对应的人数产能的信息则情况
+        //for (var i = 0; i <= 21; i++) {
+        //    $("#sum" + index + i).html("");
+        //}
+
     }
 
     // //根据产线，人数获取对应的产能信息，如果没有获取到 则为0
