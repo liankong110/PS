@@ -210,7 +210,7 @@ FROM Pro_PSDetail left join Pro_PS on Pro_PS.Id = Pro_PSDetail.[MainId] where 1=
             ojb = dataReader["ProOrderIndex"];
             if (ojb != null && ojb != DBNull.Value)
             {
-                model.ProOrderIndex = (int)ojb;
+                model.ProOrderIndex =float.Parse(ojb.ToString());
             }
             ojb = dataReader["SType"];
             if (ojb != null && ojb != DBNull.Value)
@@ -246,7 +246,7 @@ FROM Pro_PSDetail left join Pro_PS on Pro_PS.Id = Pro_PSDetail.[MainId] where 1=
             parameters.Add("ShipToName", DbType.String).Value = entity.ShipToName;
             parameters.Add("PackNum", DbType.Int32).Value = entity.PackNum;
             parameters.Add("Qty", DbType.Int32).Value = entity.Qty;
-            parameters.Add("ProOrderIndex", DbType.Int32).Value = entity.ProOrderIndex;
+            parameters.Add("ProOrderIndex", SqlDbType.Float).Value = entity.ProOrderIndex;
             parameters.Add("SType", DbType.Int32).Value = entity.SType;
             parameters.Add("StartTime", DbType.DateTime).Value = entity.StartTime;
             parameters.Add("EndTime", DbType.DateTime).Value = entity.EndTime;             

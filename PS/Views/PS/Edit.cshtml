@@ -67,14 +67,18 @@
                                 <p>
 
                                     <button class="btn btn-sm btn-primary " type="button" id="save">
-                                        <i class="ace-icon fa fa-file-excel-o bigger-110"></i>
+                                        <i class="ace-icon fa fa-check bigger-110"></i>
                                         保存
                                     </button>
                                     <button class="btn btn-sm btn-primary " type="button" id="excel" onclick="ReSetAll();">
-                                        <i class="ace-icon fa fa-file-excel-o bigger-110"></i>
-                                        重新计算
+                                        排序
                                     </button>
+                                    <button class="btn btn-sm btn-primary " type="button" id="excel" onclick="ReSetAll();">
+                                       重新计算
+                                    </button>
+                                 
                                 </p>
+                                <p>   注：PS 步骤 ->1.先选择日期+生产线    ->2.确认 早/中/晚人数是否修改，如果修改产能发生变化 则点击‘重新计算按钮’   ->3.确认零件序号顺序，修改后 点击’排序‘按钮->4.手动调整时间 或者 复制/删除 </p>
                                 <!-- /section:elements.button.white -->
                             </div><!-- /.col -->
                         </div><!-- /.row -->
@@ -87,6 +91,7 @@
                                 <table id="simple-table" class="table table-hover table-condensed table-bordered">
                                     <thead>
                                         <tr>
+                                            <th>操作</th>
                                             <th>序号</th>
                                             <th>零件号</th>
                                             <th>零件名称</th>
@@ -114,8 +119,20 @@
                                             var StartTime = "StartTime" + i;
                                             var EndTime = "EndTime" + i;
 
-                                            <tr>
-                                                <td><input type="text" style=" width:40px;" value="@m.ProOrderIndex" id="@("Index"+i)" /></td>
+                                            <tr id="@(i-1)">
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <a class="btn btn-xs btn-info" title="复制" id="@(i-1)" onclick="Copy(this.id);">
+                                                            复制
+                                                        </a>
+                                                        <a class="btn btn-xs btn-danger" title="删除" id="@(i-1)" onclick="Delete(this.id);">
+                                                            删除
+                                                        </a>
+                                                        <input type="checkbox" checked="checked" class="d" />联动
+
+                                                    </div>
+                                                </td>
+                                                <td><input type="text" class="a" style=" width:40px;" value="@m.ProOrderIndex" id="@("Index"+i)" /></td>
                                                 <td id="@GoodNo">@m.GoodNo</td>
                                                 <td id="@GoodName">@m.GoodName</td>
                                                 <td id="@SType">@(EnumOperate.GetEnumDesc((VisualSmart.Util.Menus.ClassType)m.SType))</td>
@@ -123,8 +140,8 @@
                                                 <td id="@PackNum">@m.PackNum</td>
                                                 <td id="@Channeng">@m.ChanNeng</td>
                                                 <td id="@Qty">@m.Qty</td>
-                                                <td><input type="text" id="@StartTime" value="@m.StartTime.ToString("yyyy-MM-dd HH:mm:ss")" onclick="WdatePicker({ onpicked: function (dq) { changeTime(1,'@i',this.value); }, dateFmt: 'yyyy-MM-dd HH:mm:ss' })" /></td>
-                                                <td><input type="text" id="@EndTime" value="@m.EndTime.ToString("yyyy-MM-dd HH:mm:ss")" onclick="WdatePicker({ onpicked: function (dq) { changeTime(2, '@i', this.value); }, dateFmt: 'yyyy-MM-dd HH:mm:ss' })" /> </td>
+                                                <td><input type="text" class="b" id="@StartTime" value="@m.StartTime.ToString("yyyy-MM-dd HH:mm:ss")" onclick="WdatePicker({ onpicked: function (dq) { changeTime(1,'@(i-1)',this.value); }, dateFmt: 'yyyy-MM-dd HH:mm:ss' })" /></td>
+                                                <td><input type="text" class="c" id="@EndTime" value="@m.EndTime.ToString("yyyy-MM-dd HH:mm:ss")" onclick="WdatePicker({ onpicked: function (dq) { changeTime(2, '@(i-1)', this.value); }, dateFmt: 'yyyy-MM-dd HH:mm:ss' })" /> </td>
                                             </tr>
                                             i++;
                                         }
@@ -137,7 +154,8 @@
 
 
                         </div><!-- /.row -->
-
+                        <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br />
+                        <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br />
                         <div class="hr hr-18 dotted hr-double"></div>
                         <!-- PAGE CONTENT ENDS -->
                     </div><!-- /.col -->
@@ -170,7 +188,7 @@
         var ProDate = $("#ProDate").val();
 
         var url = "/PS/GetGoodList?LineId=" + LineNo + "&SDate=" + ProDate;
-        console.log(url);
+
         $.ajax({
             data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
             url: url,
@@ -198,9 +216,11 @@
                     var StartTime = "StartTime" + (i + 1);
                     var EndTime = "EndTime" + (i + 1);
 
-                    var html = "<tr>";
+                    var html = "<tr id=" + i + ">";
+                    html += "<td> <div class='btn-group'><a class='btn btn-xs btn-info' title='复制' id=" + i + " onclick='Copy(this.id);'>复制 </a>";
+                    html += "<a class='btn btn-xs btn-danger' title='删除' id=" + i + " onclick='Delete(this.id); '>删除</a> <input type='checkbox' checked='checked' class='d' />联动</div></td>";
 
-                    html += "<td><input type='text' style='width:40px;' value=" + item.ProOrderIndex + " id=" + Index + " /></td>";
+                    html += "<td><input type='text' style='width:40px;' class='a' value=" + item.ProOrderIndex + " id=" + Index + " /></td>";
                     html += "<td id=" + GoodNo + ">" + item.GoodNo + "</td>";
                     html += "<td id=" + GoodName + ">" + item.GoodName + "</td>";
                     html += "<td id=" + SType + ">" + item.STypeString + "</td>";
@@ -208,8 +228,12 @@
                     html += "<td id=" + PackNum + ">" + item.PackNum + "</td>";
                     html += "<td id=" + Channeng + ">" + item.ChanNeng + "</td>";
                     html += "<td id=" + Qty + ">" + item.Qty + "</td>";
-                    html += "<td><input type='text' name='ProDate' id=" + StartTime + " value='" + item.StartTimeString + "' onclick='" + 'WdatePicker({dateFmt:"yyyy-MM-dd HH:mm:ss"})' + "' /></td>";
-                    html += "<td><input type='text' name='ProDate' id=" + EndTime + " value='" + item.EndTimeString + "' onclick='" + 'WdatePicker({dateFmt:"yyyy-MM-dd HH:mm:ss"})' + "' /></td>";
+                    //html += "<td><input type='text' name='ProDate' class='b' id=" + StartTime + " value='" + item.StartTimeString + "' onclick='WdatePicker({changeTime(1,'" + i + "',this.value); ,dateFmt:'yyyy-MM-dd HH:mm:ss'})' /></td>";
+                    //html += "<td><input type='text' name='ProDate' class='c' id=" + EndTime + " value='" + item.EndTimeString + "' onclick='WdatePicker({changeTime(2,'" + i + "',this.value); ,dateFmt:'yyyy-MM-dd HH:mm:ss'})' /></td>";
+
+                    html += "<td><input type=\"text\" name=\"ProDate\" class=\"b\" id='" + StartTime + "' value='" + item.StartTimeString + "' onclick=\"WdatePicker({ onpicked: function (dq) { changeTime(1,'" + i + "',this.value); }, dateFmt: 'yyyy-MM-dd HH:mm:ss' })\"  /></td>";
+                    html += "<td><input type=\"text\" name=\"ProDate\" class=\"c\" id='" + EndTime + "' value='" + item.EndTimeString + "' onclick=\"WdatePicker({onpicked: function (dq){changeTime(2,'" + i + "',this.value); },dateFmt:'yyyy-MM-dd HH:mm:ss' })\" /></td>";
+
 
                     html += " </tr>";
                     $("#simple-table tbody").append(html)
@@ -232,7 +256,7 @@
         var people = zbPeople + "," + mbPeople + "," + wbPeople;
 
         var url = "/PS/GetProductions/?LineId=" + LineId + "&proDate=" + proDate + "&people=" + people;
-        console.log(url);
+
         var allGoodCount = $("#allGoodCount").val();
         //如果全部都是0 则统计为0
         if (zbPeople == 0 && mbPeople == 0 && wbPeople == 0) {
@@ -257,11 +281,11 @@
                         }
                         return;
                     }
-                    console.log("count:" + allGoodCount);
+
                     for (var i = 1; i <= allGoodCount; i++) {
                         var goodNo = $("#GoodNo" + i).html();
                         var SType = $("#SType" + i).html();
-                        console.log(goodNo + "--" + SType);
+
                         $.each(data.Data, function (index, item) {
 
                             if (SType == "早班" && item.GoodNo == goodNo && item.People == zbPeople) {
@@ -286,8 +310,7 @@
     }
 
     $("#save").bind("click", function () {
-
-        var allGoodCount = $("#allGoodCount").val();
+        var allGoodCount = $("#simple-table").find("tr").length;
         if (allGoodCount == 0) {
             alert("没有可以保存的零件信息！");
             return;
@@ -335,34 +358,28 @@
         var goodsList = [];
         var good = {};
         var allGoodCount = $("#allGoodCount").val();
-        for (var i = 1; i <= allGoodCount; i++) {
-            var Index = $("#Index" + i).val();
-            var GoodNo = $("#GoodNo" + i).html();
-            var GoodName = $("#GoodName" + i).html();
-            var SType = $("#SType" + i).html();
-            var ShipTo = $("#ShipTo" + i).html();
-            var PackNum = $("#PackNum" + i).html();
-            var Channeng = $("#Channeng" + i).html();
-            var Qty = $("#Qty" + i).html();
-            var StartTime = $("#StartTime" + i).val();
-            var EndTime = $("#EndTime" + i).val();
-            console.log(Qty);
-            goodsList.push(
-                {
-                    Qty: Qty,
-                    ProOrderIndex: Index,
-                    GoodNo: GoodNo,
-                    GoodName: GoodName,
-                    STypeString: SType,
-                    ShipTo: ShipTo,
-                    PackNum: PackNum,
-                    Channeng: Channeng,
-                    StartTime: StartTime,
-                    EndTime: EndTime
-                }
-               );
-        }
-        console.log(JSON.stringify(goodsList));
+
+        $.each($('#simple-table:first tbody tr'), function (i, tr) {
+
+            //获取当前行
+            var currentRow = $('table:first tbody tr:eq(' + i + ')');
+            var cells = currentRow.children();
+            var item = {};
+            item.ProOrderIndex = currentRow.find(".a").val();
+            item.GoodNo = cells[2].innerText;
+            item.GoodName = cells[3].innerText;
+            item.STypeString = cells[4].innerText;
+            item.ShipTo = cells[5].innerText;
+            item.PackNum = cells[6].innerText;
+            item.ChanNeng = cells[7].innerText;
+            item.Qty = cells[8].innerText;
+            item.StartTime = currentRow.find(".b").val();
+            item.EndTime = currentRow.find(".c").val();
+            goodsList.push(item);
+
+        });
+        console.log(goodsList);
+
         var url = "/PS/Save";
         $.ajax({
             data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val(), Pro_PS: JSON.stringify(Pro_PS), Pro_PSDetail: JSON.stringify(goodsList) },
@@ -392,7 +409,6 @@
                     var table = document.getElementById(tableId);
                     var tbody = table.tBodies[0];
                     var tr = tbody.rows;
-                    console.log(tr);
                     var trValue = new Array();
                     for (var i = 0; i < tr.length; i++) {
                         trValue[i] = tr[i];  //将表格中各行的信息存储在新建的数组中
@@ -434,73 +450,173 @@
             "S": this.getMilliseconds() //millisecond
         }
         if (/(y+)/.test(format)) format = format.replace(RegExp.$1,
-        (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            (this.getFullYear() + "").substr(4 - RegExp.$1.length));
         for (var k in o) if (new RegExp("(" + k + ")").test(format))
             format = format.replace(RegExp.$1,
-            RegExp.$1.length == 1 ? o[k] :
-            ("00" + o[k]).substr(("" + o[k]).length));
+                RegExp.$1.length == 1 ? o[k] :
+                    ("00" + o[k]).substr(("" + o[k]).length));
         return format;
     }
 
     var d1 = new Date();
 
     console.log(d1.format('yyyy-MM-dd hh:mm:ss'));
-    function changeTime(type, i, value) {
+    function changeTime(type, rowIndex, value) {
 
-        var date;
-        var channeng = $("#Channeng" + i).html();
-        var qty = $("#Qty" + i).html();
-        var sum = 0;
-        if (channeng == 0) {
-            sum = 0;
-        }
-        else {
-            sum = qty / channeng * 60 * 60
-        }
+        console.log("index:" + rowIndex);
+        $.each($('#simple-table:first tbody tr'), function (i, tr) {
+            console.log("ID:" + $(this).attr('id') + ",I=" + rowIndex + ",结果：" + ($(this).attr('id') == i));
+          
+            if ($(this).attr('id') == rowIndex) {
+                var currentRow = $('table:first tbody tr:eq(' + i + ')');
+                if (currentRow.find(".d").is(":checked") == true) {
 
-        //1 开始时间  2 结束时间
-        if (type == 1) {
-            date = new Date($("#StartTime" + i).val().replace(/-/g, "/"));            
-            var newData = new Date(date.getTime() + 1000 * sum);
-            var EndTime = $("#EndTime" + i).val(newData.format('yyyy-MM-dd hh:mm:ss'));
+                    var cells = currentRow.children();
 
-        } else {
-            date = new Date($("#EndTime" + i).val().replace(/-/g, "/"))
-            var newData = new Date(date.getTime() - 1000 * sum);
-            var EndTime = $("#StartTime" + i).val(newData.format('yyyy-MM-dd hh:mm:ss'));
-        }
+                    var date;
+                    var channeng = cells[7].innerText;
+                    var qty = cells[8].innerText;
+                    var sum = 0;
+                    if (channeng == 0) {
+                        sum = 0;
+                    }
+                    else {
+                        sum = qty / channeng * 60 * 60
+                    }
+
+                    //1 开始时间  2 结束时间
+                    if (type == 1) {
+                        date = new Date(currentRow.find(".b").val().replace(/-/g, "/"));
+                        var newData = new Date(date.getTime() + 1000 * sum);
+                        var EndTime = currentRow.find(".c").val(newData.format('yyyy-MM-dd hh:mm:ss'));
+
+                    } else {
+                        date = new Date(currentRow.find(".c").val().replace(/-/g, "/"))
+                        var newData = new Date(date.getTime() - 1000 * sum);
+                        var EndTime = currentRow.find(".b").val(newData.format('yyyy-MM-dd hh:mm:ss'));
+                    }
+                }
+            }
+        });
+
+
 
     }
 
 
     function ReSetAll() {
-        $.sortTable.sort("simple-table", 0);
-        var startDate = new Date(($("#ProDate").val() + " 07:30:00").replace(/-/g, "/"));
+        $.sortTable.sort("simple-table", 1);
+        //var startDate = new Date(($("#ProDate").val() + " 07:30:00").replace(/-/g, "/"));
 
-        var table = document.getElementById("simple-table");
-        var tbody = table.tBodies[0];
-        var tr = tbody.rows;
+        //var table = document.getElementById("simple-table");
+        //var tbody = table.tBodies[0];
+        //var tr = tbody.rows;
 
-        var trValue = new Array();
-        for (var i = 0; i < tr.length; i++) {
+        //var trValue = new Array();
+        //for (var i = 0; i < tr.length; i++) {
 
-            var channeng = tr[i].cells[6].innerText;
-            var qty = tr[i].cells[7].innerText;
-            var sum = 0;
-            if (channeng == 0) {
-                sum = 0;
-            }
-            else {
-                sum = qty / channeng * 60 * 60
-            }
+        //    var channeng = tr[i].cells[6].innerText;
+        //    var qty = tr[i].cells[7].innerText;
+        //    var sum = 0;
+        //    if (channeng == 0) {
+        //        sum = 0;
+        //    }
+        //    else {
+        //        sum = qty / channeng * 60 * 60
+        //    }
 
-            var start = $(tr[i].cells[8]).find("input").val(startDate.format('yyyy-MM-dd hh:mm:ss'));
+        //    var start = $(tr[i].cells[8]).find("input").val(startDate.format('yyyy-MM-dd hh:mm:ss'));
 
-            startDate = new Date(startDate.getTime() + 1000 * sum);
-            var end = $(tr[i].cells[9]).find("input").val(startDate.format('yyyy-MM-dd hh:mm:ss'));
-            console.log(start + "---" + end);
+        //    startDate = new Date(startDate.getTime() + 1000 * sum);
+        //    var end = $(tr[i].cells[9]).find("input").val(startDate.format('yyyy-MM-dd hh:mm:ss'));
 
+
+        //}
+    }
+
+    //删除
+    function Delete(currentRowID) {
+        if (confirm("确定要删除此数据吗?") == true) {
+            $.each($('#simple-table:first tbody tr'), function (i, tr) {
+                if ($(this).attr('id') == currentRowID) {
+                    $(this).remove();
+                }
+            });
         }
+    }
+
+    //复制
+    function Copy(currentRowID) {
+
+        //获取行数
+        var trCount = parseInt($("#allGoodCount").val());
+
+
+        console.log($('simple-table:first tbody tr'));
+
+        //遍历每一行，找到指定id的行的位置i,然后在该行后添加新行
+        $.each($('#simple-table:first tbody tr'), function (i, tr) {
+            console.log(i);
+            if ($(this).attr('id') == currentRowID) {
+                //获取当前行
+                var currentRow = $('table:first tbody tr:eq(' + i + ')');
+                //要添加的行的id
+                var addRowID = trCount + 1;
+
+                var Index = "Index" + addRowID;
+                var GoodNo = "GoodNo" + addRowID;
+                var GoodName = "GoodName" + addRowID;
+                var SType = "SType" + addRowID;
+                var ShipTo = "ShipTo" + addRowID;
+                var PackNum = "PackNum" + addRowID;
+                var Channeng = "Channeng" + addRowID;
+                var Qty = "Qty" + addRowID;
+                var StartTime = "StartTime" + addRowID;
+                var EndTime = "EndTime" + addRowID;
+
+                var cells = currentRow.children();
+                console.log(currentRow.find(".a").val());
+
+
+                var item = {};
+                item.ProOrderIndex = currentRow.find(".a").val();
+                item.GoodNo = cells[2].innerText;
+                item.GoodName = cells[3].innerText;
+                item.STypeString = cells[4].innerText;
+                item.ShipTo = cells[5].innerText;
+                item.PackNum = cells[6].innerText;
+                item.ChanNeng = cells[7].innerText;
+                item.Qty = cells[8].innerText;
+                item.StartTimeString = currentRow.find(".b").val();
+                item.EndTimeString = currentRow.find(".c").val();
+                console.log(item);
+                var html = "<tr id=" + addRowID + ">";
+                html += "<td> <div class='btn-group'><a class='btn btn-xs btn-info' title='复制' id=" + addRowID + " onclick='Copy(this.id);'>复制 </a>";
+                html += "<a class='btn btn-xs btn-danger' title='删除' id=" + addRowID + " onclick='Delete(this.id); '>删除</a> <input type='checkbox' checked='checked' class='d' />联动</div></td>";
+
+                html += "<td><input type='text' style='width:40px;' class='a' value=" + item.ProOrderIndex + " id=" + Index + " /></td>";
+                html += "<td id=" + GoodNo + ">" + item.GoodNo + "</td>";
+                html += "<td id=" + GoodName + ">" + item.GoodName + "</td>";
+                html += "<td id=" + SType + ">" + item.STypeString + "</td>";
+                html += "<td id=" + ShipTo + ">" + item.ShipTo + "</td>";
+                html += "<td id=" + PackNum + ">" + item.PackNum + "</td>";
+                html += "<td id=" + Channeng + ">" + item.ChanNeng + "</td>";
+                html += "<td id=" + Qty + ">" + item.Qty + "</td>";
+                //html += "<td><input type='text' class='b' name='ProDate' id=" + StartTime + " value='" + item.StartTimeString + "' onclick='" + 'WdatePicker({dateFmt:"yyyy-MM-dd HH:mm:ss"})' + "' /></td>";
+                //html += "<td><input type='text' class='c' name='ProDate' id=" + EndTime + " value='" + item.EndTimeString + "' onclick='" + 'WdatePicker({dateFmt:"yyyy-MM-dd HH:mm:ss"})' + "' /></td>";
+
+                html += "<td><input type=\"text\" name=\"ProDate\" class=\"b\" id='" + StartTime + "' value='" + item.StartTimeString + "' onclick=\"WdatePicker({ onpicked: function (dq) { changeTime(1,'" + addRowID+"',this.value); }, dateFmt: 'yyyy-MM-dd HH:mm:ss' })\"  /></td>";
+                html += "<td><input type=\"text\" name=\"ProDate\" class=\"c\" id='" + EndTime + "' value='" + item.EndTimeString + "' onclick=\"WdatePicker({onpicked: function (dq){changeTime(2,'" + addRowID + "',this.value); },dateFmt:'yyyy-MM-dd HH:mm:ss' })\" /></td>";
+
+                html += " </tr>";
+
+                //当前行之后插入一行
+                currentRow.after(html);
+            }
+
+        });
+        $("#allGoodCount").val(trCount + 1);
+
     }
 
 </script>

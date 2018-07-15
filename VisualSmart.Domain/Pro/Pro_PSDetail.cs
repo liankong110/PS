@@ -20,7 +20,7 @@ namespace VisualSmart.Domain.Pro
         private string _shiptoname = "";
         private int _packnum = 0;
         private int _qty = 0;
-        private int _proorderindex = 0;
+        private float _proorderindex = 0;
         private int _stype = 0;
         private DateTime _starttime = DateTime.Now;
         private DateTime _endtime = DateTime.Now;
@@ -76,7 +76,7 @@ namespace VisualSmart.Domain.Pro
         /// <summary>
         /// 顺序
         /// </summary>
-        public int ProOrderIndex
+        public float ProOrderIndex
         {
             set { _proorderindex = value; }
             get { return _proorderindex; }

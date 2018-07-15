@@ -650,12 +650,6 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Manage\AddPhoneNumber.cshtml" />
-    <Content Include="Views\Manage\ChangePassword.cshtml" />
-    <Content Include="Views\Manage\Index.cshtml" />
-    <Content Include="Views\Manage\ManageLogins.cshtml" />
-    <Content Include="Views\Manage\SetPassword.cshtml" />
-    <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\Empty.cshtml" />
@@ -669,14 +663,11 @@
     <Content Include="Views\Stock\Index.cshtml" />
     <Content Include="Views\ShipPlan\Index.cshtml" />
     <Content Include="Views\Role\Index.cshtml" />
-    <Content Include="Views\AlipayQRCode\Index.cshtml" />
-    <Content Include="Views\AlipayDetail\Index.cshtml" />
     <Content Include="Views\Scheduling\Index.cshtml" />
     <Content Include="Views\User\Add.cshtml" />
     <Content Include="Views\Scheduling\ProLines.cshtml" />
     <Content Include="Views\Scheduling\List.cshtml" />
     <Content Include="Views\Scheduling\DetailList.cshtml" />
-    <Content Include="Views\SceneryOrderRefund\Index.cshtml" />
     <Content Include="Views\PS\Index.cshtml" />
     <Content Include="Views\PS\Edit.cshtml" />
     <Content Include="Views\ShipPlan\MainList.cshtml" />
@@ -700,13 +691,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="Config\" />
     <Folder Include="Content\components\" />
-    <Folder Include="Views\Alipay\" />
-    <Folder Include="Views\Base_Ship\" />
-    <Folder Include="Views\ProductionLines\" />
-    <Folder Include="Views\Scenery\" />
-    <Folder Include="Views\WeChatDetail\" />
-    <Folder Include="Views\WeChatQRCode\" />
-    <Folder Include="Views\WxPayConfig\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
