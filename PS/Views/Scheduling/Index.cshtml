@@ -243,9 +243,15 @@
                                         <label class="col-sm-2 control-label no-padding-right" for="form-field-tags">
                                             <a href="#" onclick="NewJiSuan(@startIndex,'@line.ProLineNo');">
                                                 计算
-                                            </a>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </a>&nbsp;&nbsp;    
                                             <a href="#" onclick="ClearData(@startIndex);">
                                                 清空
+                                            </a>&nbsp;&nbsp;
+                                            <a href="#" onclick="LockData(@startIndex,1);">
+                                                全锁定
+                                            </a>&nbsp;&nbsp;
+                                            <a href="#" onclick="LockData(@startIndex,0);">
+                                                全不锁定
                                             </a>
                                         </label>
 
@@ -264,6 +270,8 @@
                             //需求
                             var xu_obj = new HotData();
                             xu_obj.Type = "需求";
+                            xu_obj.GoodNo = "计算";
+                            xu_obj.GoodNo = "清空";
                             //xu_obj.StockNum = m.Qty;
                             //早
                             var zao_obj = new HotData();
@@ -488,7 +496,7 @@
                 td.style.border = "0";
             }
         }
-
+        //小于0红色显示
         if ($(td).html() < 0) {
             $(td).css("color", "red");
         }
@@ -878,6 +886,37 @@
         for (var i = 0; i < allRowsCount; i += 6) {
 
             var xuData = hot.getDataAtRow(i);//获取需求整行数据
+            //console.log("老的集合：");
+            //console.log(xuData);
+            //对需求重新排序  把需求都集中在一起 不要中间有空档
+            var newXuData = [];
+            var startIndex = -1;
+            
+            for (var gg = 7; gg < 28; gg++) {
+                var xuV = xuData[gg];
+                if (xuV != null && xuV > 0) {
+                    newXuData.push(xuV);
+                    if (startIndex == -1) {
+                        startIndex = gg;
+                    }
+                }
+            }
+            if (startIndex != -1) {
+                var len = newXuData.length + 7;
+                console.log("len："+len);
+                for (var kk = startIndex-1; kk < 28; kk++) {
+                    if (kk < len) {
+                        console.log(newXuData[kk - 7]);
+                        xuData[kk] = newXuData[kk - 7];
+                    } else {
+                        xuData[kk] = null;
+                    }
+                }
+                //console.log("新的集合：");
+                //console.log(newXuData);
+                //console.log(xuData);
+            }
+
 
             var xuRequestData = hot.getDataAtRow(i+4);//获取需求整行数据
             var gongRequestData = hot.getDataAtRow(i + 5);//获取需求整行数据
@@ -1106,6 +1145,27 @@
             }
         }
 
+    }
+    //锁定信息
+    function LockData(index, ifLock) {
+        //先清空所有功能
+        var hot = allHotList[index];
+
+        //获取产能列
+        var channNengDataList = hot.getDataAtCol(0);
+        var content = "";
+        if (ifLock == 1) {
+            content = "锁定";
+        }  
+        //获取所有行
+        var allRowsCount = hot.countRows();
+        var editData = [];
+        for (var i = 0; i < allRowsCount; i++) {
+            if (i % 6 == 0) {
+                editData.push([i, 0, content]);
+            }
+        }
+        hot.setDataAtCell(editData);
     }
     //清空数据
     function ClearData(index) {
