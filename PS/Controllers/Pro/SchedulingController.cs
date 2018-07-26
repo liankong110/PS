@@ -76,7 +76,7 @@ namespace PS.Controllers.Pro
                 }
 
                 ViewBag.ShipMainProNo = ShipMainProNo;
-                ViewBag.SchedulingList = pro_SchedulingLineList;
+                ViewBag.SchedulingList = pro_SchedulingLineList;                   
                 return View(shipPlanList);
             }
             ViewBag.Id = MainId;
