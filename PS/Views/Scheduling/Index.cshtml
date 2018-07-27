@@ -133,20 +133,17 @@
                     {
                         string line = proLineNos[ii].ProLineNo;
                         allLines += string.Format("{0},", line);
+                        string id = "tabLine" + ii;
                         if (ii == 0)
                         {
                             <li class="active">
-                                <a data-toggle="tab" href="#" onclick="show(@ii);">
-                                    @line
-                                </a>
+                                <a id="@id" data-toggle="tab" href="#" onclick="show(@ii);">@line</a>
                             </li>
                         }
                         else
                         {
                             <li>
-                                <a data-toggle="tab" href="#" onclick="show(@ii);">
-                                    @line
-                                </a>
+                                <a id="@id" data-toggle="tab" href="#" onclick="show(@ii);">@line</a>
                             </li>
                         }
                     }
@@ -185,7 +182,7 @@
                         //数据
                         List<List<object>> lineData = new List<List<object>>();
                         DateTime start = DateTime.Now;
-                        
+
                     }
                     @foreach (var line in proLineNos)
                     {
@@ -242,19 +239,20 @@
                                                     清空
                                                 </button>*@
                                         </div>
-                                        <label class="col-sm-2 control-label no-padding-right" for="form-field-tags">
+                                        <label class="col-sm-3 control-label no-padding-right" for="form-field-tags">
                                             <a href="#" onclick="NewJiSuan(@startIndex,'@line.ProLineNo',-1);">
                                                 计算
-                                            </a>&nbsp;&nbsp;
+                                            </a>|
                                             <a href="#" onclick="ClearData(@startIndex,-1);">
                                                 清空
-                                            </a>&nbsp;&nbsp;
+                                            </a>|
                                             <a href="#" onclick="LockData(@startIndex,1);">
-                                                全锁定
-                                            </a>&nbsp;&nbsp;
+                                                全锁
+                                            </a>|
                                             <a href="#" onclick="LockData(@startIndex,0);">
-                                                全不锁定
-                                            </a>
+                                                全不锁
+                                            </a>|
+                                            <a href="#" onclick="LineLockData(@startIndex,this);">产线锁定</a>
                                         </label>
 
                                     </div>
@@ -698,6 +696,8 @@
                         value = "";
                     }
                     hot.setDataAtCell([[e.row, e.col, value]]);
+                    //重新复制 重新触发afterChange 事件，在计算需求差异和供需求差异-===解决并线计算问题
+                    hot.setDataAtCell([[e.row+1, 7, hot.getDataAtCell(e.row + 1, 7)]]);
                 }
                 //点击计算-对当前产品进行排产计算
                 if (e.col == 1 && e.row % 6 == 0) {
@@ -717,6 +717,7 @@
 
                 var params = [];
                 if (changes != null) {
+
                     var row = parseInt(changes[0][0]);//行
                     var colPro = changes[0][1];//列属性
                     var hot=allHotList[currentLineIndex];
@@ -724,6 +725,7 @@
                     if(colIndex<=6){
                         return;
                     }
+                    console.log("触发----");
                     //当等于1 也就是第一列 时 初期库存= 供需求差异
                     //需求差异=需求-上一次供需求差异
                     //供需求差异=需求差异+早中晚数量
@@ -744,16 +746,42 @@
                         //思路先获取 需求 早中晚的信息，然后计算需求差异，供求差异，最后整体赋值给hot
                         var XQ_RowData=hot.getDataAtRow(XQNum_Index);
 
-                        var ZB_RowData=hot.getDataAtRow(XQNum_Index+1);
+                        var ZB_RowData = hot.getDataAtRow(XQNum_Index + 1);
+
                         //console.log(ZB_RowData);
-                        var MB_RowData=hot.getDataAtRow(XQNum_Index+2);
-                        var WB_RowData=hot.getDataAtRow(XQNum_Index+3);
+                        var MB_RowData = hot.getDataAtRow(XQNum_Index + 2);
+                        var WB_RowData = hot.getDataAtRow(XQNum_Index + 3);
+
+                        //先查询有没有已经排的信息
+                        var currentGoodNo = MB_RowData[0];
+                        var currentShipTo = MB_RowData[2];
+
+                        var suoding = XQ_RowData[0];
+
+                        var hadData = GetBingXianGood(currentGoodNo, currentShipTo, currentLineIndex);
+                        //如果有已经排的，需要计算从哪一天开始供需求差异是<0的 ，从他的前一天开始排产。
+                        //这里需要查找开始的天数
+                        var isHandData = false;
+                        for (var p = 7; p < hadData.length; p++) {
+                            if (hadData[p] > 0) {
+                                isHandData = true;
+                                break;
+                            }
+                        }
+
+
                         var aa=XQNum_Index+4;
                         var bb=XQNum_Index+5;
                         var editData=[];
                         var requestDiffNum =0;
                         var gongRequestDiffNum =0;
-                        var topGongRequestDiffNum=0;
+                        var topGongRequestDiffNum = 0;
+                        if (isHandData) {
+                            colIndex = 7;
+                        }
+
+                        console.log(isHandData);
+                        console.log(hadData);
 
                         for(var i=colIndex;i<=27;i++){
 
@@ -770,7 +798,7 @@
                             }
                             //计算当前的信息
                             requestDiffNum = topGongRequestDiffNum - parseToInt(XQ_RowData[i]);
-                            gongRequestDiffNum = requestDiffNum + parseToInt(ZB_RowData[i]) + parseToInt(MB_RowData[i]) + parseToInt(WB_RowData[i]);
+                            gongRequestDiffNum = requestDiffNum + parseToInt(ZB_RowData[i]) + parseToInt(MB_RowData[i]) + parseToInt(WB_RowData[i]) + hadData[i];
                             editData.push([aa, i, requestDiffNum]);
                             editData.push( [bb, i, gongRequestDiffNum]);
                             topGongRequestDiffNum=gongRequestDiffNum;
@@ -784,6 +812,44 @@
                                 topColIndex=editColIndex;
                             }
                         }
+                        //如果是并线产品，计算完成后，需要重新计算其他线的 供需求差异信息
+                        //如果当前信息已经锁定 并修改 则把当前修改后计算的 信息 同步到其他产线中
+                        console.log(suoding);
+                        console.log(isHandData);
+                        if (isHandData) {
+                            if (suoding == "锁定") {
+                                var getBingXian = hadData[0];
+                                console.log(getBingXian);
+                                if (getBingXian != null) {
+                                    var hot_Row = getBingXian.split(',');
+                                    console.log(hot_Row);
+                                    console.log(hot_Row.length);
+                                    for (var pp = 0; pp < hot_Row.length; pp++) {
+                                        var arr = hot_Row[pp].split('-');
+                                        var hotIndex = parseInt(arr[0]);
+                                        var rowIndex = parseInt(arr[1]);//需求起始值
+
+                                        console.table({
+                                            hotIndex: hotIndex,
+                                            rowIndex: rowIndex
+                                        });
+
+                                        //重新组装行号
+                                        for (var yy = 0; yy < editData.length; yy++) {
+                                            editData[0][0] = rowIndex;
+                                        }
+                                        //则把当前修改后计算的 信息 同步到其他产线中
+                                        var bingxian_hot = allHotList[hotIndex];
+                                        bingxian_hot.setDataAtCell(editData);
+                                    }
+                                }
+                            } else {
+                                if (colIndex == 7) {
+                                    ReSetBingXian(currentGoodNo, currentShipTo, hadData);
+                                }
+                            }
+                        }
+
 
                     }
                 }
@@ -793,6 +859,45 @@
         };
         var hot = new Handsontable(hotElement, hotSettings);
         allHotList.push(hot);
+    }
+    //重新计算 锁定 或者 不锁定
+    function ReSetBingXian(currentGoodNo, currentShipTo, _hadData) {
+
+            var xuRequestData = [];//获取需求整行数据
+            var gongRequestData = [];//获取需求整行数据
+
+            //早中晚 可以填写的数据
+            var zaoData = [];
+            var zhongData = [];
+            var wanData = [];
+
+            //初始化 0
+            for (var jj = 7; jj < 28; jj++) {
+                zaoData[jj] = 0;
+                zhongData[jj] = 0;
+                wanData[jj] = 0;
+            }
+            var xuData = [];
+
+            var hot_Row = _hadData[0].split(',');
+            for (var pp = 0; pp < hot_Row.length; pp++) {
+
+                var arr = hot_Row[pp].split('-');
+                var hotIndex = parseInt(arr[0]);
+                var rowIndex = parseInt(arr[1]);//需求起始值
+                var bingxian_hot = allHotList[hotIndex];
+                if (pp == 0) {
+                    xuData = bingxian_hot.getDataAtRow(rowIndex);
+                    ReSetRequestDiffNum(bingxian_hot, xuData, zaoData, zhongData, wanData, xuRequestData, gongRequestData, rowIndex, _hadData);
+                }
+
+                var bing_Data = [];
+                for (var jj = 7; jj < 28; jj++) {
+                    bing_Data.push([rowIndex + 4, jj, xuRequestData[jj]]);
+                    bing_Data.push([rowIndex + 5, jj, gongRequestData[jj]]);
+                }
+                bingxian_hot.setDataAtCell(bing_Data);
+            }
     }
 
     function onlyExactMatch(queryStr, value) {
@@ -876,24 +981,22 @@
     }
 
     //查询出并线产品并且是锁定的
-    function GetBingXianGood(currentGoodNo, currentShipTo) {
+    function GetBingXianGood(currentGoodNo, currentShipTo,myCurrentLineIndex) {
 
         var otherData = [];
-
         for (var gg = 7; gg < 28; gg++) {
             otherData[gg] = 0;
         }
-        //console.log(bingXianJson);
         var index = $.inArray(currentGoodNo, bingXianJson);
-        //console.log(index);
+
         if (index < 0) {
             return otherData;
         }
 
         var allLines = $("#allLines").val().split(',');
-        
+
         for (var index = 0; index < allLines.length - 1; index++) {
-            if (index != currentLineIndex) {
+            if (index != myCurrentLineIndex) {
                 var hot = allHotList[index];
                 //获取所有行
                 var good_SuoDingList = hot.getDataAtCol(0);
@@ -904,9 +1007,14 @@
 
                     if (i % 6 == 0) {
                         var suoding = good_SuoDingList[i];
-                        var goodNo = good_SuoDingList[i + 2]; 
-                        var shipTo = shipToDingList[i + 2]; 
+                        var goodNo = good_SuoDingList[i + 2];
+                        var shipTo = shipToDingList[i + 2];
                         if (goodNo == currentGoodNo && suoding == "锁定" && shipTo == currentShipTo) {
+                            if (otherData[0] == null) {
+                                otherData[0] = index + "-" + i;
+                            } else {
+                                otherData[0] = otherData[0]+","+ index + "-" + i;
+                            }
                             var zaoData = hot.getDataAtRow(i + 1);
                             var zhongData = hot.getDataAtRow(i + 2);
                             var wanData = hot.getDataAtRow(i + 3);
@@ -1031,7 +1139,7 @@
                 //先查询有没有已经排的信息
                 var currentGoodNo = goodsList[i + 2];
                 var currentShipTo = shipToList[i + 2];
-                hadData = GetBingXianGood(currentGoodNo,currentShipTo);
+                hadData = GetBingXianGood(currentGoodNo, currentShipTo, currentLineIndex);
                 //如果有已经排的，需要计算从哪一天开始供需求差异是<0的 ，从他的前一天开始排产。
                 //这里需要查找开始的天数
                 var isHandData = false;
@@ -1088,12 +1196,7 @@
                 console.log(hadData);
                 console.log(xuData);
             }
-
-
-
-
             var topGongRequestDiffNum = 0;
-
             for (var col = 7; col < 28; col++) {
 
                 ReSetRequestDiffNum(hot, xuData, zaoData, zhongData, wanData, xuRequestData, gongRequestData, i, hadData);
@@ -1109,7 +1212,7 @@
 
                         } else {
                              nextXu = gongRequestData[col] - xuData[col + 1];//下一天的需求差异 如果是负数的话
-                        }                      
+                        }
                         if (nextXu < 0) {
                             var nums = -nextXu;
                             //需要循环看看前面的早中晚 有没有没排完的。 如果没有排完需要前面的拍完，不能让第二天需求差异为负数
@@ -1195,15 +1298,6 @@
 
                 if (col == 27) {
                     ReSetRequestDiffNum(hot, xuData, zaoData, zhongData, wanData, xuRequestData, gongRequestData, i, hadData);
-
-
-                    //console.log(xuData);
-                    //console.log(zaoData);
-                    //console.log(zhongData);
-                    //console.log(wanData);
-
-                    //console.log(xuRequestData);
-                    //console.log(gongRequestData);
                 }
                 if (col == 27 && gongRequestData[27] < 0) {
                     var nums= -gongRequestData[27];
@@ -1308,6 +1402,21 @@
         }
 
     }
+
+    function LineLockData(index, a) {
+        var value = $(a).html();
+        console.log(value);
+
+        console.log($("#tabLine" + index).html());
+        if (value == "产线锁定") {
+            $("#tabLine" + index).html($("#tabLine" + index).html() + "(锁定)");
+            $(a).html("产线解锁");
+        } else {
+            $("#tabLine" + index).html($("#tabLine" + index).html().replace("(锁定)", ""));
+            $(a).html("产线锁定");
+        }
+
+    }
     //锁定信息
     function LockData(index, ifLock) {
         //先清空所有功能
@@ -1321,12 +1430,18 @@
         }
         //获取所有行
         var allRowsCount = hot.countRows();
+        var sevData = hot.getDataAtCol(7);
         var editData = [];
         for (var i = 0; i < allRowsCount; i++) {
             if (i % 6 == 0) {
                 editData.push([i, 0, content]);
+                //重新复制 重新触发afterChange 事件，在计算需求差异和供需求差异-===解决并线计算问题
+                //editData.push([i + 1, 7, hot.getDataAtCell(i + 1, 7)]);
+
+               hot.setDataAtCell([[i + 1, 7, hot.getDataAtCell(i + 1, 7)]]);
             }
         }
+
         hot.setDataAtCell(editData);
     }
     //清空数据
