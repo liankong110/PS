@@ -64,6 +64,8 @@
     <Compile Include="BaseDomain\UserDomain.cs" />
     <Compile Include="Base\Entity.cs" />
     <Compile Include="Base\IEntity.cs" />
+    <Compile Include="ProBase\Base_LineHour.cs" />
+    <Compile Include="ProBase\Base_Matching.cs" />
     <Compile Include="ProBase\Base_Bom.cs" />
     <Compile Include="ProBase\Base_GoodsDomain.cs" />
     <Compile Include="ProBase\Base_ProductionLine.cs" />

@@ -47,6 +47,8 @@
     <Compile Include="Alipay\IAlipayBizService.cs" />
     <Compile Include="Base\IEntityBizService.cs" />
     <Compile Include="Alipay\IAlipayTradeBizService.cs" />
+    <Compile Include="ProBase\IBase_LineHourBizService.cs" />
+    <Compile Include="ProBase\IBase_MatchingBizService.cs" />
     <Compile Include="ProBase\IBase_GoodsBizService.cs" />
     <Compile Include="ProBase\IBase_ProductionLineBizService.cs" />
     <Compile Include="ProBase\IBase_ProductionLinesBizService.cs" />

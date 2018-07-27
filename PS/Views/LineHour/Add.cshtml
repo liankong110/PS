@@ -1,0 +1,127 @@
+﻿@{
+    ViewBag.Title = "产品工时编辑";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model VisualSmart.Domain.ProBase.Base_LineHour
+<div class="page-content">
+    <div class="page-header">
+        <h1>
+            @ViewBag.ViewTitle 产线工时
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                请填写下面内容
+                <input type="hidden" id="error" value="@ViewBag.Error" />
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+
+
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal" role="form" action="/LineHour/Add" method="post">
+
+                <div class="col-xs-12">
+                    <!-- PAGE CONTENT BEGINS -->
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>产线</label>
+
+                        <div class="col-sm-9">
+                            @Html.HiddenFor(t => t.Id)
+                            @Html.HiddenFor(T => T.CreateTime)
+                            @Html.AntiForgeryToken()
+                            @Html.TextBoxFor(t => t.ProLineNo, new
+                       {
+                           @class = "col-xs-10 col-sm-5",
+                           @placeholder = "请输入产线",                          
+                           @data_rel = "tooltip",
+                           @data_placement = "right",
+                           @data_trigger = "focus",
+                           @title = "请输入产线"
+                       })
+                        </div>
+                    </div>
+
+                   
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>最大工时</label>
+
+                        <div class="col-sm-9">
+
+                            @Html.TextBoxFor(t => t.MaxHours, new
+                       {
+                           @class = "col-xs-10 col-sm-5",
+                           @data_placement = "right",
+                           @title = "请输入最大工时",
+                           @placeholder = "请输入最大工时",
+                           @data_trigger = "focus"                           
+                       })/天
+                        </div>
+                    </div>
+        
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+
+                        <div class="clearfix form-actions">
+                            <div class="col-md-offset-3 col-md-9">
+                                <button class="btn btn-info" type="submit" id="btnSave">
+                                    <i class="ace-icon fa fa-check bigger-110 "></i>
+                                    保存
+                                </button>
+
+                                &nbsp; &nbsp; &nbsp;
+                                <a class="btn" href="/LineHour/Index">
+
+                                    <i class="ace-icon fa fa-undo bigger-110 "></i>
+                                    返回
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div><!-- /.col -->
+        <!-- /.table-responsive -->
+    </div>
+</div><!-- /.row --> 
+<script type="text/javascript">
+
+    jQuery(function ($) { 
+        //$('[data-rel=tooltip]').tooltip({ container: 'body' });
+        //$('[data-rel=popover]').popover({ container: 'body' });
+
+        var error = $("#error").val();
+
+        if (error != "") {
+            var className = "gritter-error gritter-light";
+            if (error == 1) {
+                className = "gritter-info gritter-light";
+                error = "保存成功！";
+            }
+
+            $.gritter.add({
+                title: error,
+                text: "",
+                class_name: className
+            });
+        }       
+    });
+    $("#btnSave").click(function () {
+        var result = CheckValue("ProLineNo") && CheckValue("MaxHours");
+        return result;
+    });
+
+    function CheckValue(name) {
+        var control = $("#" + name + "");
+        if (control.val() == "") {
+            control.focus();
+            return false;
+        }
+        return true;
+    }
+
+
+</script>
+
+<script src="~/Content/components/jquery-ui/jquery-ui.js"></script>

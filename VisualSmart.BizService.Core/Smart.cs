@@ -103,6 +103,17 @@ namespace VisualSmart.BizService.Core
         /// 零件信息
         /// </summary>
         public IBase_GoodsBizService Base_GoodsBizService { get; set; }
+
+        /// <summary>
+        /// 产线最大工时
+        /// </summary>
+        public IBase_LineHourBizService Base_LineHourBizService { get; set; }
+
+        /// <summary>
+        /// 配套信息
+        /// </summary>
+        public IBase_MatchingBizService Base_MatchingBizService { get; set; }
+
         /// <summary>
         /// 生产产能主表
         /// </summary>

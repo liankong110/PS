@@ -205,6 +205,8 @@
     <Compile Include="Controllers\Alipay\SceneryOrderRefundController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ProBase\LineHourController.cs" />
+    <Compile Include="Controllers\ProBase\MatchingController.cs" />
     <Compile Include="Controllers\ProBase\BomController.cs" />
     <Compile Include="Controllers\ProBase\GoodsController.cs" />
     <Compile Include="Controllers\ProBase\ProductionLineController.cs" />
@@ -686,6 +688,12 @@
     <Content Include="Views\Bom\Add.cshtml" />
     <Content Include="Views\Bom\ImportData.cshtml" />
     <Content Include="Views\ShipPlan\ImportData.cshtml" />
+    <Content Include="Views\Matching\Index.cshtml" />
+    <Content Include="Views\Matching\Add.cshtml" />
+    <Content Include="Views\Matching\ImportData.cshtml" />
+    <Content Include="Views\LineHour\Index.cshtml" />
+    <Content Include="Views\LineHour\Add.cshtml" />
+    <Content Include="Views\LineHour\ImportData.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

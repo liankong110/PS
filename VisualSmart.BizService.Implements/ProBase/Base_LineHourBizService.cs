@@ -1,5 +1,4 @@
 ﻿using System;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +11,7 @@ using VisualSmart.Util;
 
 namespace VisualSmart.BizService.Implements.ProBase
 {
-    public class Base_BomBizService : EntityBizService<Base_Bom, Base_BomDao>, IBase_BomBizService
+    public class Base_LineHourBizService : EntityBizService<Base_LineHour, Base_LineHourDao>, IBase_LineHourBizService
     {
         /// <summary>
         /// 删除-所有信息

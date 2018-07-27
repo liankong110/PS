@@ -1,0 +1,204 @@
+﻿@{
+    ViewBag.Title = "产品编辑";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model VisualSmart.Domain.ProBase.Base_Matching
+<div class="page-content">
+    <div class="page-header">
+        <h1>
+            @ViewBag.ViewTitle 配套产品
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                请填写下面内容
+                <input type="hidden" id="error" value="@ViewBag.Error" />
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
+
+
+    <div class="row">
+        <div class="col-xs-12">
+            <form class="form-horizontal" role="form" action="/Matching/Add" method="post">
+
+                <div class="col-xs-12">
+                    <!-- PAGE CONTENT BEGINS -->
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>左产品编码</label>
+
+                        <div class="col-sm-9">
+                            @Html.HiddenFor(t => t.Id)
+                            @Html.HiddenFor(T => T.CreateTime)
+                            @Html.AntiForgeryToken()
+                            @Html.TextBoxFor(t => t.LeftGoodNo, new
+                       {
+                           @class = "col-xs-10 col-sm-5",
+                           @placeholder = "请输入左产品编码",
+                           @onblur = "ChangeInfo('LeftGoodNo','LeftGoodName');",
+                           @data_rel = "tooltip",
+                           @data_placement = "right",
+                           @data_trigger = "focus",
+                           @title = "请输入左产品编码"
+                       })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>左产品名称</label>
+
+                        <div class="col-sm-9">
+
+                            @Html.TextBoxFor(t => t.LeftGoodName, new
+                       {
+                           @class = "col-xs-10 col-sm-5",
+                           @data_placement = "right",
+                           @title = "请输入左产品名称",
+                           @placeholder = "请输入左产品名称",
+                           @data_trigger = "focus"
+                       })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>右产品编号</label>
+
+                        <div class="col-sm-9">
+
+                            @Html.TextBoxFor(t => t.RightGoodNo, new
+                       {
+                           @class = "col-xs-10 col-sm-5",
+                           @data_placement = "right",
+                           @title = "请输入右产品编号",
+                           @placeholder = "请输入右产品编号",
+                           @data_trigger = "focus",
+                           @onblur = "ChangeInfo('RightGoodNo','RightGoodName');"
+                       })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>右产品名称</label>
+
+                        <div class="col-sm-9">
+
+                            @Html.TextBoxFor(t => t.RightGoodName, new
+                       {
+                           @class = "col-xs-10 col-sm-5",
+                           @data_placement = "right",
+                           @title = "请输入右产品名称",
+                           @placeholder = "请输入右产品名称",
+                           @data_trigger = "focus"
+
+                       })
+                        </div>
+                    </div>
+                   
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+
+                        <div class="clearfix form-actions">
+                            <div class="col-md-offset-3 col-md-9">
+                                <button class="btn btn-info" type="submit" id="btnSave">
+                                    <i class="ace-icon fa fa-check bigger-110 "></i>
+                                    保存
+                                </button>
+
+                                &nbsp; &nbsp; &nbsp;
+                                <a class="btn" href="/Matching/Index">
+
+                                    <i class="ace-icon fa fa-undo bigger-110 "></i>
+                                    返回
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div><!-- /.col -->
+        <!-- /.table-responsive -->
+    </div>
+</div><!-- /.row -->
+
+@*<script src="~/Content/components/bootstrap/dist/js/bootstrap.js"></script>*@
+
+<!-- page specific plugin scripts -->
+
+@*<script src="~/Content/assets/js/src/ace.searchbox-autocomplete.js"></script>*@
+
+@{
+
+    var GoodList = ViewBag.GoodList as IList<string>;
+    var stringGoodList = new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(GoodList));
+}
+<script type="text/javascript">
+
+    jQuery(function ($) {
+
+      
+        //$('[data-rel=tooltip]').tooltip({ container: 'body' });
+        //$('[data-rel=popover]').popover({ container: 'body' });
+
+        var error = $("#error").val();
+
+        if (error != "") {
+            var className = "gritter-error gritter-light";
+            if (error == 1) {
+                className = "gritter-info gritter-light";
+                error = "保存成功！";
+            }
+
+            $.gritter.add({
+                title: error,
+                text: "",
+                class_name: className
+            });
+        }
+        //autocomplete
+        var availableTags = @stringGoodList;
+
+        $("#LeftGoodNo").autocomplete({
+            source: availableTags
+        });
+        $("#RightGoodNo").autocomplete({
+            source: availableTags
+        });
+
+       
+    });
+
+
+    function ChangeInfo(goodNo,goodName){
+        var goodNoVal= $("#" + goodNo + "").val();
+        if(goodNoVal!=""){           
+            var arr = goodNoVal.split(',');
+            console.log(arr);
+            if(arr.length>1){
+                $("#" + goodNo + "").val(arr[0]);
+                $("#" + goodName + "").val(arr[1]);
+            }
+        }else{
+            $("#" + goodName + "").val("");
+        }
+    }
+
+
+
+
+    $("#btnSave").click(function () {
+
+        var result = CheckValue("LeftGoodNo") && CheckValue("LeftGoodName") && CheckValue("RightGoodNo") && CheckValue("RightGoodName");
+        return result;
+    });
+
+    function CheckValue(name) {
+        var control = $("#" + name + "");
+        if (control.val() == "") {
+            control.focus();
+            return false;
+        }
+        return true;
+    }
+
+
+</script>
+
+<script src="~/Content/components/jquery-ui/jquery-ui.js"></script>
