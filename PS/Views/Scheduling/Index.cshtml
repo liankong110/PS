@@ -873,7 +873,6 @@
         var allLines = $("#allLines").val().split(',');
         var line = allLines[currentLineIndex];
         NewJiSuan(currentLineIndex, line, rowIndex);
-
     }
 
     //查询出并线产品并且是锁定的
@@ -1086,8 +1085,8 @@
                     }
                 }
 
-                //console.log(hadData);
-                //console.log(xuData);
+                console.log(hadData);
+                console.log(xuData);
             }
 
 
@@ -1102,8 +1101,15 @@
                 //2.供需求差异与第二天的需求差异做对比
                 //第二天需求差异如果是负数的话 前一天就要排完
                 if (col < 27) {
-                    if (xuData[col + 1] != null) {
-                        var nextXu = gongRequestData[col] - xuData[col + 1];//下一天的需求差异 如果是负数的话
+                    if (xuData[col] != null) {
+                        var nextXu = 0;
+                        //特殊处理第一列 索引7
+                        if (xuData[col + 1] == null) {
+                            nextXu = gongRequestData[col] - 0;//下一天的需求差异 如果是负数的话
+
+                        } else {
+                             nextXu = gongRequestData[col] - xuData[col + 1];//下一天的需求差异 如果是负数的话
+                        }                      
                         if (nextXu < 0) {
                             var nums = -nextXu;
                             //需要循环看看前面的早中晚 有没有没排完的。 如果没有排完需要前面的拍完，不能让第二天需求差异为负数
