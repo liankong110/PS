@@ -14,16 +14,16 @@ namespace VisualSmart.Domain.Pro
     public partial class Pro_SchedulingLine : Entity
     {
         public Pro_SchedulingLine()
-        { }
+        { MaxHour = 24; }
         #region Model
-      
+
         private int _mainid = 0;
         private string _prolineno = "";
-        private int? _morningshift = 0;        
-        private int? _middleshift;      
+        private int? _morningshift = 0;
+        private int? _middleshift;
         private int? _eveningshift;
-    
-        
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -48,7 +48,7 @@ namespace VisualSmart.Domain.Pro
             set { _morningshift = value; }
             get { return _morningshift; }
         }
-        
+
         /// <summary>
         /// 中班
         /// </summary>
@@ -57,7 +57,7 @@ namespace VisualSmart.Domain.Pro
             set { _middleshift = value; }
             get { return _middleshift; }
         }
-         
+
         /// <summary>
         /// 晚班
         /// </summary>
@@ -66,8 +66,12 @@ namespace VisualSmart.Domain.Pro
             set { _eveningshift = value; }
             get { return _eveningshift; }
         }
-        
+
         #endregion Model
+        /// <summary>
+        /// 最大工时
+        /// </summary>
+        public decimal MaxHour { get; set; }
 
     }
 }

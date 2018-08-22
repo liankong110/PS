@@ -372,8 +372,10 @@
     <Content Include="Content\images\BOM.png" />
     <Content Include="Content\images\Good.png" />
     <Content Include="Content\images\Line.png" />
+    <Content Include="Content\images\LineHour.png" />
     <Content Include="Content\images\logo.png" />
     <Content Include="Content\images\logo1.ico" />
+    <Content Include="Content\images\Matching.png" />
     <Content Include="Content\images\Plan.png" />
     <Content Include="Content\images\Stock.png" />
     <Content Include="Content\MyTable.css" />

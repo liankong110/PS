@@ -44,6 +44,14 @@ namespace PS.Controllers
             {
                 name = "发运计划模板.xlsx";
             }
+            else if (Id == 6)   //产线工时 excel模板
+            {
+                name = "产线工时模板.xlsx";
+            }
+            else if (Id == 7)   //配套产品 excel模板
+            {
+                name = "配套产品模板.xlsx";
+            }
             return downLoadFile(name, urlpath+name);
         }
         private FileStreamResult downLoadFile(string fileName, string filePath)

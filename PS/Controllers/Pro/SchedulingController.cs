@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using VisualSmart.BizService.Core;
 using VisualSmart.Domain.Pro;
+using VisualSmart.Domain.ProBase;
 using VisualSmart.Util;
 
 namespace PS.Controllers.Pro
@@ -48,6 +49,7 @@ namespace PS.Controllers.Pro
             List<Pro_ShipPlan> shipPlanList = new List<Pro_ShipPlan>();
             List<Pro_ShipPlans> _shipPlansList = new List<Pro_ShipPlans>();
             List<Pro_SchedulingLine> pro_SchedulingLineList = new List<Pro_SchedulingLine>();
+            var lingHourList = new List<Base_LineHour>();
             if (MainId == 0)
             {
                 ViewBag.Id = MainId;
@@ -66,12 +68,20 @@ namespace PS.Controllers.Pro
 
                 ViewBag.ShipPlansList = _shipPlansList;
 
-                //生产线
-                var ProLineNos = proLineNosList.Replace("'", "").Split(',').ToList();
+                //4 获取每条产线最大的工时
+                lingHourList=Smart.Instance.Base_LineHourBizService.GetLineHourList(proLineNosList).ToList();
+
+               //生产线
+               var ProLineNos = proLineNosList.Replace("'", "").Split(',').ToList();
                 foreach (var line in ProLineNos)
                 {
                     var lineModel = new Pro_SchedulingLine();
                     lineModel.ProLineNo = line;
+                    var hourModel=lingHourList.Find(t=>t.ProLineNo==line);
+                    if (hourModel != null)
+                    {
+                        lineModel.MaxHour = hourModel.MaxHours;
+                    }
                     pro_SchedulingLineList.Add(lineModel);
                 }
 
@@ -90,6 +100,22 @@ namespace PS.Controllers.Pro
             ViewBag.MainDate = model;
             //获取所有产线信息
             pro_SchedulingLineList = Smart.Instance.Pro_SchedulingLineBizService.GetAllDomain(QueryCondition.Instance.AddEqual("MainId", MainId.ToString())).ToList();
+            var temp_proLineNosList = "";
+            foreach (var line in pro_SchedulingLineList)
+            {
+                temp_proLineNosList += string.Format("'{0}',", line.ProLineNo);
+            }
+            //4 获取每条产线最大的工时
+            lingHourList = Smart.Instance.Base_LineHourBizService.GetLineHourList(temp_proLineNosList.Trim(',')).ToList();
+            foreach (var line in pro_SchedulingLineList)
+            {
+                var hourModel = lingHourList.Find(t => t.ProLineNo == line.ProLineNo);
+                if (hourModel != null)
+                {
+                    line.MaxHour = hourModel.MaxHours;
+                }
+            }
+
             ViewBag.SchedulingList = pro_SchedulingLineList;
 
             //发运计划产品信息

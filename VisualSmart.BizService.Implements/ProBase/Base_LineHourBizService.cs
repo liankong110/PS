@@ -32,5 +32,13 @@ namespace VisualSmart.BizService.Implements.ProBase
         {
             return EntityDao.GetId(query);
         }
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Base_LineHour> GetLineHourList(string proLineNosList)
+        {
+            return EntityDao.GetLineHourList(proLineNosList);
+        }
     }
 }

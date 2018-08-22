@@ -213,12 +213,13 @@
                         var WBPeople = line.ProLineNo + "WB";
                         var goodsLine = line.ProLineNo + "Goods";
                         var tempGoodsLine = "temp" + line.ProLineNo + "Goods";
-
+                        var lineMaxHourId = "MaxHour" + startIndex;
                         <div id="@id" class="@startClass" style="@startDivClass">
                             <div class="row">
                                 <div class="col-xs-12">
                                     <!--早中晚人数信息-->
                                     <div class="form-group" style="margin-bottom:6px; margin-top:10px;">
+                                        <input type="hidden" value="@line.MaxHour" id="@lineMaxHourId" />
                                         <input type="hidden" value="@goodNos" id="@goodsLine" />
                                         <input type="hidden" value="@temoGoodNos" id="@tempGoodsLine" />
                                         <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">早班人数：</label>
@@ -293,6 +294,7 @@
                             //晚
                             var wan_obj = new HotData();
                             wan_obj.Type = "晚班";
+                            wan_obj.GoodNo = m.RightGoodNo;
                             //wan_obj.StockNum = m.Qty;
                             wan_obj.ChanNeng = m.EveningNum > 0 ? m.EveningNum.ToString() : null;
                             //需求差异
@@ -685,6 +687,16 @@
             afterSetCellMeta: function (row, col, key, val,prop) {
                 //console.log("cell meta changed", row, col, key, val,prop);
             },
+            //afterSelection: function (r, c, r2, c2) {
+            //    console.log("afterSelection", r, c, r2, c2);
+            //},
+            //beforeChange: function (changes, source) {
+            //    console.log("beforeChange");
+            //    console.table({
+            //        changes: changes,
+            //        source: source
+            //    });
+            //}, 
             afterOnCellMouseDown: function (event, e, TD) {
                //点击锁定 不锁定
                 if (e.col == 0 && e.row % 6 == 0) {
@@ -721,11 +733,19 @@
                     var row = parseInt(changes[0][0]);//行
                     var colPro = changes[0][1];//列属性
                     var hot=allHotList[currentLineIndex];
-                    var colIndex =hot.propToCol(colPro);// colHeadersName.indexOf(colPro);
+                    var colIndex = hot.propToCol(colPro);// colHeadersName.indexOf(colPro);
+                    //console.log("行：" + row + "，列：" + colIndex);
+                  
+                    //合并                    
                     if(colIndex<=6){
                         return;
                     }
-                    console.log("触发----");
+                    //首行 并且是 0行 第27列 触发
+                    if (colIndex == 27 && row == 0) {
+                        //console.log("触发MacthingGoods（）");
+                        MacthingGoods();
+                    }
+                    //console.log("触发----");
                     //当等于1 也就是第一列 时 初期库存= 供需求差异
                     //需求差异=需求-上一次供需求差异
                     //供需求差异=需求差异+早中晚数量
@@ -780,8 +800,10 @@
                             colIndex = 7;
                         }
 
-                        console.log(isHandData);
-                        console.log(hadData);
+                        //console.table({
+                        //    isHandData:isHandData,
+                        //    hadData: hadData
+                        //    } ); 
 
                         for(var i=colIndex;i<=27;i++){
 
@@ -814,33 +836,39 @@
                         }
                         //如果是并线产品，计算完成后，需要重新计算其他线的 供需求差异信息
                         //如果当前信息已经锁定 并修改 则把当前修改后计算的 信息 同步到其他产线中
-                        console.log(suoding);
-                        console.log(isHandData);
+
+                        //console.table({
+                        //    suoding: suoding,
+                        //    isHandData: isHandData
+                        //});
+                       
                         if (isHandData) {
                             if (suoding == "锁定") {
                                 var getBingXian = hadData[0];
-                                console.log(getBingXian);
+                                //console.log(getBingXian);
                                 if (getBingXian != null) {
                                     var hot_Row = getBingXian.split(',');
-                                    console.log(hot_Row);
-                                    console.log(hot_Row.length);
+                                    //console.log(hot_Row);
+                                    //console.log(hot_Row.length);
                                     for (var pp = 0; pp < hot_Row.length; pp++) {
                                         var arr = hot_Row[pp].split('-');
                                         var hotIndex = parseInt(arr[0]);
                                         var rowIndex = parseInt(arr[1]);//需求起始值
 
-                                        console.table({
-                                            hotIndex: hotIndex,
-                                            rowIndex: rowIndex
-                                        });
+                                        //console.table({
+                                        //    hotIndex: hotIndex,
+                                        //    rowIndex: rowIndex
+                                        //});
 
                                         //重新组装行号
-                                        for (var yy = 0; yy < editData.length; yy++) {
-                                            editData[0][0] = rowIndex;
+                                        for (var yy = 0; yy < editData.length; yy=yy+2) {
+                                            editData[yy][0] = rowIndex + 4;
+                                            editData[yy+1][0] = rowIndex + 5;
                                         }
                                         //则把当前修改后计算的 信息 同步到其他产线中
                                         var bingxian_hot = allHotList[hotIndex];
                                         bingxian_hot.setDataAtCell(editData);
+                                        //console.log(editData);
                                     }
                                 }
                             } else {
@@ -849,8 +877,8 @@
                                 }
                             }
                         }
-
-
+                        //MacthingGoods();                    
+                       
                     }
                 }
 
@@ -911,23 +939,43 @@
     //    hot.render();
     //});
 
-    //计算工时信息
-    function SumGongShi(col){
-        var hot=allHotList[currentLineIndex];
-        var colDataList=hot.getDataAtCol(col);
-        var sum=0;
-        for(var i=1;i<colDataList.length;i++){
+    //获取21天 初始化工时时间 需要优化
+    function MaxHour() {
+        //var hot = allHotList[currentLineIndex];
+        var maxHourArr = [];
+        for (var i = 7; i < 28; i++) {
+            //var hour = $("#sum" + currentLineIndex + (i - 7)).html();
+            //if (hour == "") {
+            //    hour = 0;
+            //}
+            maxHourArr[i] = parseFloat(GetHour(i) / 3600);
+        }
+        //console.log("总工时：===============");
+        //console.log(maxHourArr);
+        return maxHourArr;
+    }
 
-            if ((i - 1) % 6 == 0||(i - 2) % 6 == 0||(i - 3) % 6 == 0) {
+    function GetHour(col) {
+        var hot = allHotList[currentLineIndex];
+        var colDataList = hot.getDataAtCol(col);
+        var sum = 0;
+        for (var i = 1; i < colDataList.length; i++) {
+
+            if ((i - 1) % 6 == 0 || (i - 2) % 6 == 0 || (i - 3) % 6 == 0) {
                 //早
-                var channeng=hot.getDataAtCell(i,5);
-                if(channeng!=null&&colDataList[i]!=null){
+                var channeng = hot.getDataAtCell(i, 5);
+                if (channeng != null && colDataList[i] != null) {
                     //转换成秒
-                    sum+=colDataList[i]/channeng*60*60;
+                    sum += colDataList[i] / channeng * 60 * 60;
                 }
             }
-
         }
+        return sum;
+    }
+    //计算工时信息
+    function SumGongShi(col) {
+
+        var sum = GetHour(col);
         //实际工时数=SUM（零件的早班生产量/早班人数的产能量+零件的中班生产量/中班人数的产能量+零件的晚班生产量/晚班人数的产能量）
         //注意：1）早中晚班的工时要换算成秒，才可以相加，最终的总工时才可以换算成小时。
         //2）SUM是将所有零件的所有工时，加总到一起。
@@ -1045,13 +1093,132 @@
         }
         return otherData;
     }
+    //所有逻辑都计算完毕后，最后在计算配到产线需要平分每一天的,
+    function MacthingGoods() {
+        //先清空所有功能
+        var hot = allHotList[currentLineIndex];
+
+        var matchingGoodsList = hot.getDataAtCol(0);
+        var shipToList = hot.getDataAtCol(2);
+        //获取所有行
+        var allRowsCount = hot.countRows();
+        var match_ShipData = new Array();
+        //遍历所有产品 保存在数组中
+        for (var i = 0; i < allRowsCount; i++) {
+            if ((i - 2) % 6 == 0) {
+                var val = matchingGoodsList[i] + "_"+shipToList[i];
+                match_ShipData.push([i, val]);
+            }
+        }
+
+        var shipTo = "";
+        for (var i = 0; i < allRowsCount; i++) {
+            if ((i - 2) % 6 == 0) {
+                shipTo = shipToList[i];
+            }
+            if ((i - 3) % 6 == 0) {
+                var matching = matchingGoodsList[i];
+                if (matching != null && matching != "") {
+                    var val = matching + "_" + shipTo;
+                    //查找之前配套排序的产品信息
+                    for (var kk = 0; kk < match_ShipData.length; kk++) {
+                        if (match_ShipData[kk][1] == val) {
+                            var index = match_ShipData[kk][0];
+                            //获取2个配套产品的总的早中晚数量 然后平均分配
+                            var left_Zao = hot.getDataAtRow(i - 2);
+                            //console.log(left_Zao);
+                            var left_Zhong = hot.getDataAtRow(i - 1);
+                            var left_Wan = hot.getDataAtRow(i);
+
+                            var right_Zao = hot.getDataAtRow(index - 1);
+                            var right_Zhong = hot.getDataAtRow(index);
+                            var right_Wan = hot.getDataAtRow(index + 1); 
+
+                            //var editData = [];
+                            var leftZaoData = [];
+                            var rightZaoData = [];
+                            var leftZhongData = [];
+                            var rightZhongData = [];
+                            var leftWanData = [];
+                            var rightWanData = [];
+
+                            for (var hh = 7; hh < 28; hh++) {                             
+                                var zao_sum = 0;
+                                var zhong_sum = 0;
+                                var wan_sum = 0;
+                                //早
+                                if (left_Zao[hh] != null) {
+                                    zao_sum += left_Zao[hh];
+                                }
+                                if (right_Zao[hh] != null) {
+                                    zao_sum += right_Zao[hh];
+                                }
+                               
+                                //中
+                                if (left_Zhong[hh] != null) {
+                                    zhong_sum += left_Zhong[hh];
+                                }
+                                if (right_Zhong[hh] != null) {
+                                    zhong_sum += right_Zhong[hh];
+                                }
+                                //晚
+                                if (left_Wan[hh] != null) {
+                                    wan_sum += left_Wan[hh];
+                                }
+                                if (right_Wan[hh] != null) {
+                                    wan_sum += right_Wan[hh];
+                                }
+                                if (zao_sum != 0) {
+                                    leftZaoData.push([i - 2, hh, parseInt(zao_sum / 2)]);
+                                    rightZaoData.push([index - 1, hh, parseInt(zao_sum / 2)]);
+                                }
+                                if (zhong_sum != 0) {
+                                    leftZhongData.push([i - 1, hh, parseInt(zhong_sum / 2)]);
+                                    rightZhongData.push([index, hh, parseInt(zhong_sum / 2)]);
+                                }
+                                if (wan_sum != 0) {
+                                    leftWanData.push([i, hh, parseInt(wan_sum / 2)]);
+                                    rightWanData.push([index + 1, hh, parseInt(wan_sum / 2)]);
+                                } 
+                            }
+
+                            //赋值
+                            if (leftZaoData.length > 0) {
+                                hot.setDataAtCell(leftZaoData);
+                            }
+                            if (leftZaoData.length > 0) {
+                                hot.setDataAtCell(leftZhongData);
+                            }
+                            if (leftZaoData.length > 0) {
+                                hot.setDataAtCell(leftWanData);
+                            }
+                            if (rightZaoData.length > 0) {
+                                hot.setDataAtCell(rightZaoData);
+                            }
+                            if (rightZhongData.length > 0) {
+                                hot.setDataAtCell(rightZhongData);
+                            }
+                            if (rightWanData.length > 0) {
+                                hot.setDataAtCell(rightWanData);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        isLastRowIndex = false;
+    }
+
+    var isLastRowIndex = true;
     //计算 -高级
     function NewJiSuan(index, proLineNo, rowIndex) {
 
-
+        isLastRowIndex = false;
         //先清空所有功能
         var hot = allHotList[index];
-
         //获取产能列
         var channNengDataList = hot.getDataAtCol(5);
         //获取 最大产能基数  早*24 ，早晚*12 ，早中晚 *8
@@ -1091,6 +1258,12 @@
         //获取商品编码
         var goodsList = hot.getDataAtCol(0);
         var shipToList = hot.getDataAtCol(2);
+
+        var maxHourArr = MaxHour();
+        var lineMaxHour = parseFloat($("#MaxHour" + currentLineIndex).val());
+
+       
+
         for (var i = startI; i < endI; i += 6) {
 
             var xuData = hot.getDataAtRow(i);//获取需求整行数据
@@ -1166,6 +1339,9 @@
                             break;
                         }
                     }
+                    if (fristXuIndex == 0) {
+                        return;
+                    }
 
                     newXuData = [];
                     startIndex = -1;
@@ -1178,9 +1354,7 @@
                             }
                         }
                     }
-
                     //console.table({ fristXuIndex: fristXuIndex, startIndex: startIndex });
-
                 }
                 //从有需求的第一天开始 连续 排产，将需求排列在一起，中间不能有空
                 var len = newXuData.length + startIndex;
@@ -1193,8 +1367,8 @@
                     }
                 }
 
-                console.log(hadData);
-                console.log(xuData);
+                //console.log(hadData);
+                //console.log(xuData);
             }
             var topGongRequestDiffNum = 0;
             for (var col = 7; col < 28; col++) {
@@ -1209,7 +1383,6 @@
                         //特殊处理第一列 索引7
                         if (xuData[col + 1] == null) {
                             nextXu = gongRequestData[col] - 0;//下一天的需求差异 如果是负数的话
-
                         } else {
                              nextXu = gongRequestData[col] - xuData[col + 1];//下一天的需求差异 如果是负数的话
                         }
@@ -1217,29 +1390,58 @@
                             var nums = -nextXu;
                             //需要循环看看前面的早中晚 有没有没排完的。 如果没有排完需要前面的拍完，不能让第二天需求差异为负数
                             for (var newCol = col; newCol > 6; newCol--) {
+                                //计算列总工时 必须 小于产线的工时最大值
+                                var shengYuHours = lineMaxHour - maxHourArr[newCol];
+                                if (shengYuHours<=0) {
+                                    continue;
+                                }
                                 //记录早中晚本次填写的数量
                                 zaoZhongWanTotal = 0;
                                 if (nums > 0) {
-                                    if (zaoChanNeng != null) {
+                                    if (zaoChanNeng != null && zaoChanNeng>0) {
                                         var zao = zaoChanNeng * jishuNum;
                                         //获取已经排的信息
                                         var hadZao = zaoData[newCol];
 
                                         //判断是否有剩余的数量没有排
                                         var shengyu = zao - hadZao;
-                                        if (shengyu > 0) {
+                                         //丢弃小数部分,保留整数部分
+                                        var sum_ShengYuChanNeng = parseInt(shengYuHours * zaoChanNeng);
+                                        if (shengyu > 0 && sum_ShengYuChanNeng>0) {
+                                             //判断剩余数量 和 该列总工时 进行比较 如果大约则 减去
+
                                             if (nums >= shengyu) {
-                                                zaoData[newCol] = zao;//更新之前的数据信息
-                                                nums = nums - shengyu;
-                                                zaoZhongWanTotal = shengyu;
+
+                                                var cha = 0;
+                                                if (sum_ShengYuChanNeng < shengyu) {
+                                                    cha = shengyu - sum_ShengYuChanNeng;
+                                                }
+
+                                                zaoData[newCol] = zao - cha;//更新之前的数据信息
+                                                nums = nums - shengyu - cha;
+                                                zaoZhongWanTotal = shengyu - cha;
+                                                maxHourArr[newCol] = maxHourArr[newCol] + (shengyu - cha) / zaoChanNeng;
+
                                             } else {
+
+                                                if (sum_ShengYuChanNeng < nums) {
+                                                    //shengyu = sum_ShengYuChanNeng;
+                                                    nums = sum_ShengYuChanNeng;
+                                                }
                                                 zaoData[newCol] = zaoData[newCol] + nums;
                                                 zaoZhongWanTotal = nums;
+
+                                                maxHourArr[newCol] = maxHourArr[newCol] + nums / zaoChanNeng;
                                                 nums = 0;
                                             }
                                         }
                                     }
+
                                     if (zhongChanNeng != null && nums > 0) {
+                                        shengYuHours = lineMaxHour - maxHourArr[newCol];
+                                        if (shengYuHours <= 0) {
+                                            continue;
+                                        }
                                         var zao = zhongChanNeng * jishuNum;
 
                                         //获取已经排的信息
@@ -1247,19 +1449,40 @@
 
                                         //判断是否有剩余的数量没有排
                                         var shengyu = zao - hadZao;
-                                        if (shengyu > 0) {
+                                        //丢弃小数部分,保留整数部分
+                                        var sum_ShengYuChanNeng = parseInt(shengYuHours * zhongChanNeng);
+                                        if (shengyu > 0 && sum_ShengYuChanNeng > 0) {
+
                                             if (nums >= shengyu) {
-                                                zhongData[newCol] = zao;//更新之前的数据信息
-                                                nums = nums - shengyu;
-                                                zaoZhongWanTotal += shengyu;
+                                                var cha = 0;
+                                                if (sum_ShengYuChanNeng < shengyu) {
+                                                    cha = shengyu - sum_ShengYuChanNeng;
+                                                }
+
+                                                zhongData[newCol] = zao - cha;//更新之前的数据信息
+                                                nums = nums - shengyu - cha;
+                                                zaoZhongWanTotal += shengyu - cha;
+                                                maxHourArr[newCol] = maxHourArr[newCol] + (shengyu - cha) / zhongChanNeng;
                                             } else {
+
+                                                if (sum_ShengYuChanNeng < nums) {
+                                                    nums = sum_ShengYuChanNeng;
+                                                }
+
                                                 zhongData[newCol] = zhongData[newCol] + nums;
                                                 zaoZhongWanTotal += nums;
+
+                                                maxHourArr[newCol] = maxHourArr[newCol] + nums / zhongChanNeng;
                                                 nums = 0;
                                             }
                                         }
                                     }
+
                                     if (wanChanNeng != null && nums > 0) {
+                                        shengYuHours = lineMaxHour - maxHourArr[newCol];
+                                        if (shengYuHours <= 0) {
+                                            continue;
+                                        }
                                         var zao = wanChanNeng * jishuNum;
 
                                         //获取已经排的信息
@@ -1267,17 +1490,33 @@
 
                                         //判断是否有剩余的数量没有排
                                         var shengyu = zao - hadZao;
+                                        //丢弃小数部分,保留整数部分
+                                        var sum_ShengYuChanNeng = parseInt(shengYuHours * wanChanNeng);
                                         if (shengyu > 0) {
+
                                             if (nums >= shengyu) {
-                                                wanData[newCol] = zao;//更新之前的数据信息
-                                                nums = nums - shengyu;
-                                                zaoZhongWanTotal += shengyu;
+                                                var cha = 0;
+                                                if (sum_ShengYuChanNeng < shengyu) {
+                                                    cha = shengyu - sum_ShengYuChanNeng;
+                                                }
+                                                wanData[newCol] = zao - cha;//更新之前的数据信息
+                                                nums = nums - shengyu - cha;
+                                                zaoZhongWanTotal += shengyu - cha;
+                                                maxHourArr[newCol] = maxHourArr[newCol] + (shengyu - cha) / wanChanNeng;
                                             } else {
+                                                if (sum_ShengYuChanNeng < nums) {
+                                                    nums = sum_ShengYuChanNeng;
+                                                }
                                                 wanData[newCol] = wanData[newCol] + nums;
                                                 zaoZhongWanTotal += nums;
+
+                                                maxHourArr[newCol] = maxHourArr[newCol] + nums / wanChanNeng;
                                                 nums = 0;
                                             }
                                         }
+                                    }
+                                    if (newCol == 7) {
+                                        console.log("列："+maxHourArr[newCol]);
                                     }
 
                                     if (zaoZhongWanTotal > 0) {
@@ -1300,40 +1539,89 @@
                     ReSetRequestDiffNum(hot, xuData, zaoData, zhongData, wanData, xuRequestData, gongRequestData, i, hadData);
                 }
                 if (col == 27 && gongRequestData[27] < 0) {
-                    var nums= -gongRequestData[27];
+                    var nums = -gongRequestData[27];
+
                     if (zaoChanNeng != null) {
                         var zao = zaoChanNeng * jishuNum;
-                        if (nums >= zao) {
-                            zaoData[col] = zao;
-                            nums = nums - zao;
 
-                        } else {
-                            zaoData[col] = nums;
-                            nums = 0;
+                        var shengYuHours = lineMaxHour - maxHourArr[col];
+                        var sum_ShengYuChanNeng = parseInt(shengYuHours * zaoChanNeng);
+                        if (sum_ShengYuChanNeng > 0) {
+
+                            if (nums >= zao) {
+                                var cha = 0;
+                                if (sum_ShengYuChanNeng < zao) {
+                                    cha = zao - sum_ShengYuChanNeng;
+                                }
+
+                                zaoData[col] = zao - cha;
+                                nums = nums - zao - cha;
+
+                                maxHourArr[col] = maxHourArr[col] + (zao - cha) / zaoChanNeng;
+
+                            } else {
+                                if (sum_ShengYuChanNeng < nums) {
+                                    nums = sum_ShengYuChanNeng;
+                                }
+                                zaoData[col] = nums;
+                                maxHourArr[col] = maxHourArr[col] + nums / zaoChanNeng;
+                                nums = 0;
+                            }
                         }
                     }
-                        if (zhongChanNeng != null && nums>0) {
-                            var zao = zhongChanNeng * jishuNum;
+                    if (zhongChanNeng != null && nums > 0) {
+                        var zao = zhongChanNeng * jishuNum;
+                        var shengYuHours = lineMaxHour - maxHourArr[col];
+                        var sum_ShengYuChanNeng = parseInt(shengYuHours * zhongChanNeng);
+                        if (sum_ShengYuChanNeng > 0) {
                             if (nums >= zao) {
-                                zhongData[col] = zao;
-                                nums = nums - zao;
+                                var cha = 0;
+                                if (sum_ShengYuChanNeng < zao) {
+                                    cha = zao - sum_ShengYuChanNeng;
+                                }
+
+                                zhongData[col] = zao - cha;
+                                nums = nums - zao - cha;
+                                maxHourArr[col] = maxHourArr[col] + (zao - cha) / zhongChanNeng;
                             } else {
+                                if (sum_ShengYuChanNeng < nums) {
+                                    nums = sum_ShengYuChanNeng;
+                                }
                                 zhongData[col] = nums;
+                                maxHourArr[col] = maxHourArr[col] + nums / zhongChanNeng;
                                 nums = 0;
                             }
                         }
-                        if (wanChanNeng!= null && nums > 0) {
-                            var zao = wanChanNeng * jishuNum;
+                    }
+                    if (wanChanNeng != null && nums > 0) {
+
+                        var zao = wanChanNeng * jishuNum;
+                        var shengYuHours = lineMaxHour - maxHourArr[col];
+                        var sum_ShengYuChanNeng = parseInt(shengYuHours * wanChanNeng);
+                        if (sum_ShengYuChanNeng > 0) {
                             if (nums >= zao) {
-                                wanData[col] = zao;
-                                nums = nums - zao;
+                                var cha = 0;
+                                if (sum_ShengYuChanNeng < zao) {
+                                    cha = zao - sum_ShengYuChanNeng;
+                                }
+                                wanData[col] = zao - cha;
+                                nums = nums - zao - cha;
+                                maxHourArr[col] = maxHourArr[col] + (zao - cha) / wanChanNeng;
                             } else {
+                                if (sum_ShengYuChanNeng < nums) {
+                                    nums = sum_ShengYuChanNeng;
+                                }
                                 wanData[col] = nums;
+                                maxHourArr[col] = maxHourArr[col] + nums / wanChanNeng;
                                 nums = 0;
                             }
                         }
+                    }
                 }
             }
+
+
+         
 
             var newZaoArr = [];
             //赋值
@@ -1347,12 +1635,26 @@
             if (wanData.length > 0) {
                 hot.setDataAtCell(getValueArr(wanData, i + 3));
             }
-            //重新复制 重新计算需求 和 供需求差异信息
-            if (newZaoArr.length > 0) {
-                hot.setDataAtCell([newZaoArr[0]]);
-            }
+           
 
+            //重新复制 重新计算需求 和 供需求差异信息
+            //if (newZaoArr.length > 0) {
+               
+            //    hot.setDataAtCell([newZaoArr[0]]);
+                
+            //}
+            //console.log("行：" + i + "，行：" + endI);
+          
+            //console.log(maxHourArr);
         }
+       
+        //此方法来激发MacthingGoods(); 方法
+        var lastArr = [];
+        lastArr.push([0, 27, hot.getDataAtCell(0,27)]);        
+        hot.setDataAtCell(lastArr);         
+        console.log("执行完成-触发afterchange功能");
+
+       
     }
      //将数组转为 hot 需要的集合 进行插入数据
     function getValueArr(arr, row) {
@@ -1362,6 +1664,7 @@
                 newArr.push([row, i, arr[i] ]);
             }
         }
+        //console.table({ newArr: newArr});
         return newArr;
     }
     //计算
@@ -1405,9 +1708,9 @@
 
     function LineLockData(index, a) {
         var value = $(a).html();
-        console.log(value);
+        //console.log(value);
 
-        console.log($("#tabLine" + index).html());
+        //console.log($("#tabLine" + index).html());
         if (value == "产线锁定") {
             $("#tabLine" + index).html($("#tabLine" + index).html() + "(锁定)");
             $(a).html("产线解锁");

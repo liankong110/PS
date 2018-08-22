@@ -149,5 +149,9 @@ namespace VisualSmart.Domain.Pro
         /// </summary>
         public int? ShipPkgQty { get; set; }
         public int BiLi { get; set; }
+        /// <summary>
+        /// 配套产品-右侧产品
+        /// </summary>
+        public string RightGoodNo { get; set; }
     }
 }

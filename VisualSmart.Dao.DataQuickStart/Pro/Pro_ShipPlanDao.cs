@@ -221,6 +221,8 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             //left join [dbo].[Base_Stock] on [dbo].[Base_Stock].GoodNo=Pro_ShipPlan.GoodNo
             //left join Base_StockMain on Base_StockMain.Id=Base_Stock.MainId");
             //            strSql.AppendFormat(" where ProLineNo IN ({0}) and Base_StockMain.Id={1} and Pro_ShipPlan.MainId={2}", lineNos, stockMainId, mainId);
+
+            strSql.Append(" select allInfo.*,Base_Matching.RightGoodNo from ( ");
             //子产品
             strSql.AppendFormat(@"select ShipPkgQty,NEWTB.* from (select ProLineNo,Qty, TB.ID,TB.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
 SonGoodNo as GoodNo,SonGoodName as GoodName,ParentGoodNo,ParentGoodName,BiLi
@@ -244,6 +246,8 @@ left join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=Pro_
 left join [dbo].[Base_Stock_View] on [dbo].[Base_Stock_View].GoodNo=Pro_ShipPlan.GoodNo and Base_Stock_View.MainId={0}
 left join Base_Goods on Base_Goods.GoodNo=Pro_ShipPlan.GoodNo and Base_Goods.ShipTo=Pro_ShipPlan.ShipTo", stockMainId);
             strSql.AppendFormat(" where ProLineNo IN ({0})  and Pro_ShipPlan.MainId={1}", lineNos, mainId);
+
+            strSql.Append(") AS allInfo left join Matching_View on allInfo.GoodNo=Matching_View.GoodNo  left join Base_Matching on Base_Matching.LeftGoodNo=allInfo.GoodNo order by Matching_View.GoodNo desc ");
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Pro_ShipPlan>(CommandType.Text, strSql.ToString(), MapRowByLineNos, parameters);
         }
 
@@ -299,7 +303,11 @@ left join Base_Goods on Base_Goods.GoodNo=Pro_ShipPlan.GoodNo and Base_Goods.Shi
             {
                 model.BiLi = Convert.ToInt32(ojb);
             }
-            
+            ojb = dataReader["RightGoodNo"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.RightGoodNo = Convert.ToString(ojb);
+            }
             return model;
         }
         /// <summary>

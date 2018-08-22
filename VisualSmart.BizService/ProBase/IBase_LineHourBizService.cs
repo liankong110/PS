@@ -1,4 +1,5 @@
-﻿using VisualSmart.BizService.Base;
+﻿using System.Collections.Generic;
+using VisualSmart.BizService.Base;
 using VisualSmart.Domain.ProBase;
 using VisualSmart.Util;
 
@@ -19,5 +20,7 @@ namespace VisualSmart.BizService.ProBase
         /// <param name="query"></param>
         /// <returns></returns>
         int GetId(QueryCondition query);
+
+        IList<Base_LineHour> GetLineHourList(string proLineNosList);
     }
 }

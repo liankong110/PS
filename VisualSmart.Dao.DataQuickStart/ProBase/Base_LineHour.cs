@@ -106,6 +106,24 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
 
             return ReadAdoTemplate.QueryWithRowMapperDelegate<Base_LineHour>(CommandType.Text, strSql.ToString(), MapRow, parameters);
         }
+
+
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public IList<Base_LineHour> GetLineHourList(string proLineNosList)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append("select Id,ProLineNo,MaxHours,CreateTime,Creater,UpdateTime,Updater,RowState ");
+            strSql.Append(" FROM Base_LineHour ");
+
+            strSql.AppendFormat("where RowState=1 and ProLineNo in({0})", proLineNosList);
+
+            return ReadAdoTemplate.QueryWithRowMapperDelegate<Base_LineHour>(CommandType.Text, strSql.ToString(), MapRow, parameters);
+        }
         /// <summary>
         /// 获取id
         /// </summary>
