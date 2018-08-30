@@ -262,8 +262,8 @@ select ProLineNo from [dbo].[Base_ProductionLine]
  union
  select ProLineNo from [dbo].[Base_ProductionLine] 
  inner join(
- select SonGoodNo from Base_Bom
- inner join [Pro_ShipPlan] on [Pro_ShipPlan].GoodNo=Base_Bom.ParentGoodNo
+ select SonGoodNo from Base_Bom_View
+ inner join [Pro_ShipPlan] on [Pro_ShipPlan].GoodNo=Base_Bom_View.ParentGoodNo
   where Pro_ShipPlan.MainId = {0}
   ) as NewTB on  Base_ProductionLine.GoodNo = NewTB.SonGoodNo)
   AS TB order by ProLineNo", ShipPlanMainId);

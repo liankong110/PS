@@ -231,9 +231,9 @@ select Pro_ShipPlan.ID,Pro_ShipPlan.MainId,ScheduleNo,Term,EditionNo,CityNo,Ship
 Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName
 FROM Pro_ShipPlan
 where  Pro_ShipPlan.MainId={2}
-) AS TB inner join [dbo].[Base_Bom] on TB.GoodNo=Base_Bom.ParentGoodNo
-LEFT join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=[Base_Bom].SonGoodNo
-left join [dbo].[Base_Stock_View] on [dbo].[Base_Stock_View].GoodNo=[Base_Bom].SonGoodNo and Base_Stock_View.MainId={1}
+) AS TB inner join [dbo].[Base_Bom_View] on TB.GoodNo=Base_Bom_View.ParentGoodNo
+LEFT join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=[Base_Bom_View].SonGoodNo
+left join [dbo].[Base_Stock_View] on [dbo].[Base_Stock_View].GoodNo=[Base_Bom_View].SonGoodNo and Base_Stock_View.MainId={1}
 where ProLineNo IN ({0})) AS NEWTB
 left join Base_Goods on Base_Goods.GoodNo=NEWTB.GoodNo and Base_Goods.ShipTo=NEWTB.ShipTo ", lineNos, stockMainId, mainId);
 

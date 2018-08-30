@@ -45,6 +45,9 @@
                                         <i class="ace-icon fa fa-search bigger-110 "></i>
                                         查询
                                     </button>
+                                    <a class="btn btn-sm btn-success " href="#" onclick="ReSetView();">
+                                        递归BOM （增删改后点击按钮）
+                                    </a>
                                     <a class="btn btn-sm btn-primary " href="/BOM/Add">
                                         <i class="ace-icon fa fa-plus bigger-110"></i>
                                         手工添加
@@ -53,10 +56,13 @@
                                         <i class="ace-icon fa fa-plus bigger-110"></i>
                                         Excel导入添加
                                     </a>
+
                                     <a class="btn btn-sm btn-default " href="/Base/download/3">
                                         <i class="ace-icon fa fa-download bigger-110"></i>
                                         下载Excel模板
                                     </a>
+
+
                                 </p>
                                 <!-- /section:elements.button.white -->
                             </div><!-- /.col -->
@@ -83,28 +89,28 @@
                                     <tbody>
                                         @foreach (var m in Model)
                                         {
-                                        <tr>
-                                            <td>
+                                            <tr>
+                                                <td>
 
-                                                <div class="btn-group">
-                                                    <a href="/Bom/Add?Id=@m.Id" class="btn btn-xs btn-info" title="编辑">
-                                                        <i class="ace-icon fa fa-pencil bigger-120"></i>
-                                                    </a>
+                                                    <div class="btn-group">
+                                                        <a href="/Bom/Add?Id=@m.Id" class="btn btn-xs btn-info" title="编辑">
+                                                            <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                                        </a>
 
-                                                    <a class="btn btn-xs btn-danger" title="删除" onclick="Delete('@m.Id');">
-                                                        <i class="ace-icon fa fa-trash-o bigger-120"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                            <td>@m.ParentGoodNo</td>
-                                            <td>@m.ParentGoodName</td>
-                                            <td>@m.SonGoodNo</td>
-                                            <td>@m.SonGoodName</td>
-                                            <td>@m.BiLi</td>
-                                            <td class="am-hide-sm-only">@m.CreateTime/@m.Creater</td>
+                                                        <a class="btn btn-xs btn-danger" title="删除" onclick="Delete('@m.Id');">
+                                                            <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                                <td>@m.ParentGoodNo</td>
+                                                <td>@m.ParentGoodName</td>
+                                                <td>@m.SonGoodNo</td>
+                                                <td>@m.SonGoodName</td>
+                                                <td>@m.BiLi</td>
+                                                <td class="am-hide-sm-only">@m.CreateTime/@m.Creater</td>
 
 
-                                        </tr>
+                                            </tr>
                                         }
                                         @if (Model.Count == 0)
                                         {
@@ -170,5 +176,29 @@
                 }
             });
         }
+    }
+
+    //重置
+    function ReSetView() {
+
+        var url = "/Bom/ReSetView";
+        $.ajax({
+            data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+            url: url,
+            type: 'post',
+            async: false,
+            cache: false,
+            success: function (data) {
+                if (data.Mess == "success") {
+                    $.gritter.add({
+                        title: '递归成功！',
+                        text: '',
+                        class_name: 'gritter-info gritter-light'
+                    });                     
+                }
+
+            }
+        });
+
     }
 </script>

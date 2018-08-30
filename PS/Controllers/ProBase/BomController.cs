@@ -127,6 +127,14 @@ namespace PS.Controllers.ProBase
             return Json(new { Mess = "success" });
         }
 
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public JsonResult ReSetView()
+        {
+            _bomBizService.ReSetView();            
+            return Json(new { Mess = "success" });
+        }
+
         public ActionResult UploadFile()
         {
             Response.Clear(); //清除所有之前生成的Response内容

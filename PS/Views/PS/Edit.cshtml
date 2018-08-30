@@ -70,7 +70,7 @@
                                         <i class="ace-icon fa fa-check bigger-110"></i>
                                         保存
                                     </button>
-                                    <button class="btn btn-sm btn-primary " type="button" id="excel" onclick="ReSetAll();">
+                                    <button class="btn btn-sm btn-primary " type="button" id="excel" onclick="MySort();">
                                         排序
                                     </button>
                                     <button class="btn btn-sm btn-primary " type="button" id="excel" onclick="ReSetAll();">
@@ -78,7 +78,7 @@
                                     </button>
                                  
                                 </p>
-                                <p>   注：PS 步骤 ->1.先选择日期+生产线    ->2.确认 早/中/晚人数是否修改，如果修改产能发生变化 则点击‘重新计算按钮’   ->3.确认零件序号顺序，修改后 点击’排序‘按钮->4.手动调整时间 或者 复制/删除 </p>
+                                <p>   注：PS 步骤 ->1.先选择日期+生产线    ->2.确认 早/中/晚人数是否修改 修改后点击‘重新计算’  ->3.确认零件序号顺序，修改后 点击’排序‘按钮->4.手动调整时间 或者 复制/删除 </p>
                                 <!-- /section:elements.button.white -->
                             </div><!-- /.col -->
                         </div><!-- /.row -->
@@ -503,35 +503,38 @@
 
     }
 
-
-    function ReSetAll() {
+    function MySort() {
         $.sortTable.sort("simple-table", 1);
-        //var startDate = new Date(($("#ProDate").val() + " 07:30:00").replace(/-/g, "/"));
+    }
+    function ReSetAll() {
+        //$.sortTable.sort("simple-table", 1);
+        var startDate = new Date(($("#ProDate").val() + " 07:30:00").replace(/-/g, "/"));
 
-        //var table = document.getElementById("simple-table");
-        //var tbody = table.tBodies[0];
-        //var tr = tbody.rows;
+        var table = document.getElementById("simple-table");
+        var tbody = table.tBodies[0];
+        var tr = tbody.rows;
 
-        //var trValue = new Array();
-        //for (var i = 0; i < tr.length; i++) {
+        var trValue = new Array();
+        for (var i = 0; i < tr.length; i++) {
 
-        //    var channeng = tr[i].cells[6].innerText;
-        //    var qty = tr[i].cells[7].innerText;
-        //    var sum = 0;
-        //    if (channeng == 0) {
-        //        sum = 0;
-        //    }
-        //    else {
-        //        sum = qty / channeng * 60 * 60
-        //    }
+            var channeng = tr[i].cells[7].innerText;
+            var qty = tr[i].cells[8].innerText;
+            var sum = 0;
+            if (channeng == 0) {
+                sum = 0;
+            }
+            else {
+                sum = qty / channeng * 60 * 60
+            }
+            //console.log("start：" + startDate.format('yyyy-MM-dd hh:mm:ss'));
+            $(tr[i].cells[9]).find("input").val(startDate.format('yyyy-MM-dd hh:mm:ss'));
 
-        //    var start = $(tr[i].cells[8]).find("input").val(startDate.format('yyyy-MM-dd hh:mm:ss'));
+            startDate = new Date(startDate.getTime() + 1000 * sum);
+            //console.log("end：" + startDate.format('yyyy-MM-dd hh:mm:ss'));
+             $(tr[i].cells[10]).find("input").val(startDate.format('yyyy-MM-dd hh:mm:ss'));
 
-        //    startDate = new Date(startDate.getTime() + 1000 * sum);
-        //    var end = $(tr[i].cells[9]).find("input").val(startDate.format('yyyy-MM-dd hh:mm:ss'));
-
-
-        //}
+           
+        }
     }
 
     //删除

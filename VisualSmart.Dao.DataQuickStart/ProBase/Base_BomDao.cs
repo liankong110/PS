@@ -86,6 +86,37 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
             parameters.Add("ID", DbType.Int32, 0).Value = Id;
             return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
         }
+
+        /// <summary>
+        /// 重新填充Base_Bom_View 表信息
+        /// </summary>      
+        /// <returns></returns>
+        public bool ReSetView()
+        {
+            StringBuilder strSql = new StringBuilder();
+            strSql.Append(@"truncate table Base_Bom_View;
+with t as
+(select a.ParentGoodNo ,a.SonGoodNo ,a.BiLi,a.ParentGoodName,a.SonGoodName
+  from Base_Bom a
+  where not exists(select 1 from Base_Bom b where b.SonGoodNo=a.ParentGoodNo)
+ union all
+ select d.ParentGoodNo,c.SonGoodNo,c.BiLi*d.BiLi,d.ParentGoodName,c.SonGoodName
+  from Base_Bom c
+  inner join t d on c.ParentGoodNo=d.SonGoodNo
+)
+insert into Base_Bom_View 
+select ParentGoodNo ,SonGoodNo ,BiLi,ParentGoodName,SonGoodName from (
+select a.ParentGoodNo,a.SonGoodNo,a.BiLi,
+       case when not exists(select 1 from Base_Bom b where b.ParentGoodNo=a.SonGoodNo)
+            then '底层' else '' end  as 'BiaoShi',a.ParentGoodName,a.SonGoodName
+ from t a ) as TopBom where BiaoShi=''
+ union
+ select a.ParentGoodNo ,a.SonGoodNo ,a.BiLi,a.ParentGoodName,a.SonGoodName
+ from Base_Bom a");
+            var parameters = WriteAdoTemplate.CreateDbParameters();           
+            return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
+        }
+
         /// <summary>
         /// 获取信息列表
         /// </summary>

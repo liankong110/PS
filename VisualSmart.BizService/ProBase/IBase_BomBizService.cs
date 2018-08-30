@@ -19,5 +19,12 @@ namespace VisualSmart.BizService.ProBase
         /// <param name="query"></param>
         /// <returns></returns>
         int GetId(QueryCondition query);
+
+        /// <summary>
+        /// 重新填充Base_Bom_View 表信息
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        bool ReSetView();
     }
 }

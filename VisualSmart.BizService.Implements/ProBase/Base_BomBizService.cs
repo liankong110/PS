@@ -33,5 +33,14 @@ namespace VisualSmart.BizService.Implements.ProBase
         {
             return EntityDao.GetId(query);
         }
+
+        /// <summary>
+        /// 重新填充Base_Bom_View 表信息
+        /// </summary>     
+        /// <returns></returns>
+        public bool ReSetView()
+        {
+            return EntityDao.ReSetView();
+        }
     }
 }
