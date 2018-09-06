@@ -273,7 +273,7 @@
                             xu_obj.Type = "需求";
                             xu_obj.GoodName = "计算";
                             xu_obj.ShipTo = "清空";
-                            //xu_obj.StockNum = m.Qty;
+                            xu_obj.StockNum = m.SafeDays;
                             //早
                             var zao_obj = new HotData();
                             zao_obj.Type = "早班";
@@ -999,7 +999,7 @@
         var topGongRequestDiffNum = 0;
         for (var col = 7; col < 28; col++) {
             if (col == 7) {
-                topGongRequestDiffNum = hot.getDataAtCell(i + 2, 6);//库存
+                topGongRequestDiffNum = hot.getDataAtCell(i + 2, 6) -hot.getDataAtCell(i, 6);//库存-安全库存 就是排产的时候多排安全库存
             }
             else {
                 topGongRequestDiffNum = gongXuDiffArr[col - 1];

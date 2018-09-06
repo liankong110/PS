@@ -153,5 +153,10 @@ namespace VisualSmart.Domain.Pro
         /// 配套产品-右侧产品
         /// </summary>
         public string RightGoodNo { get; set; }
+
+        /// <summary>
+        /// 安全库存（标准天数去除改为安全库存使用）
+        /// </summary>
+        public int SafeDays { get; set; }
     }
 }
