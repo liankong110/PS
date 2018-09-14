@@ -135,5 +135,6 @@ namespace VisualSmart.Domain.Pro
         /// 父节点-shipto
         /// </summary>
         public string ParentGoodName { get; set; }
+        public decimal BiLi { get; set; }
     }
 }

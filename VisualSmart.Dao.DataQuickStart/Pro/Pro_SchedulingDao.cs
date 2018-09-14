@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 using VisualSmart.Dao.DataQuickStart.Base;
 using VisualSmart.Domain.Pro;
@@ -232,6 +233,132 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             parameters.Add("Updater", SqlDbType.NVarChar).Value = entity.Updater ?? "";
             parameters.Add("RowState", SqlDbType.TinyInt).Value = entity.RowState;
             return parameters;
+        }
+
+
+        /// <summary>
+        /// 获取当前Bom 是否有下级商品信息 需要排产
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public int CreateNextBomList(QueryCondition query,string name)
+        {
+            var mainId = query.GetCondition("MainId").Value;
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            //获取BOM下一级的子产品 并剔除最后一级别
+            strSql.AppendFormat(@"select distinct ShipTo,ShipToName,SonGoodNo as GoodNo,SonGoodName as GoodName,ParentGoodNo,ParentGoodName,BiLi
+from(select ID,ShipTo,ShipToName,GoodNo,GoodName FROM Pro_SchedulingGoods  where  
+SLineId IN (select ID from [dbo].[Pro_SchedulingLine] WHERE MainId={0})
+) AS TB inner join [dbo].[Base_Bom] on TB.GoodNo=Base_Bom.ParentGoodNo where exists(select 1 from Base_Bom b where b.ParentGoodNo=Base_Bom.SonGoodNo)", mainId);
+
+            var list = ReadAdoTemplate.QueryWithRowMapperDelegate(CommandType.Text, strSql.ToString(), MapRowByCreateNextBom, parameters);
+            //如果检测到有下一级的BOM信息
+            if (list.Count > 0)
+            {
+                strSql = new StringBuilder();
+                strSql.AppendFormat(@"select GoodNo,ShipTo,SDate,sum(SNum) as SNums from [dbo].[Pro_SchedulingGoodsNum]
+left join Pro_SchedulingGoods on Pro_SchedulingGoods.Id=Pro_SchedulingGoodsNum.SGoodId
+ where SGoodId in
+(select TB.ID
+from(select ID,ShipTo,ShipToName,GoodNo,GoodName FROM Pro_SchedulingGoods  where  
+SLineId IN (select ID from [dbo].[Pro_SchedulingLine] WHERE MainId={0})
+) AS TB inner join [dbo].[Base_Bom] on TB.GoodNo=Base_Bom.ParentGoodNo)   
+and SType in (2,3,4)
+group by GoodNo,ShipTo,SDate", mainId);
+                //排产信息 将早中晚 汇总在一起
+                var num_list = ReadAdoTemplate.QueryWithRowMapperDelegate(CommandType.Text, strSql.ToString(), MapRow_BomNum, parameters).ToList();
+                //主信息
+                var scheduling_model = GetAllDomain(QueryCondition.Instance.AddEqual("Id", mainId)).ToList()[0];
+
+                Pro_ShipPlanMain mainModel = new Pro_ShipPlanMain();
+               
+                mainModel.Updater = mainModel.Creater = name;
+                mainModel.RowState = 1;
+                mainModel.PlanFromDate = scheduling_model.PlanFromDate;
+                mainModel.PlanFromTo = scheduling_model.PlanToDate;
+                var main_Id =new Pro_ShipPlanMainDao().AddGetId(mainModel);
+
+                var _shipPlanBizService = new Pro_ShipPlanDao();
+                var _shipPlansBizService = new Pro_ShipPlansDao();
+                foreach (var good in list)
+                {
+                    var model = new Pro_ShipPlan();
+                    model.ScheduleNo = "";
+
+                    model.Term = 0;
+                    model.EditionNo = "";
+                    model.CityNo = "";
+                    model.ShipDetailNo = "";
+                    model.ShipTo = good.ShipTo;
+                    model.ShipToName = good.ShipToName;
+                    model.GoodNo = good.GoodNo;
+                    model.GoodName = good.GoodName;
+                    model.MainId = main_Id; 
+                    var shipId = _shipPlanBizService.AddGetId(model);
+
+                    //获取goodNO+ shipto的商品
+                    var good_num_list = num_list.FindAll(t => t.GoodNo == good.ParentGoodNo && t.ShipTo == good.ShipTo);
+
+                    for (int i = 0; i < good_num_list.Count; i++)
+                    {
+                        var goodNum = good_num_list[i];
+                        var sonModel = new Pro_ShipPlans();
+                        sonModel.PlanId = shipId;
+                        sonModel.PlanNum =Convert.ToInt32((goodNum.SNum??0)* good.BiLi);
+                        sonModel.PlanDate = goodNum.SDate;
+                        _shipPlansBizService.Add(sonModel);                         
+                    }
+                }
+                return main_Id;
+            }
+            //说明没有下一级的BOM 信息
+            return -1;
+        }
+
+        /// <summary>
+        /// 列表基本参数
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="rowNum"></param>
+        /// <returns></returns>
+        public Pro_SchedulingGoods MapRowByCreateNextBom(IDataReader dataReader, int rowNum)
+        {
+            Pro_SchedulingGoods model = new Pro_SchedulingGoods();
+            model.GoodNo = Convert.ToString(dataReader["GoodNo"]);
+            model.GoodName = Convert.ToString(dataReader["GoodName"]);
+            model.ParentGoodNo = Convert.ToString(dataReader["ParentGoodNo"]);
+            model.ParentGoodName = Convert.ToString(dataReader["ParentGoodName"]);
+            model.ShipTo = Convert.ToString(dataReader["ShipTo"]);
+            model.ShipToName = Convert.ToString(dataReader["ShipToName"]);
+            model.BiLi = Convert.ToDecimal(dataReader["BiLi"]);
+            return model;
+        }
+
+        /// <summary>
+        /// 列表基本参数
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="rowNum"></param>
+        /// <returns></returns>
+        public Pro_SchedulingGoodsNum MapRow_BomNum(IDataReader dataReader, int rowNum)
+        {
+            Pro_SchedulingGoodsNum model = new Pro_SchedulingGoodsNum();
+            object ojb;
+            ojb = dataReader["SDate"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.SDate = (DateTime)ojb;
+            }
+            ojb = dataReader["SNums"];
+            if (ojb != null && ojb != DBNull.Value)
+            {
+                model.SNum = (int)ojb;
+            }
+            model.GoodNo = Convert.ToString(dataReader["GoodNo"]);
+            model.ShipTo = Convert.ToString(dataReader["ShipTo"]);
+            return model;
         }
 
     }

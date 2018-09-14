@@ -63,7 +63,7 @@
                                             <th>单号</th>
                                             <th>计划时间</th>
                                             <th>发运计划单号</th>
-                                            <th>创建时间/创建人</th>
+                                            @*<th>创建时间/创建人</th>*@
                                             <th>修改时间/修改人</th>
                                         </tr>
                                     </thead>
@@ -73,7 +73,7 @@
                                             <tr>
                                                 <td>
 
-                                                    <div class="btn-group"> 
+                                                    <div class="btn-group">
                                                         <a href="/Scheduling/Index?MainId=@m.Id" target="_blank" class="btn btn-xs btn-info" title="编辑">
                                                             <i class="ace-icon fa fa-pencil bigger-120"></i>
                                                         </a>
@@ -85,7 +85,10 @@
                                                             <i class="ace-icon fa fa-search bigger-120"></i>
                                                             查看明细
                                                         </a>
-
+                                                        <a onclick="CreateNextBomList('@m.Id')" target="_blank" class="btn btn-xs btn-default" title="查看">
+                                                            <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                                            生成BOM下级发运计划
+                                                        </a>
                                                         <a href="/PS/edit?SchedulingId=@m.Id&SchedulingProNo=@m.ProNo" class="btn btn-xs btn-info" title="编辑">
                                                             <i class="ace-icon fa fa-pencil bigger-120"></i>新增PS信息
                                                         </a>
@@ -94,7 +97,7 @@
                                                 <td>@m.ProNo</td>
                                                 <td>@m.PlanFromDate.ToString("yyyy-MM-dd")~@m.PlanToDate.ToString("yyyy-MM-dd")</td>
                                                 <td>@m.ShipMainProNo</td>
-                                                <td class="am-hide-sm-only">@m.CreateTime/@m.Creater</td>
+                                                @*<td class="am-hide-sm-only">@m.CreateTime/@m.Creater</td>*@
                                                 <td class="am-hide-sm-only">@m.UpdateTime/@m.Updater</td>
 
 
@@ -160,6 +163,44 @@
                             class_name: 'gritter-info gritter-light'
                         });
                         setTimeout(function () { window.location.reload(); }, 500);
+                    }
+
+                }
+            });
+        }
+    }
+
+     
+    function CreateNextBomList(id) {
+        if (confirm("确定要生成数据吗?") == true) {
+            $.gritter.add({
+                title: '请等候......',
+                text: '',
+                class_name: 'gritter-info gritter-light'
+            });
+            var url = "/Scheduling/CreateNextBomList/?id=" + id;
+            $.ajax({
+                data: { '__RequestVerificationToken': $('input[name=__RequestVerificationToken]').val() },
+                url: url,
+                type: 'post',
+                async: false,
+                cache: false,
+                success: function (data) {
+                    if (data.Mess == "success") {
+                        if (data.ResultId == -1) {
+                            $.gritter.add({
+                                title: '没有检测到有下级Bom关联信息！',
+                                text: '',
+                                class_name: 'gritter-info gritter-light'
+                            });
+                        } else {
+                            var url = "/Scheduling/ProLines?ShipPlanMainId=" + data.ResultId + "&ShipMainProNo=" + data.ShipMainProNo;
+                            console.log(url);
+                            //window.location.href = url;
+                            window.open(url);  
+                        }
+                       
+                        
                     }
 
                 }

@@ -295,5 +295,6 @@ LEFT JOIN Pro_SchedulingGoodsNum ON Pro_SchedulingGoodsNum.SGoodId=Pro_Schedulin
             model.EveningNum = Convert.ToInt32(dataReader["EveningNum"]);            
             return model;
         }
+
     }
 }

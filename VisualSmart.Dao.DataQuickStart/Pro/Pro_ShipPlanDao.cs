@@ -182,7 +182,8 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
 
             return parameters;
         }
-
+        
+       
 
         /// <summary>
         /// 根据生产线信息获取对应的发运信息
@@ -196,49 +197,26 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             var mainId = query.GetCondition("MainId").Value;
 
             var parameters = WriteAdoTemplate.CreateDbParameters();
-            StringBuilder strSql = new StringBuilder();
-            //子产品
-            //            strSql.AppendFormat(@"select ProLineNo,Qty, TB.ID,TB.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
-            //SonGoodNo as GoodNo,SonGoodName as GoodName,ParentGoodNo,ShipTo AS ParentShipTo
-            // from(
-            //select Distinct  Pro_ShipPlan.ID,Pro_ShipPlan.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
-            //Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName
-            //FROM Pro_ShipPlan
-            //where  Pro_ShipPlan.MainId={2}
-            //) AS TB inner join [dbo].[Base_Bom] on TB.GoodNo=Base_Bom.ParentGoodNo
-            //LEFT join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=[Base_Bom].SonGoodNo
-            //left join [dbo].[Base_Stock] on [dbo].[Base_Stock].GoodNo=[Base_Bom].SonGoodNo
-            //left join Base_StockMain on Base_StockMain.Id=Base_Stock.MainId
-            //where ProLineNo IN ({0}) and
-            //Base_StockMain.Id={1} ", lineNos, stockMainId, mainId);
-
-            //            strSql.Append(" union all ");
-            //            //主产品
-            //            strSql.Append(@"select Distinct ProLineNo,Qty, Pro_ShipPlan.ID,Pro_ShipPlan.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
-            //Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName,'' as ParentGoodNo,'' as ParentShipTo
-            //FROM Pro_ShipPlan
-            //left join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=Pro_ShipPlan.GoodNo
-            //left join [dbo].[Base_Stock] on [dbo].[Base_Stock].GoodNo=Pro_ShipPlan.GoodNo
-            //left join Base_StockMain on Base_StockMain.Id=Base_Stock.MainId");
-            //            strSql.AppendFormat(" where ProLineNo IN ({0}) and Base_StockMain.Id={1} and Pro_ShipPlan.MainId={2}", lineNos, stockMainId, mainId);
+            StringBuilder strSql = new StringBuilder();           
 
             strSql.Append(" select allInfo.*,Base_Matching.RightGoodNo,StandardDays from ( ");
-            //子产品
-            strSql.AppendFormat(@"select ShipPkgQty,NEWTB.* from (select ProLineNo,Qty, TB.ID,TB.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
-SonGoodNo as GoodNo,SonGoodName as GoodName,ParentGoodNo,ParentGoodName,BiLi,StandardDays
- from(
-select Pro_ShipPlan.ID,Pro_ShipPlan.MainId,ScheduleNo,Term,EditionNo,CityNo,Pro_ShipPlan.ShipTo,Pro_ShipPlan.ShipToName,
-Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName,StandardDays
-FROM Pro_ShipPlan
-left join Base_Goods on Base_Goods.GoodNo=Pro_ShipPlan.GoodNo and Base_Goods.ShipTo=Pro_ShipPlan.ShipTo 
-where  Pro_ShipPlan.MainId={2}
-) AS TB inner join [dbo].[Base_Bom_View] on TB.GoodNo=Base_Bom_View.ParentGoodNo
-LEFT join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=[Base_Bom_View].SonGoodNo
-left join [dbo].[Base_Stock_View] on [dbo].[Base_Stock_View].GoodNo=[Base_Bom_View].SonGoodNo and Base_Stock_View.MainId={1}
-where ProLineNo IN ({0})) AS NEWTB
-left join Base_Goods on Base_Goods.GoodNo=NEWTB.GoodNo and Base_Goods.ShipTo=NEWTB.ShipTo ", lineNos, stockMainId, mainId);
+            //去除子产品
+//            //子产品
+//            strSql.AppendFormat(@"select ShipPkgQty,NEWTB.* from (select ProLineNo,Qty, TB.ID,TB.MainId,ScheduleNo,Term,EditionNo,CityNo,ShipTo,ShipToName,
+//SonGoodNo as GoodNo,SonGoodName as GoodName,ParentGoodNo,ParentGoodName,BiLi,StandardDays
+// from(
+//select Pro_ShipPlan.ID,Pro_ShipPlan.MainId,ScheduleNo,Term,EditionNo,CityNo,Pro_ShipPlan.ShipTo,Pro_ShipPlan.ShipToName,
+//Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName,StandardDays
+//FROM Pro_ShipPlan
+//left join Base_Goods on Base_Goods.GoodNo=Pro_ShipPlan.GoodNo and Base_Goods.ShipTo=Pro_ShipPlan.ShipTo 
+//where  Pro_ShipPlan.MainId={2}
+//) AS TB inner join [dbo].[Base_Bom_View] on TB.GoodNo=Base_Bom_View.ParentGoodNo
+//LEFT join [dbo].[Base_ProductionLine] on [dbo].[Base_ProductionLine].GoodNo=[Base_Bom_View].SonGoodNo
+//left join [dbo].[Base_Stock_View] on [dbo].[Base_Stock_View].GoodNo=[Base_Bom_View].SonGoodNo and Base_Stock_View.MainId={1}
+//where ProLineNo IN ({0})) AS NEWTB
+//left join Base_Goods on Base_Goods.GoodNo=NEWTB.GoodNo and Base_Goods.ShipTo=NEWTB.ShipTo ", lineNos, stockMainId, mainId);
 
-            strSql.Append(" union all ");
+//            strSql.Append(" union all ");
             //主产品
             strSql.AppendFormat(@"select ShipPkgQty,ProLineNo,Qty, Pro_ShipPlan.ID,Pro_ShipPlan.MainId,ScheduleNo,Term,EditionNo,CityNo,Pro_ShipPlan.ShipTo,Pro_ShipPlan.ShipToName,
 Pro_ShipPlan.GoodNo,Pro_ShipPlan.GoodName,'' as ParentGoodNo,'' as ParentGoodName,1 as BiLi,StandardDays

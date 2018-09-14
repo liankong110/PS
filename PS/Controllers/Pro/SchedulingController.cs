@@ -23,10 +23,10 @@ namespace PS.Controllers.Pro
         public ActionResult ProLines(int ShipPlanMainId, string ShipMainProNo)
         {
             ViewBag.ShipMainProNo = ShipMainProNo;
-            var stockList = Smart.Instance.Base_StockMainBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", false).AddEqual("RowState", "1").SetPager(1,50));
+            var stockList = Smart.Instance.Base_StockMainBizService.GetAllDomain(QueryCondition.Instance.AddOrderBy("Id", false).AddEqual("RowState", "1").SetPager(1, 50));
             foreach (var model in stockList)
             {
-                model.ProNo = model.ProNo + "["+model.Creater+"]";
+                model.ProNo = model.ProNo + "[" + model.Creater + "]";
             }
             ViewBag.StockList = new SelectList(stockList, "Id", "ProNo");
             ViewBag.ShipPlanMainId = ShipPlanMainId;
@@ -43,8 +43,8 @@ namespace PS.Controllers.Pro
         /// <param name="page"></param>
         /// <returns></returns>
         [ViewPageAttribute]
-        public ActionResult Index(string proLineNosList, string StockId, string ShipMainProNo,int ShipPlanMainId=0,
-            int Id = 0,int MainId=0, int page = 1)
+        public ActionResult Index(string proLineNosList, string StockId, string ShipMainProNo, int ShipPlanMainId = 0,
+            int Id = 0, int MainId = 0, int page = 1)
         {
             List<Pro_ShipPlan> shipPlanList = new List<Pro_ShipPlan>();
             List<Pro_ShipPlans> _shipPlansList = new List<Pro_ShipPlans>();
@@ -69,15 +69,15 @@ namespace PS.Controllers.Pro
                 ViewBag.ShipPlansList = _shipPlansList;
 
                 //4 获取每条产线最大的工时
-                lingHourList=Smart.Instance.Base_LineHourBizService.GetLineHourList(proLineNosList).ToList();
+                lingHourList = Smart.Instance.Base_LineHourBizService.GetLineHourList(proLineNosList).ToList();
 
-               //生产线
-               var ProLineNos = proLineNosList.Replace("'", "").Split(',').ToList();
+                //生产线
+                var ProLineNos = proLineNosList.Replace("'", "").Split(',').ToList();
                 foreach (var line in ProLineNos)
                 {
                     var lineModel = new Pro_SchedulingLine();
                     lineModel.ProLineNo = line;
-                    var hourModel=lingHourList.Find(t=>t.ProLineNo==line);
+                    var hourModel = lingHourList.Find(t => t.ProLineNo == line);
                     if (hourModel != null)
                     {
                         lineModel.MaxHour = hourModel.MaxHours;
@@ -86,7 +86,7 @@ namespace PS.Controllers.Pro
                 }
 
                 ViewBag.ShipMainProNo = ShipMainProNo;
-                ViewBag.SchedulingList = pro_SchedulingLineList;                   
+                ViewBag.SchedulingList = pro_SchedulingLineList;
                 return View(shipPlanList);
             }
             ViewBag.Id = MainId;
@@ -127,7 +127,7 @@ namespace PS.Controllers.Pro
 
             ViewBag.ShipMainProNo = schedulingModel.ShipMainProNo;
             return View(shipPlanList);
-        } 
+        }
 
         /// <summary>
         /// 获取产能，根据产线 商品 人数
@@ -160,7 +160,7 @@ namespace PS.Controllers.Pro
         public JsonResult AddPro_Scheduling(Pro_Scheduling model)
         {
             if (model.Id == 0)
-            {              
+            {
                 model.Creater = model.Updater = CurrentUser.Name;
                 model.RowState = 1;
                 return Json(new { Mess = "success", Id = Smart.Instance.Pro_SchedulingBizService.AddGetId(model) });
@@ -214,19 +214,19 @@ namespace PS.Controllers.Pro
                 goodModel.ShipTo = zhong[2];
                 goodModel.ShipToName = zhong[3];
                 goodModel.StockNum = Convert.ToInt32(zhong[6]);
-                goodModel.PackNum = zhong[30]==""?0:Convert.ToInt32(zhong[30]);
+                goodModel.PackNum = zhong[30] == "" ? 0 : Convert.ToInt32(zhong[30]);
                 goodModel.MorningNum = morningNum;
                 goodModel.MiddleNum = middleNum;
                 goodModel.EveningNum = eveningNum;
                 goodModel.ParentGoodNo = zhong[28];
                 goodModel.ParentGoodName = zhong[29];
 
-                
+
                 var id = schedulingGoodsBizService.AddGetId(goodModel);
-                for (var colIndex = 7; colIndex <28; colIndex++)
+                for (var colIndex = 7; colIndex < 28; colIndex++)
                 {
                     var xu_val = 0;
-                    int.TryParse(xuqiu[colIndex],out xu_val);
+                    int.TryParse(xuqiu[colIndex], out xu_val);
 
                     //4.保存 产线对应日期的数量
                     if (xu_val != 0)
@@ -249,7 +249,7 @@ namespace PS.Controllers.Pro
                         r[3] = zao_val;
                         dt.Rows.Add(r);
                     }
-                    var zhong_val =0;
+                    var zhong_val = 0;
                     int.TryParse(zhong[colIndex], out zhong_val);
                     if (zhong_val != 0)
                     {
@@ -274,7 +274,7 @@ namespace PS.Controllers.Pro
                 }
 
             }
-            
+
 
             //DataTable dt = GetTableSchema();
             //foreach (var good in model)
@@ -320,7 +320,7 @@ namespace PS.Controllers.Pro
         /// </summary>
         /// <returns></returns>
         [ViewPageAttribute]
-        public ActionResult List(string ProNo,string ShipMainProNo,DateTime? Time,int page = 1)
+        public ActionResult List(string ProNo, string ShipMainProNo, DateTime? Time, int page = 1)
         {
             Hashtable hs = new Hashtable();
             var query = QueryCondition.Instance.AddOrderBy("Id", false).SetPager(page, 10);
@@ -337,7 +337,7 @@ namespace PS.Controllers.Pro
             }
             if (Time != null)
             {
-                hs.Add("PlanFromDate", Time.Value.ToString("yyy-MM-dd"));                     
+                hs.Add("PlanFromDate", Time.Value.ToString("yyy-MM-dd"));
                 ViewBag.Time = Time.Value.ToString("yyy-MM-dd");
             }
             ViewBag.Page = query.GetPager();
@@ -382,5 +382,23 @@ namespace PS.Controllers.Pro
             ViewBag.id = id;
             return View(list);
         }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public JsonResult CreateNextBomList(int Id)
+        {
+            if (CurrentUser != null)
+            {
+                int resultId = Smart.Instance.Pro_SchedulingBizService.CreateNextBomList(QueryCondition.Instance.AddEqual("MainId", Id.ToString()), CurrentUser.Name);
+                string ShipMainProNo = "";
+                if (resultId != -1)
+                {
+                    ShipMainProNo = Smart.Instance.Pro_ShipPlanMainBizService.GetAllDomain(QueryCondition.Instance.AddEqual("Id", resultId.ToString()))[0].ProNo;
+                }
+                return Json(new { Mess = "success", ResultId = resultId, ShipMainProNo = ShipMainProNo });
+            }
+            return Json(new { Mess = "fail" });
+        }
+
     }
 }

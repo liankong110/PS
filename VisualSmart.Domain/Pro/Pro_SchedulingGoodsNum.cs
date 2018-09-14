@@ -56,5 +56,13 @@ namespace VisualSmart.Domain.Pro
         #endregion Model
 
         public int Index { get; set; }
+        /// <summary>
+        /// 产品编码
+        /// </summary>
+        public string GoodNo { get; set; }
+        /// <summary>
+        /// ship-to
+        /// </summary>
+        public string ShipTo { get; set; }
     }
 }

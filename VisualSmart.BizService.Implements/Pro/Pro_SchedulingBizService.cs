@@ -28,5 +28,16 @@ namespace VisualSmart.BizService.Implements.Pro
         {
             return EntityDao.GetList(query,hs);
         }
+
+        /// <summary>
+        /// 获取当前Bom 是否有下级商品信息 需要排产
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public int CreateNextBomList(QueryCondition query, string name)
+        {
+            return EntityDao.CreateNextBomList(query,name);
+        }
     }
 }

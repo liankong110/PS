@@ -169,17 +169,17 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
             //子产品
-            strSql.Append("select distinct Base_ProductionLine.GoodNo,People,Number from[Base_ProductionLines]");
-            strSql.Append("left join [Base_ProductionLine] on Base_ProductionLine.ID=[Base_ProductionLines].ProLineId");
-            strSql.AppendFormat(@" left join (select SonGoodNo as GoodNo,SonGoodName as GoodName from
- Pro_ShipPlan 
-left join Pro_ShipPlanMain on Pro_ShipPlanMain.ID = Pro_ShipPlan.MainId
-inner join [dbo].[Base_Bom_View] on GoodNo=Base_Bom_View.ParentGoodNo
-where Pro_ShipPlanMain.ProNo='{0}') as TB ON  TB.GoodNo=Base_ProductionLine.GoodNo", query.GetCondition("ShipMainProNo").Value);
-            strSql.AppendFormat(" where ProLineNo='{0}'", query.GetCondition("LineNo").Value);     
-            strSql.AppendFormat(" and People in({0})", query.GetCondition("People").Value);
+//            strSql.Append("select distinct Base_ProductionLine.GoodNo,People,Number from[Base_ProductionLines]");
+//            strSql.Append("left join [Base_ProductionLine] on Base_ProductionLine.ID=[Base_ProductionLines].ProLineId");
+//            strSql.AppendFormat(@" left join (select SonGoodNo as GoodNo,SonGoodName as GoodName from
+// Pro_ShipPlan 
+//left join Pro_ShipPlanMain on Pro_ShipPlanMain.ID = Pro_ShipPlan.MainId
+//inner join [dbo].[Base_Bom_View] on GoodNo=Base_Bom_View.ParentGoodNo
+//where Pro_ShipPlanMain.ProNo='{0}') as TB ON  TB.GoodNo=Base_ProductionLine.GoodNo", query.GetCondition("ShipMainProNo").Value);
+//            strSql.AppendFormat(" where ProLineNo='{0}'", query.GetCondition("LineNo").Value);     
+//            strSql.AppendFormat(" and People in({0})", query.GetCondition("People").Value);
 
-            strSql.Append(" union all ");
+//            strSql.Append(" union all ");
 
             //成品
             strSql.Append("select distinct Base_ProductionLine.GoodNo,People,Number from[Base_ProductionLines]");

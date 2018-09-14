@@ -249,24 +249,17 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
         }
 
         /// <summary>
-        /// 获取所有产线信息，包含Bom 子产品信息
+        /// 获取所有产线信息，
+        /// （去除BOM）
         /// </summary>
         /// <returns></returns>
         public IList<string> GetAllProLineNos(int ShipPlanMainId)
         {
-            string sql = string.Format(@" select *from(
-select ProLineNo from [dbo].[Base_ProductionLine] 
+            string sql = string.Format(@"select ProLineNo from [dbo].[Base_ProductionLine] 
  left join[dbo].[Pro_ShipPlan]  on Base_ProductionLine.GoodNo = Pro_ShipPlan.GoodNo
- where Pro_ShipPlan.MainId = {0}
- group by ProLineNo
- union
- select ProLineNo from [dbo].[Base_ProductionLine] 
- inner join(
- select SonGoodNo from Base_Bom_View
- inner join [Pro_ShipPlan] on [Pro_ShipPlan].GoodNo=Base_Bom_View.ParentGoodNo
-  where Pro_ShipPlan.MainId = {0}
-  ) as NewTB on  Base_ProductionLine.GoodNo = NewTB.SonGoodNo)
-  AS TB order by ProLineNo", ShipPlanMainId);
+ where Pro_ShipPlan.MainId = {0} 
+group by ProLineNo
+order by ProLineNo", ShipPlanMainId);
             return ReadAdoTemplate.QueryWithRowMapperDelegate<string>(CommandType.Text, sql, delegate (IDataReader dataReader, int rowNum)
             {
                 return dataReader["ProLineNo"].ToString(); ;
