@@ -97,6 +97,15 @@ namespace PS.Controllers.ProBase
                 ViewBag.Error = string.Format("已经存在相同的父商品:{0},子商品:{1},请重新填写", model.ParentGoodNo, model.SonGoodNo);
                 return View(model);
             }
+            var bomGoods=Smart.Instance.Base_GoodsBizService.GetBomName(model.ParentGoodNo, model.SonGoodNo);
+            if (bomGoods.Count <2)
+            {
+                ViewBag.GoodList = Smart.Instance.Base_GoodsBizService.GetGoodName(QueryCondition.Instance.AddEqual("RowState", "1"));
+                ViewBag.Error = string.Format("没有找到产品信息，请检查维护的产品在产品中是否存在！");
+                return View(model);
+            }
+            model.ParentGoodName = bomGoods.Find(t => t.GoodNo == model.ParentGoodNo).GoodName;
+            model.SonGoodName = bomGoods.Find(t => t.GoodNo == model.SonGoodNo).GoodName;
             if (model.Id == 0)
             {
                 _bomBizService.Add(model);
@@ -151,10 +160,11 @@ namespace PS.Controllers.ProBase
         {
             int rowIndex = 2;
             string error = "success";
-
+            var GoodList = Smart.Instance.Base_GoodsBizService.GetGoodName(QueryCondition.Instance.AddEqual("RowState", "1")).ToList();
             try
             {
                 var goodsBizSer = Smart.Instance.Base_GoodsBizService;
+
                 string strConn;
                 strConn = "Provider=Microsoft.ACE.OLEDB.12.0; Data Source=" + fileAddress + "; Extended Properties='Excel 12.0 Xml;HDR=YES;IMEX=1'";
                 OleDbConnection conn = new OleDbConnection(strConn);
@@ -174,9 +184,9 @@ namespace PS.Controllers.ProBase
                         {
                             while (dataReader.Read())
                             {
-                                if (dataReader.FieldCount != 5)
+                                if (dataReader.FieldCount != 3)
                                 {
-                                    error = "解析错误,Excel 列头必须是5列，请下载模板 进行对比！";
+                                    error = "解析错误,Excel 列头必须是3列，请下载模板 进行对比！";
                                     break;
                                 }
                                 //if (rowIndex == 2)
@@ -185,13 +195,21 @@ namespace PS.Controllers.ProBase
                                 //}
 
                                 var model = new Base_Bom();
-                                model.ParentGoodNo = dataReader[0].ToString();
-                                model.ParentGoodName = dataReader[1].ToString();
-                                model.SonGoodNo = dataReader[2].ToString();
-                                model.SonGoodName = dataReader[3].ToString();
-                                model.BiLi = Convert.ToInt32(dataReader[4]);
+                                model.ParentGoodNo = dataReader[0].ToString();                               
+                                model.SonGoodNo = dataReader[1].ToString();                         
+                                model.BiLi = Convert.ToInt32(dataReader[2]);
                                 model.Updater = model.Creater = CurrentUser.Name;
                                 model.RowState = 1;
+                                var p=GoodList.Find(t => t.Contains(model.ParentGoodNo));
+                                var s = GoodList.Find(t => t.Contains(model.SonGoodNo));
+                                if (p==null || s==null)
+                                {
+                                    error = "Excel解析错误,成功" + (rowIndex - 1) + "条，错误行号：" + rowIndex + ",没有找到对应的商品信息，请检查。";
+                                    break;
+                                }
+
+                                model.ParentGoodName = p.Split(',')[1];                             
+                                model.SonGoodName = s.Split(',')[1];
                                 var query = QueryCondition.Instance;
                                 query.AddEqual("ParentGoodNo", model.ParentGoodNo);
                                 query.AddEqual("SonGoodNo", model.SonGoodNo);

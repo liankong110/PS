@@ -100,7 +100,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
  where SLineId IN(select id from[dbo].[Pro_SchedulingLine] where MainId =@ID)); ");
             strSql.Append("delete from [Pro_SchedulingGoods] where SLineId IN ( select id from[dbo].[Pro_SchedulingLine] where MainId=@ID);");
             strSql.Append("delete from [Pro_SchedulingLine] where MainId=@ID;");
-            strSql.Append("delete from Pro_Scheduling where ID=@ID;");       
+            strSql.Append("delete from Pro_Scheduling where ID=@ID;");
             var parameters = WriteAdoTemplate.CreateDbParameters();
             parameters.Add("ID", DbType.Int32, 0).Value = Id;
             return ReadAdoTemplate.ExecuteNonQuery(CommandType.Text, strSql.ToString(), parameters) > 0;
@@ -121,7 +121,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             string otherWhere = "";
             if (query.GetCondition("PlanFromDate") != null)
             {
-                
+
             }
             if (query.GetPager() != null)
             {
@@ -141,7 +141,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public  IList<Pro_Scheduling> GetList(QueryCondition query,Hashtable hs)
+        public IList<Pro_Scheduling> GetList(QueryCondition query, Hashtable hs)
         {
             var parameters = WriteAdoTemplate.CreateDbParameters();
             StringBuilder strSql = new StringBuilder();
@@ -152,6 +152,28 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             if (hs.ContainsKey("PlanFromDate"))
             {
                 otherWhere += string.Format(" and '{0}'>=PlanFromDate and '{0}'<=PlanToDate", hs["PlanFromDate"]);
+            }
+            if (hs.ContainsKey("LineNo"))
+            {
+                otherWhere += string.Format(" and Exists(select id from Pro_SchedulingLine where ProLineNo like '%{0}%' and Pro_SchedulingLine.MainId=Pro_Scheduling.Id)",
+                    hs["LineNo"]);
+            }
+            if (hs.ContainsKey("GoodNo") || hs.ContainsKey("GoodName") || hs.ContainsKey("ShipTo"))
+            {
+                otherWhere += " and Id in (select MainId from Pro_SchedulingLine left join Pro_SchedulingGoods on Pro_SchedulingGoods.SLineId=Pro_SchedulingLine.Id where 1=1 ";
+                if (hs.ContainsKey("GoodNo"))
+                {
+                    otherWhere += string.Format(" and GoodNo like '%{0}%'",hs["GoodNo"]);
+                }
+                if (hs.ContainsKey("GoodName"))
+                {
+                    otherWhere += string.Format(" and GoodName like '%{0}%'", hs["GoodName"]);
+                }
+                if (hs.ContainsKey("ShipTo"))
+                {
+                    otherWhere += string.Format(" and ShipTo like '%{0}%'", hs["ShipTo"]);
+                }
+                otherWhere += " )";
             }
             if (query.GetPager() != null)
             {
@@ -183,7 +205,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             }
             model.ProNo = dataReader["ProNo"].ToString();
             model.ShipMainProNo = dataReader["ShipMainProNo"].ToString();
-            
+
             ojb = dataReader["PlanFromDate"];
             if (ojb != null && ojb != DBNull.Value)
             {
@@ -242,7 +264,7 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
         /// <param name="query"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public int CreateNextBomList(QueryCondition query,string name)
+        public int CreateNextBomList(QueryCondition query, string name)
         {
             var mainId = query.GetCondition("MainId").Value;
             var parameters = WriteAdoTemplate.CreateDbParameters();
@@ -269,49 +291,63 @@ and SType in (2,3,4)
 group by GoodNo,ShipTo,SDate", mainId);
                 //排产信息 将早中晚 汇总在一起
                 var num_list = ReadAdoTemplate.QueryWithRowMapperDelegate(CommandType.Text, strSql.ToString(), MapRow_BomNum, parameters).ToList();
-                //主信息
-                var scheduling_model = GetAllDomain(QueryCondition.Instance.AddEqual("Id", mainId)).ToList()[0];
+                if (num_list.Count > 0)
+                { //主信息
+                    var scheduling_model = GetAllDomain(QueryCondition.Instance.AddEqual("Id", mainId)).ToList()[0];
 
-                Pro_ShipPlanMain mainModel = new Pro_ShipPlanMain();
-               
-                mainModel.Updater = mainModel.Creater = name;
-                mainModel.RowState = 1;
-                mainModel.PlanFromDate = scheduling_model.PlanFromDate;
-                mainModel.PlanFromTo = scheduling_model.PlanToDate;
-                var main_Id =new Pro_ShipPlanMainDao().AddGetId(mainModel);
+                    Pro_ShipPlanMain mainModel = new Pro_ShipPlanMain();
 
-                var _shipPlanBizService = new Pro_ShipPlanDao();
-                var _shipPlansBizService = new Pro_ShipPlansDao();
-                foreach (var good in list)
-                {
-                    var model = new Pro_ShipPlan();
-                    model.ScheduleNo = "";
+                    mainModel.Updater = mainModel.Creater = name;
+                    mainModel.RowState = 1;
+                    mainModel.PlanFromDate = scheduling_model.PlanFromDate;
+                    mainModel.PlanFromTo = scheduling_model.PlanToDate;
+                    var main_Id = new Pro_ShipPlanMainDao().AddGetId(mainModel);
 
-                    model.Term = 0;
-                    model.EditionNo = "";
-                    model.CityNo = "";
-                    model.ShipDetailNo = "";
-                    model.ShipTo = good.ShipTo;
-                    model.ShipToName = good.ShipToName;
-                    model.GoodNo = good.GoodNo;
-                    model.GoodName = good.GoodName;
-                    model.MainId = main_Id; 
-                    var shipId = _shipPlanBizService.AddGetId(model);
-
-                    //获取goodNO+ shipto的商品
-                    var good_num_list = num_list.FindAll(t => t.GoodNo == good.ParentGoodNo && t.ShipTo == good.ShipTo);
-
-                    for (int i = 0; i < good_num_list.Count; i++)
+                    var _shipPlanBizService = new Pro_ShipPlanDao();
+                    var _shipPlansBizService = new Pro_ShipPlansDao();
+                    foreach (var good in list)
                     {
-                        var goodNum = good_num_list[i];
-                        var sonModel = new Pro_ShipPlans();
-                        sonModel.PlanId = shipId;
-                        sonModel.PlanNum =Convert.ToInt32((goodNum.SNum??0)* good.BiLi);
-                        sonModel.PlanDate = goodNum.SDate;
-                        _shipPlansBizService.Add(sonModel);                         
+                        var model = new Pro_ShipPlan();
+                        model.ScheduleNo = "";
+
+                        model.Term = 0;
+                        model.EditionNo = "";
+                        model.CityNo = "";
+                        model.ShipDetailNo = "";
+                        model.ShipTo = good.ShipTo;
+                        model.ShipToName = good.ShipToName;
+                        model.GoodNo = good.GoodNo;
+                        model.GoodName = good.GoodName;
+                        model.MainId = main_Id;
+
+                        //获取goodNO+ shipto的商品 如果没有对应的排产信息就不要出来了
+                        var good_num_list = num_list.FindAll(t => t.GoodNo == good.ParentGoodNo && t.ShipTo == good.ShipTo);
+                        if (good_num_list.Count == 0)
+                        {
+                            continue;
+                        }
+                        var shipId = _shipPlanBizService.AddGetId(model);
+
+
+
+                        for (int i = 0; i < good_num_list.Count; i++)
+                        {
+                            var goodNum = good_num_list[i];
+                            var sonModel = new Pro_ShipPlans();
+                            sonModel.PlanId = shipId;
+                            sonModel.PlanNum = Convert.ToInt32((goodNum.SNum ?? 0) * good.BiLi);
+                            sonModel.PlanDate = goodNum.SDate;
+                            _shipPlansBizService.Add(sonModel);
+                        }
                     }
+                    return main_Id;
                 }
-                return main_Id;
+                else
+                {
+                    //说明没有下一级的BOM 信息
+                    return -1;
+                }
+               
             }
             //说明没有下一级的BOM 信息
             return -1;

@@ -45,16 +45,8 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>父产品名称</label>
 
-                        <div class="col-sm-9">
-
-                            @Html.TextBoxFor(t => t.ParentGoodName, new
-                       {
-                           @class = "col-xs-10 col-sm-5",
-                           @data_placement = "right",
-                           @title = "请输入父产品名称",
-                           @placeholder = "请输入父产品名称",
-                           @data_trigger = "focus"
-                       })
+                        <div class="col-sm-9">                            
+                            <span id="ParentGoodName">@Model.ParentGoodName</span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -77,16 +69,8 @@
                         <label class="col-sm-3 control-label no-padding-right" for="RoleName"> <span style="color:red;">*</span>子产品名称</label>
 
                         <div class="col-sm-9">
-
-                            @Html.TextBoxFor(t => t.SonGoodName, new
-                       {
-                           @class = "col-xs-10 col-sm-5",
-                           @data_placement = "right",
-                           @title = "请输入子产品名称",
-                           @placeholder = "请输入子产品名称",
-                           @data_trigger = "focus"
-
-                       })
+                            <span id="SonGoodName">@Model.SonGoodName</span>                           
+                            
                         </div>
                     </div>
                     <div class="form-group">
@@ -188,7 +172,7 @@
             console.log(arr);
             if(arr.length>1){
                 $("#" + goodNo + "").val(arr[0]);
-                $("#" + goodName + "").val(arr[1]);
+                $("#" + goodName + "").text(arr[1]);
             }
         }else{
             $("#" + goodName + "").val("");
@@ -200,7 +184,7 @@
 
     $("#btnSave").click(function () {
 
-        var result = CheckValue("ParentGoodNo") && CheckValue("ParentGoodName") && CheckValue("SonGoodNo") && CheckValue("SonGoodName");
+        var result = CheckValue("ParentGoodNo")  && CheckValue("SonGoodNo");
         return result;
     });
 

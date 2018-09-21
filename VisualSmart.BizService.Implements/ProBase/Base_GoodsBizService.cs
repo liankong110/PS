@@ -32,5 +32,17 @@ namespace VisualSmart.BizService.Implements.ProBase
         {
             return EntityDao.GetGoodName(query);
         }
+
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public List<Base_Goods> GetBomName(string parentNo, string sonNo)
+        {
+            return EntityDao.GetBomName(parentNo, sonNo);
+        }
+
+
     }
 }

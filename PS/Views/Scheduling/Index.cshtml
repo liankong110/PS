@@ -309,7 +309,7 @@
                             //gongxuqiu_obj.GoodNo = "整箱包装数";
                             //gongxuqiu_obj.GoodName = "10";
                             gongxuqiu_obj.Type = "供需求差异";
-                            gongxuqiu_obj.GoodNo = "整托包装数";
+                            gongxuqiu_obj.GoodNo = "整箱包装数";
                             gongxuqiu_obj.GoodName = m.ShipPkgQty == null ? "" : m.ShipPkgQty.ToString();
                             List<SchedulingDateNumModel> dateNumList = new List<SchedulingDateNumModel>();
                             var currentLineShipPlansList = _shipPlansList.FindAll(t => t.PlanId == m.Id);
@@ -2053,7 +2053,7 @@
                         zhongDetail.push(hot.getDataAtCell(rowIndex+4,0));
                         zhongDetail.push(hot.getDataAtCell(rowIndex+4,1));
 
-                        //增加整托包装数
+                        //增加整箱包装数
                         zhongDetail.push(hot.getDataAtCell(rowIndex+5,1));
                         //console.log(zaoDetail);
                         //3.保存 产线+库存+产能信息

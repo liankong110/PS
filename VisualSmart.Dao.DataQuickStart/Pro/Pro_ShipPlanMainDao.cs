@@ -208,6 +208,23 @@ namespace VisualSmart.Dao.DataQuickStart.Pro
             {
                 otherWhere += string.Format(" and '{0}'>=PlanFromDate and '{0}'<=PlanFromTo", hs["PlanFromDate"]);
             }
+            if (hs.ContainsKey("GoodNo") || hs.ContainsKey("GoodName") || hs.ContainsKey("ShipTo"))
+            {
+                otherWhere += " and Exists (select id from Pro_ShipPlan where  Pro_ShipPlan.MainId=Pro_ShipPlanMain.Id ";
+                if (hs.ContainsKey("GoodNo"))
+                {
+                    otherWhere += string.Format(" and GoodNo like '%{0}%'", hs["GoodNo"]);
+                }
+                if (hs.ContainsKey("GoodName"))
+                {
+                    otherWhere += string.Format(" and GoodName like '%{0}%'", hs["GoodName"]);
+                }
+                if (hs.ContainsKey("ShipTo"))
+                {
+                    otherWhere += string.Format(" and ShipTo like '%{0}%'", hs["ShipTo"]);
+                }
+                otherWhere += " )";
+            }
             if (query.GetPager() != null)
             {
                 strSql = new StringBuilder(GetPagerSql(strSql.ToString(), query, parameters, otherWhere));

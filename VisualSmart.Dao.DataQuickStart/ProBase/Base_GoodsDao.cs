@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 using VisualSmart.Dao.DataQuickStart.Base;
 using VisualSmart.Domain.ProBase;
@@ -114,6 +115,34 @@ namespace VisualSmart.Dao.DataQuickStart.ProBase
             strSql.Append("select GoodNo+','+GoodName as good from Base_Goods where RowState=1 group by GoodNo,GoodName");   
             return ReadAdoTemplate.QueryWithRowMapperDelegate<string>(CommandType.Text, strSql.ToString(), MapRowToString, parameters);
         }
+
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public List<Base_Goods> GetBomName(string parentNo,string sonNo)
+        {
+            var parameters = WriteAdoTemplate.CreateDbParameters();
+            StringBuilder strSql = new StringBuilder();
+            strSql.AppendFormat("select GoodNo,GoodName from Base_Goods where RowState=1 and GoodNo in ('{0}','{1}') group by GoodNo,GoodName ", parentNo, sonNo);
+            return ReadAdoTemplate.QueryWithRowMapperDelegate(CommandType.Text, strSql.ToString(), MapRowBomName, parameters).ToList();
+        }
+
+        /// <summary>
+        /// 列表基本参数
+        /// </summary>
+        /// <param name="dataReader"></param>
+        /// <param name="rowNum"></param>
+        /// <returns></returns>
+        public Base_Goods MapRowBomName(IDataReader dataReader, int rowNum)
+        {
+            Base_Goods model = new Base_Goods();            
+            model.GoodNo = dataReader["GoodNo"].ToString();
+            model.GoodName = dataReader["GoodName"].ToString();
+            return model;
+        }
+
         /// <summary>
         /// 获取id
         /// </summary>

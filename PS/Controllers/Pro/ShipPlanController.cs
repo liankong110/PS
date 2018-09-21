@@ -27,7 +27,8 @@ namespace PS.Controllers.Pro
         /// <param name="page"></param>
         /// <returns></returns>
         [ViewPageAttribute]
-        public ActionResult MainList(string ProNo, DateTime? PlanDate,int IsGuoQi=0, int page = 1)
+        public ActionResult MainList(string ProNo, string GoodNo, string GoodName,
+             string ShipTo, DateTime? PlanDate,int IsGuoQi=0, int page = 1)
         {
             Hashtable hs = new Hashtable();
             var query = QueryCondition.Instance.AddOrderBy("Id", false).SetPager(page, 10);
@@ -49,6 +50,23 @@ namespace PS.Controllers.Pro
             if (IsGuoQi == 1)
             {
                 query.AddSmaller("PlanFromTo", DateTime.Now.ToString("yyyy-MM-dd"));
+            }
+
+            if (!string.IsNullOrEmpty(GoodNo))
+            {
+                hs.Add("GoodNo", GoodNo);
+                ViewBag.GoodNo = GoodNo;
+            }
+            if (!string.IsNullOrEmpty(GoodName))
+            {
+                hs.Add("GoodName", GoodName);
+                ViewBag.GoodName = GoodName;
+            }
+           
+            if (!string.IsNullOrEmpty(ShipTo))
+            {
+                hs.Add("ShipTo", ShipTo);
+                ViewBag.ShipTo = ShipTo;
             }
             ViewBag.IsGuoQi = IsGuoQi;
             ViewBag.Page = query.GetPager();

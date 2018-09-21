@@ -24,5 +24,12 @@ namespace VisualSmart.BizService.ProBase
         /// <param name="query"></param>
         /// <returns></returns>
         IList<string> GetGoodName(QueryCondition query);
+
+        /// <summary>
+        /// 获取信息列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        List<Base_Goods> GetBomName(string parentNo, string sonNo);
     }
 }

@@ -320,7 +320,8 @@ namespace PS.Controllers.Pro
         /// </summary>
         /// <returns></returns>
         [ViewPageAttribute]
-        public ActionResult List(string ProNo, string ShipMainProNo, DateTime? Time, int page = 1)
+        public ActionResult List(string ProNo, string ShipMainProNo,string GoodNo,string GoodName,
+            string LineNo,string ShipTo, DateTime? Time, int page = 1)
         {
             Hashtable hs = new Hashtable();
             var query = QueryCondition.Instance.AddOrderBy("Id", false).SetPager(page, 10);
@@ -340,6 +341,27 @@ namespace PS.Controllers.Pro
                 hs.Add("PlanFromDate", Time.Value.ToString("yyy-MM-dd"));
                 ViewBag.Time = Time.Value.ToString("yyy-MM-dd");
             }
+            if (!string.IsNullOrEmpty(GoodNo))
+            {
+                hs.Add("GoodNo", GoodNo);
+                ViewBag.GoodNo = GoodNo;
+            }
+            if (!string.IsNullOrEmpty(GoodName))
+            {
+                hs.Add("GoodName", GoodName);
+                ViewBag.GoodName = GoodName;
+            }
+            if (!string.IsNullOrEmpty(LineNo))
+            {
+                hs.Add("LineNo", LineNo);
+                ViewBag.LineNo = LineNo;
+            }
+            if (!string.IsNullOrEmpty(ShipTo))
+            {
+                hs.Add("ShipTo", ShipTo);
+                ViewBag.ShipTo = ShipTo;
+            }
+
             ViewBag.Page = query.GetPager();
             var list = Smart.Instance.Pro_SchedulingBizService.GetList(query, hs);
             return View(list);

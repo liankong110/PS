@@ -24,6 +24,26 @@
                 @Html.AntiForgeryToken()
                 <!-- 查询条件-->
                 <div class="form-group" style="margin-bottom:6px;">
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产品编号：</label>
+                    <div class="col-sm-2 ">
+                        <input type="text" name="GoodNo" id="GoodNo" placeholder="产品编号" value="@ViewBag.GoodNo" />
+                    </div>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">产品名称：</label>
+                    <div class="col-sm-2">
+                        <input type="text" name="GoodName" id="GoodName" placeholder="产品名称" value="@ViewBag.GoodName" />
+                    </div>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">生产线：</label>
+                    <div class="col-sm-2">
+                        <input type="text" name="LineNo" id="LineNo" placeholder="生产线" value="@ViewBag.LineNo" />
+                    </div>
+                    <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">ship-to：</label>
+                    <div class="col-sm-2">
+                        <input type="text" name="ShipTo" id="ShipTo" placeholder="ship-to" value="@ViewBag.ShipTo" />
+                    </div>
+
+                    <!-- /.col -->
+                </div>
+                <div class="form-group" style="margin-bottom:6px;">
                     <label class="col-sm-1 control-label no-padding-right" for="form-field-tags">单号：</label>
                     <div class="col-sm-2 ">
                         <input type="text" name="ProNo" id="ProNo" placeholder="单号" value="@ViewBag.ProNo" />
@@ -37,7 +57,6 @@
                         <input type="text" name="Time" id="Time" placeholder="计划时间" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" readonly="readonly" value="@ViewBag.Time" />
                     </div>
                     <div class="col-sm-3 " id="default-buttons">
-
                         <p>
                             <button class="btn btn-sm btn-success" type="submit">
                                 <i class="ace-icon fa fa-search bigger-110 "></i>
@@ -46,11 +65,12 @@
 
                         </p>
                         <!-- /section:elements.button.white -->
-                    </div><!-- /.col -->
+                    </div>
                 </div>
+
                 <hr class="no-padding no-margin" />
                 <div class="row">
-                    <div class="col-xs-12"> 
+                    <div class="col-xs-12">
                         <div class="space-4"></div>
                         <!-- 查询列表 -->
                         <div class="row">
@@ -102,7 +122,7 @@
 
 
                                             </tr>
-                                        }  
+                                        }
                                         @if (Model.Count == 0)
                                         {
                                             <tr><td colspan="6" style="height:200px;" class="center">暂无数据</td></tr>
