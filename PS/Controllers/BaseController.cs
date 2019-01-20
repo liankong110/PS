@@ -85,6 +85,7 @@ namespace PS.Controllers
                         var user = new UserDomain();
                         user.loginPwd = MD5Util.Encrypt("123456");
                         user.RowState = 1;
+
                         user.Creater = "system";
                         user.Updater = "system";
                         user.loginId = LoginId;
